@@ -12,3 +12,4 @@ composer.lock
 .mimocode
 .opencode
 .commandcode
+.worktrees
