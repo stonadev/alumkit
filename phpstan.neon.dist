@@ -6,3 +6,8 @@ parameters:
         - database
         - routes
     tmpDir: build/phpstan
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        -
+            message: '~expects view-string\|null, string given~'
+            path: src/AlumkitServiceProvider.php

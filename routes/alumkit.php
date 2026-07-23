@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-use Alumkit\Alumkit\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
-    Route::get('login', [AuthController::class, 'showLoginForm'])
-        ->name('login');
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('dashboard', function () {
+            /** @phpstan-ignore argument.type */
+            return view('alumkit::auth.dashboard');
+        })->name('alumkit.dashboard');
 
-    Route::post('login', [AuthController::class, 'login'])
-        ->name('alumkit.login');
-
-    Route::post('logout', [AuthController::class, 'logout'])
-        ->name('alumkit.logout');
-
-    Route::middleware('auth')->group(function () {
-        Route::get('dashboard', [AuthController::class, 'dashboard'])
-            ->name('alumkit.dashboard');
+        Route::get('profile', function () {
+            /** @phpstan-ignore argument.type */
+            return view('alumkit::profile.show');
+        })->name('alumkit.profile');
     });
 });

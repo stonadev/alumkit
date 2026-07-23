@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 return [
 
-    'placeholder' => 'default',
+    'auth' => [
+
+        'user_model' => 'App\\Models\\User',
+
+    ],
 
 ];

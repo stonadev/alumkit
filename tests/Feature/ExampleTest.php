@@ -13,7 +13,7 @@ it('returns the same instance from the container', function () {
 });
 
 it('merges the package config', function () {
-    expect(config('alumkit.placeholder'))->toBe('default');
+    expect(config('alumkit.auth.user_model'))->toBeString()->not->toBeEmpty();
 });
 
 it('loads the package translations', function () {

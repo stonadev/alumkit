@@ -4,15 +4,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'AlumKit') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @tallStackUiStyle
+    <style>[x-cloak] { display: none !important; }</style>
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-gray-100">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
     <div class="min-h-screen flex items-center justify-center">
         <div class="w-full max-w-md p-6">
             @yield('content')
         </div>
     </div>
+    @tallStackUiScript
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>
