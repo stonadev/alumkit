@@ -3,6 +3,7 @@
 namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Workbench\App\Models\User;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        config(['cache.default' => 'array']);
+        config(['alumkit.auth.user_model' => User::class]);
     }
 }

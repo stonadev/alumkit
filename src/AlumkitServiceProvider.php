@@ -12,6 +12,9 @@ use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 
 class AlumkitServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,7 @@ class AlumkitServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/alumkit.php', 'alumkit');
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
+        $this->mergeConfigFrom(__DIR__.'/../config/permission.php', 'permission');
 
         $this->app->singleton(Alumkit::class);
     }
@@ -26,6 +30,8 @@ class AlumkitServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureFortifyConfig();
+
+        $this->registerMiddlewareAliases();
 
         $this->loadRoutesFrom(__DIR__.'/../routes/alumkit.php');
 
@@ -52,6 +58,10 @@ class AlumkitServiceProvider extends ServiceProvider
         ], ['alumkit', 'alumkit-fortify-config']);
 
         $this->publishes([
+            __DIR__.'/../config/permission.php' => config_path('permission.php'),
+        ], ['alumkit', 'alumkit-permission-config']);
+
+        $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/alumkit'),
         ], ['alumkit', 'alumkit-views']);
 
@@ -66,6 +76,14 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->publishesMigrations([
             __DIR__.'/../database/migrations' => database_path('migrations'),
         ], ['alumkit', 'alumkit-migrations']);
+
+        $this->publishes([
+            __DIR__.'/../database/seeders/AlumkitRolesAndPermissionsSeeder.php' => database_path('seeders/AlumkitRolesAndPermissionsSeeder.php'),
+        ], ['alumkit', 'alumkit-seeder']);
+
+        $this->publishes([
+            __DIR__.'/../database/seeders/AlumkitUserSeeder.php' => database_path('seeders/AlumkitUserSeeder.php'),
+        ], ['alumkit', 'alumkit-seeder']);
 
         $this->commands([
             AlumkitCommand::class,
@@ -117,5 +135,12 @@ class AlumkitServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
+    }
+
+    protected function registerMiddlewareAliases(): void
+    {
+        $this->app->make('router')->aliasMiddleware('role', RoleMiddleware::class);
+        $this->app->make('router')->aliasMiddleware('permission', PermissionMiddleware::class);
+        $this->app->make('router')->aliasMiddleware('role_or_permission', RoleOrPermissionMiddleware::class);
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Routing\Route;
 use Laravel\Fortify\FortifyServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Permission\PermissionServiceProvider;
 use TallStackUi\Facades\TallStackUi;
 use TallStackUi\TallStackUiServiceProvider;
 use Workbench\App\Models\User;
@@ -38,6 +39,7 @@ abstract class TestCase extends Orchestra
             LivewireServiceProvider::class,
             TallStackUiServiceProvider::class,
             FortifyServiceProvider::class,
+            PermissionServiceProvider::class,
             AlumkitServiceProvider::class,
         ];
     }

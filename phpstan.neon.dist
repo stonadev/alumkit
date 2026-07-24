@@ -10,4 +10,9 @@ parameters:
     ignoreErrors:
         -
             message: '~expects view-string\|null, string given~'
-            path: src/AlumkitServiceProvider.php
+            paths:
+                - src/AlumkitServiceProvider.php
+                - src/Http/Controllers/*.php
+        -
+            identifier: larastan.noEnvCallsOutsideOfConfig
+            path: config/*.php

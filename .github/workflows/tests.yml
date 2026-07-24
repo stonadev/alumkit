@@ -59,6 +59,8 @@ jobs:
       - name: Type Coverage
         if: runner.os != 'Windows'
         run: composer test:types
+        env:
+          __PEST_PLUGIN_ENV: 1
 
       - name: Test Suite
         if: runner.os != 'Windows'

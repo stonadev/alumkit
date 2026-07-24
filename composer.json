@@ -20,6 +20,7 @@
         "php": "^8.3",
         "illuminate/support": "^12.0||^13.0",
         "laravel/fortify": "^1.37.2",
+        "spatie/laravel-permission": "^6.0",
         "tallstackui/tallstackui": "^3.0"
     },
     "require-dev": {
@@ -40,6 +41,7 @@
     "autoload-dev": {
         "psr-4": {
             "Alumkit\\Alumkit\\Tests\\": "tests/",
+            "Alumkit\\Alumkit\\Database\\Seeders\\": "database/seeders/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"

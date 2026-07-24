@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 use Workbench\Database\Factories\UserFactory;
 
 #[Fillable(['email', 'password'])]
@@ -19,6 +20,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    use HasRoles;
     use MustVerifyEmail;
     use TwoFactorAuthenticatable;
 
