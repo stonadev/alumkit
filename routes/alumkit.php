@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
+use Alumkit\Alumkit\Http\Controllers\UserStateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth', 'verified', 'user.state'])->group(function () {
         Route::get('dashboard', function () {
             /** @phpstan-ignore argument.type */
             return view('alumkit::layouts.dashboard');
@@ -27,6 +28,7 @@ Route::middleware(['web'])->group(function () {
                 Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
                 Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
                 Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
+                Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');
             });
         });
     });

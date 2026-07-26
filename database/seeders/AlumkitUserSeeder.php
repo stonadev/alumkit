@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Database\Seeders;
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Models\Role;
@@ -32,6 +33,7 @@ class AlumkitUserSeeder extends Seeder
             [
                 'password' => bcrypt(config('alumkit.seeder.admin_password', 'password')),
                 'email_verified_at' => now(),
+                'state' => UserState::Active->value,
             ],
         );
 

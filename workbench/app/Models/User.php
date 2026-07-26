@@ -13,7 +13,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Workbench\Database\Factories\UserFactory;
 
-#[Fillable(['email', 'password'])]
+/**
+ * @property string $state
+ */
+#[Fillable(['email', 'password', 'state'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements MustVerifyEmailContract
 {

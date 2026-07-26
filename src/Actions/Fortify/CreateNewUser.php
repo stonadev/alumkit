@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Actions\Fortify;
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -34,6 +35,7 @@ class CreateNewUser implements CreatesNewUsers
         return config('alumkit.auth.user_model')::create([
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
+            'state' => config('alumkit.default_state', UserState::Pending)->value,
         ]);
     }
 }

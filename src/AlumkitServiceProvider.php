@@ -9,6 +9,7 @@ use Alumkit\Alumkit\Actions\Fortify\ResetUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
+use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
@@ -142,5 +143,6 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->app->make('router')->aliasMiddleware('role', RoleMiddleware::class);
         $this->app->make('router')->aliasMiddleware('permission', PermissionMiddleware::class);
         $this->app->make('router')->aliasMiddleware('role_or_permission', RoleOrPermissionMiddleware::class);
+        $this->app->make('router')->aliasMiddleware('user.state', CheckUserState::class);
     }
 }

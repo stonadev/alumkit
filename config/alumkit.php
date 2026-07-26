@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Alumkit\Alumkit\Enums\UserState;
 
 return [
 
@@ -12,7 +13,9 @@ return [
 
     'seeder' => [
         'admin_email' => env('ALUMKIT_ADMIN_EMAIL', 'admin@example.com'),
-        'admin_password' => env('ALUMKIT_ADMIN_PASSWORD'),
+        'admin_password' => env('ALUMKIT_ADMIN_PASSWORD', 'password'),
     ],
+
+    'default_state' => UserState::Pending,
 
 ];
