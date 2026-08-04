@@ -88,6 +88,9 @@ it('registers a new user', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT'],
+        ],
     ])->assertRedirect();
 
     $this->assertDatabaseHas('users', [
@@ -104,7 +107,7 @@ it('validates registration fields', function () {
         'email' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['name', 'email', 'password']);
+    ])->assertSessionHasErrors(['name', 'email', 'password', 'educations']);
 });
 
 it('validates unique email on registration', function () {
@@ -115,6 +118,9 @@ it('validates unique email on registration', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT'],
+        ],
     ])->assertSessionHasErrors(['email']);
 });
 

@@ -16,3 +16,6 @@ parameters:
         -
             identifier: larastan.noEnvCallsOutsideOfConfig
             path: config/*.php
+        -
+            identifier: trait.unused
+            path: src/Traits/*.php

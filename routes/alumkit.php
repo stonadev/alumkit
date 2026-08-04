@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
@@ -22,6 +23,10 @@ Route::middleware(['web'])->group(function () {
         Route::prefix('dashboard')->name('alumkit.')->group(function () {
             Route::middleware('permission:manage roles')->group(function () {
                 Route::resource('roles', RoleController::class)->except(['show']);
+            });
+
+            Route::middleware('permission:manage educations')->group(function () {
+                Route::resource('educations', EducationController::class)->except(['show']);
             });
 
             Route::middleware('permission:manage members')->group(function () {

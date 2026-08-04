@@ -17,8 +17,9 @@ it('creates the expected permissions', function () {
     expect($permissions)->toContain('manage roles');
     expect($permissions)->toContain('manage permissions');
     expect($permissions)->toContain('manage members');
+    expect($permissions)->toContain('manage educations');
     expect($permissions)->toContain('view dashboard');
-    expect($permissions)->toHaveCount(4);
+    expect($permissions)->toHaveCount(5);
 });
 
 it('creates the expected roles', function () {
@@ -37,11 +38,12 @@ it('assigns all permissions to the admin role', function () {
 
     $adminRole = Role::findByName('admin');
 
-    expect($adminRole->permissions->count())->toBe(4);
+    expect($adminRole->permissions->count())->toBe(5);
     expect($adminRole->permissions->pluck('name')->toArray())->toBe([
         'manage roles',
         'manage permissions',
         'manage members',
+        'manage educations',
         'view dashboard',
     ]);
 });
