@@ -40,7 +40,10 @@
             </nav>
 
             <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ Auth::user()->name }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     {{ Auth::user()->email }}
                 </p>
                 <form method="POST" action="{{ route('logout') }}">

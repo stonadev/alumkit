@@ -26,6 +26,7 @@ return [
     'select_permissions' => 'Select Permissions',
     'select_roles' => 'Select Roles',
     'select_user' => 'Select User',
+    'user_name' => 'Name',
     'user_email' => 'User Email',
     'permissions_count' => ':count permission|:count permissions',
     'manage_roles_description' => 'Manage roles and their permissions',

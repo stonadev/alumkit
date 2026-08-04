@@ -12,6 +12,7 @@ return [
     ],
 
     'seeder' => [
+        'admin_name' => env('ALUMKIT_ADMIN_NAME', 'Admin'),
         'admin_email' => env('ALUMKIT_ADMIN_EMAIL', 'admin@example.com'),
         'admin_password' => env('ALUMKIT_ADMIN_PASSWORD', 'password'),
     ],

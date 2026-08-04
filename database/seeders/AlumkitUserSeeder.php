@@ -31,6 +31,7 @@ class AlumkitUserSeeder extends Seeder
         $user = $userModel::firstOrCreate(
             ['email' => config('alumkit.seeder.admin_email', 'admin@example.com')],
             [
+                'name' => config('alumkit.seeder.admin_name', 'Admin'),
                 'password' => bcrypt(config('alumkit.seeder.admin_password', 'password')),
                 'email_verified_at' => now(),
                 'state' => UserState::Active->value,

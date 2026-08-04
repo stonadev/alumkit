@@ -6,6 +6,14 @@
             @csrf
 
             <x-input
+                type="text"
+                name="name"
+                :value="old('name')"
+                :label="__('alumkit::auth.name')"
+                required
+            />
+
+            <x-input
                 type="email"
                 name="email"
                 :value="old('email')"

@@ -21,6 +21,7 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -33,6 +34,7 @@ class CreateNewUser implements CreatesNewUsers
 
         /** @var User */
         return config('alumkit.auth.user_model')::create([
+            'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'state' => config('alumkit.default_state', UserState::Pending)->value,

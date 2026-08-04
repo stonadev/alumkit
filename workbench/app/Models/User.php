@@ -16,7 +16,7 @@ use Workbench\Database\Factories\UserFactory;
 /**
  * @property string $state
  */
-#[Fillable(['email', 'password', 'state'])]
+#[Fillable(['name', 'email', 'password', 'state'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements MustVerifyEmailContract
 {

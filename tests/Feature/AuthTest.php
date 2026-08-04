@@ -84,12 +84,14 @@ it('redirects unauthenticated users to login', function () {
 
 it('registers a new user', function () {
     $this->post(route('register'), [
+        'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ])->assertRedirect();
 
     $this->assertDatabaseHas('users', [
+        'name' => 'Test User',
         'email' => 'test@example.com',
     ]);
 
@@ -98,16 +100,18 @@ it('registers a new user', function () {
 
 it('validates registration fields', function () {
     $this->post(route('register'), [
+        'name' => '',
         'email' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['email', 'password']);
+    ])->assertSessionHasErrors(['name', 'email', 'password']);
 });
 
 it('validates unique email on registration', function () {
     User::factory()->create(['email' => 'test@example.com']);
 
     $this->post(route('register'), [
+        'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -195,11 +199,13 @@ it('updates user profile information', function () {
 
     $this->actingAs($user)
         ->put(route('user-profile-information.update'), [
+            'name' => 'Updated Name',
             'email' => 'updated@example.com',
         ])->assertSessionHasNoErrors();
 
     $this->assertDatabaseHas('users', [
         'id' => $user->id,
+        'name' => 'Updated Name',
         'email' => 'updated@example.com',
     ]);
 });

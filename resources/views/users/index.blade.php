@@ -14,6 +14,7 @@
             <table class="w-full">
                 <thead>
                     <tr class="border-b dark:border-gray-700">
+                        <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.user_name') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.user_email') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.state') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.roles') }}</th>
@@ -23,7 +24,8 @@
                 <tbody>
                     @foreach ($users as $u)
                         <tr class="border-b dark:border-gray-700">
-                            <td class="py-3 px-4 font-medium">{{ $u->email }}</td>
+                            <td class="py-3 px-4 font-medium">{{ $u->name }}</td>
+                            <td class="py-3 px-4">{{ $u->email }}</td>
                             <td class="py-3 px-4">
                                 @include('alumkit::users.partials.state-badge', ['state' => $u->state])
                             </td>

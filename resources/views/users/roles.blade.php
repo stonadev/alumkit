@@ -8,7 +8,8 @@
     <x-card>
         <div class="mb-4">
             <p class="text-gray-600 dark:text-gray-400">
-                {{ __('alumkit::dashboard.user_email') }}: <strong>{{ $user->email }}</strong>
+                {{ __('alumkit::dashboard.user_name') }}: <strong>{{ $user->name }}</strong>
+                ({{ __('alumkit::dashboard.user_email') }}: {{ $user->email }})
             </p>
         </div>
 
