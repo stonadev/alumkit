@@ -64,7 +64,7 @@
                 </div>
 
                 <template x-for="(edu, index) in educations" :key="index">
-                    <div class="rounded-lg border border-gray-200 p-4 space-y-3 dark:border-gray-700">
+                    <div class="rounded-lg border border-gray-200 p-4 space-y-4 dark:border-gray-700">
                         <div class="flex justify-end" x-show="educations.length > 1">
                             <x-button
                                 type="button"
@@ -84,7 +84,7 @@
                                 x-bind:name="'educations[' + index + '][level]'"
                                 x-model="edu.level"
                                 required
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                                class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                             >
                                 @foreach (config('alumkit.education.levels', []) as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
@@ -107,7 +107,7 @@
                             :label="__('alumkit::education.subject')"
                         />
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-4">
                             <x-input
                                 type="number"
                                 x-bind:name="'educations[' + index + '][start_year]'"
@@ -126,7 +126,7 @@
                             />
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-4">
                             <x-input
                                 type="number"
                                 x-bind:name="'educations[' + index + '][end_year]'"
