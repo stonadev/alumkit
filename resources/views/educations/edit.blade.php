@@ -16,7 +16,6 @@
                         {{ __('alumkit::education.level') }}
                     </label>
                     <select name="level" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                        <option value="">—</option>
                         @foreach ($levels as $value => $label)
                             <option value="{{ $value }}" @selected($education->level === $value)>{{ $label }}</option>
                         @endforeach

@@ -40,9 +40,9 @@
             {{-- Education Section --}}
             <div
                 x-data="{
-                    educations: [{ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
+                    educations: [{ level: '{{ array_key_first(config('alumkit.education.levels', [])) }}', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
                     add() {
-                        this.educations.push({ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
+                        this.educations.push({ level: '{{ array_key_first(config('alumkit.education.levels', [])) }}', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
                     },
                     remove(index) {
                         this.educations.splice(index, 1);
@@ -86,7 +86,6 @@
                                 required
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                             >
-                                <option value="">—</option>
                                 @foreach (config('alumkit.education.levels', []) as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
