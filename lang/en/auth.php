@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'name' => 'Name',
     'email' => 'Email',
+    'phone' => 'Phone',
     'password' => 'Password',
     'remember_me' => 'Remember me',
     'sign_in' => 'Sign in',

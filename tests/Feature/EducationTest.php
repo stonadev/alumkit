@@ -158,6 +158,7 @@ it('creates a user with educations during registration', function () {
     $this->post(route('register'), [
         'name' => 'Education User',
         'email' => 'edu@example.com',
+        'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [
@@ -193,6 +194,7 @@ it('requires at least one education during registration', function () {
     $this->post(route('register'), [
         'name' => 'No Edu User',
         'email' => 'noedu@example.com',
+        'phone' => '+1234567891',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
     ])->assertSessionHasErrors(['educations']);
@@ -202,6 +204,7 @@ it('validates education level during registration', function () {
     $this->post(route('register'), [
         'name' => 'Invalid Edu User',
         'email' => 'invalid@example.com',
+        'phone' => '+1234567892',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [
@@ -217,6 +220,7 @@ it('validates institution required during registration when educations present',
     $this->post(route('register'), [
         'name' => 'No Inst User',
         'email' => 'noinst@example.com',
+        'phone' => '+1234567893',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [
@@ -399,6 +403,7 @@ it('rejects empty educations array during registration', function () {
     $this->post(route('register'), [
         'name' => 'Empty Edu User',
         'email' => 'emptyedu@example.com',
+        'phone' => '+1234567894',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [],

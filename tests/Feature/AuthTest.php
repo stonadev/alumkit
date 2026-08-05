@@ -86,6 +86,7 @@ it('registers a new user', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
+        'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [
@@ -96,6 +97,7 @@ it('registers a new user', function () {
     $this->assertDatabaseHas('users', [
         'name' => 'Test User',
         'email' => 'test@example.com',
+        'phone' => '+1234567890',
     ]);
 
     Event::assertDispatched(Registered::class);
@@ -105,9 +107,10 @@ it('validates registration fields', function () {
     $this->post(route('register'), [
         'name' => '',
         'email' => '',
+        'phone' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['name', 'email', 'password', 'educations']);
+    ])->assertSessionHasErrors(['name', 'email', 'phone', 'password', 'educations']);
 });
 
 it('validates unique email on registration', function () {
@@ -116,6 +119,7 @@ it('validates unique email on registration', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
+        'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'educations' => [

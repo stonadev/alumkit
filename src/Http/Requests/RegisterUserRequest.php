@@ -24,6 +24,7 @@ class RegisterUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+            'phone' => ['required', 'string', 'max:20', Rule::unique('users')],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'educations' => ['required', 'array', 'min:1'],
             'educations.*.level' => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],

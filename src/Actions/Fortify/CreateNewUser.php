@@ -29,6 +29,7 @@ class CreateNewUser implements CreatesNewUsers
             $user = config('alumkit.auth.user_model')::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'],
                 'password' => Hash::make($validated['password']),
                 'state' => config('alumkit.default_state', UserState::Pending)->value,
             ]);

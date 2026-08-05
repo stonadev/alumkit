@@ -21,6 +21,14 @@
                 required
             />
 
+            <x-input
+                type="tel"
+                name="phone"
+                :value="old('phone')"
+                :label="__('alumkit::auth.phone')"
+                required
+            />
+
             <div>
                 <x-password
                     name="password"
