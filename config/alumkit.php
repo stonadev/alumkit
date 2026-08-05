@@ -29,4 +29,14 @@ return [
         ],
     ],
 
+    'career' => [
+        'employment_types' => [
+            'full_time' => 'Full-Time',
+            'part_time' => 'Part-Time',
+            'contract' => 'Contract',
+            'freelance' => 'Freelance',
+            'internship' => 'Internship',
+        ],
+    ],
+
 ];

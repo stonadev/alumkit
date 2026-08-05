@@ -70,6 +70,7 @@ it('logs out and invalidates session', function () {
 it('renders the dashboard for authenticated users', function () {
     $user = User::factory()->create();
     $user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->actingAs($user)
         ->get(route('alumkit.dashboard'))
@@ -193,6 +194,7 @@ it('redirects unverified users from dashboard', function () {
 it('renders the profile page for verified users', function () {
     $user = User::factory()->create();
     $user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->actingAs($user)
         ->get(route('alumkit.profile'))

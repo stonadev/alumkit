@@ -15,9 +15,11 @@ beforeEach(function () {
 
     $this->user = User::factory()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->targetUser = User::factory()->create();
     $this->targetUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $this->targetUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });
 
 it('renders the user roles edit form for users with manage members permission', function () {

@@ -34,6 +34,13 @@
                     </a>
                 @endcan
 
+                @can('manage careers')
+                    <a href="{{ route('alumkit.careers.index') }}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        {{ __('alumkit::career.careers') }}
+                    </a>
+                @endcan
+
+
                 <a href="{{ route('alumkit.profile') }}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                     {{ __('alumkit::auth.profile') }}
                 </a>

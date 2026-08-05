@@ -14,7 +14,7 @@ class CompleteProfileCheck
     {
         $user = $request->user();
 
-        if ($user && $user->educations()->exists() === false) {
+        if ($user && ($user->educations()->exists() === false || $user->careers()->exists() === false)) {
             return redirect()->route('alumkit.profile.complete');
         }
 

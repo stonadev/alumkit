@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
@@ -35,6 +36,10 @@ Route::middleware(['web'])->group(function () {
 
             Route::middleware('permission:manage educations')->group(function () {
                 Route::resource('educations', EducationController::class)->except(['show']);
+            });
+
+            Route::middleware('permission:manage careers')->group(function () {
+                Route::resource('careers', CareerController::class)->except(['show']);
             });
 
             Route::middleware('permission:manage members')->group(function () {
