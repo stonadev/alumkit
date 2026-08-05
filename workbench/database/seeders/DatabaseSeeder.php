@@ -23,7 +23,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         UserFactory::new()->create([
-            'email' => 'test@example.com',
+            'name' => 'Verified User',
+            'email' => 'verified@example.com',
+        ]);
+
+        UserFactory::new()->unverified()->create([
+            'name' => 'Unverified User',
+            'email' => 'unverified@example.com',
         ]);
     }
 }

@@ -14,7 +14,10 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create(['state' => UserState::Active->value]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+
     $this->targetUser = User::factory()->create(['state' => UserState::Pending->value]);
+    $this->targetUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 });
 
 it('allows pending to active transition', function () {

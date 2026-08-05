@@ -14,7 +14,10 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create();
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+
     $this->targetUser = User::factory()->create();
+    $this->targetUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 });
 
 it('renders the user roles edit form for users with manage members permission', function () {

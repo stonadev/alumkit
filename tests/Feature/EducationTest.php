@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Alumkit\Alumkit\Enums\EducationLevel;
 use Alumkit\Alumkit\Models\Education;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -15,6 +14,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create();
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 });
 
 it('renders the educations index for users with manage educations permission', function () {
@@ -152,84 +152,6 @@ it('deletes an education record', function () {
         ->assertRedirect(route('alumkit.educations.index'));
 
     $this->assertDatabaseMissing('educations', ['id' => $education->id]);
-});
-
-it('creates a user with educations during registration', function () {
-    $this->post(route('register'), [
-        'name' => 'Education User',
-        'email' => 'edu@example.com',
-        'phone' => '+1234567890',
-        'password' => 'Password1!',
-        'password_confirmation' => 'Password1!',
-        'educations' => [
-            [
-                'level' => 'masters',
-                'institution' => 'MIT',
-                'subject' => 'Computer Science',
-                'start_year' => '2020',
-                'start_month' => '9',
-                'end_year' => '2022',
-                'end_month' => '6',
-            ],
-            [
-                'level' => 'phd',
-                'institution' => 'Stanford',
-                'subject' => 'AI',
-                'start_year' => '2022',
-                'start_month' => '9',
-            ],
-        ],
-    ])->assertSessionHasNoErrors()
-        ->assertRedirect();
-
-    $user = User::where('email', 'edu@example.com')->first();
-    expect($user->educations)->toHaveCount(2);
-    expect($user->educations->first()->level)->toBe(EducationLevel::Masters);
-    expect($user->educations->first()->institution)->toBe('MIT');
-    expect($user->educations->last()->level)->toBe(EducationLevel::Phd);
-    expect($user->educations->last()->end_year)->toBeNull();
-});
-
-it('requires at least one education during registration', function () {
-    $this->post(route('register'), [
-        'name' => 'No Edu User',
-        'email' => 'noedu@example.com',
-        'phone' => '+1234567891',
-        'password' => 'Password1!',
-        'password_confirmation' => 'Password1!',
-    ])->assertSessionHasErrors(['educations']);
-});
-
-it('validates education level during registration', function () {
-    $this->post(route('register'), [
-        'name' => 'Invalid Edu User',
-        'email' => 'invalid@example.com',
-        'phone' => '+1234567892',
-        'password' => 'Password1!',
-        'password_confirmation' => 'Password1!',
-        'educations' => [
-            [
-                'level' => 'invalid_level',
-                'institution' => 'MIT',
-            ],
-        ],
-    ])->assertSessionHasErrors(['educations.0.level']);
-});
-
-it('validates institution required during registration when educations present', function () {
-    $this->post(route('register'), [
-        'name' => 'No Inst User',
-        'email' => 'noinst@example.com',
-        'phone' => '+1234567893',
-        'password' => 'Password1!',
-        'password_confirmation' => 'Password1!',
-        'educations' => [
-            [
-                'level' => 'masters',
-                'institution' => '',
-            ],
-        ],
-    ])->assertSessionHasErrors(['educations.0.institution']);
 });
 
 it('denies access to create education form without permission', function () {
@@ -397,15 +319,4 @@ it('validates end_year gte start_year on update', function () {
             'end_year' => 2020,
         ])
         ->assertSessionHasErrors(['end_year']);
-});
-
-it('rejects empty educations array during registration', function () {
-    $this->post(route('register'), [
-        'name' => 'Empty Edu User',
-        'email' => 'emptyedu@example.com',
-        'phone' => '+1234567894',
-        'password' => 'Password1!',
-        'password_confirmation' => 'Password1!',
-        'educations' => [],
-    ])->assertSessionHasErrors(['educations']);
 });

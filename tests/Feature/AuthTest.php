@@ -69,6 +69,7 @@ it('logs out and invalidates session', function () {
 
 it('renders the dashboard for authenticated users', function () {
     $user = User::factory()->create();
+    $user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 
     $this->actingAs($user)
         ->get(route('alumkit.dashboard'))
@@ -89,9 +90,6 @@ it('registers a new user', function () {
         'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
-        'educations' => [
-            ['level' => 'masters', 'institution' => 'MIT'],
-        ],
     ])->assertRedirect();
 
     $this->assertDatabaseHas('users', [
@@ -110,7 +108,7 @@ it('validates registration fields', function () {
         'phone' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['name', 'email', 'phone', 'password', 'educations']);
+    ])->assertSessionHasErrors(['name', 'email', 'phone', 'password']);
 });
 
 it('validates unique email on registration', function () {
@@ -122,9 +120,6 @@ it('validates unique email on registration', function () {
         'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
-        'educations' => [
-            ['level' => 'masters', 'institution' => 'MIT'],
-        ],
     ])->assertSessionHasErrors(['email']);
 });
 
@@ -197,6 +192,7 @@ it('redirects unverified users from dashboard', function () {
 
 it('renders the profile page for verified users', function () {
     $user = User::factory()->create();
+    $user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 
     $this->actingAs($user)
         ->get(route('alumkit.profile'))

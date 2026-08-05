@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
@@ -9,7 +10,14 @@ use Alumkit\Alumkit\Http\Controllers\UserStateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
-    Route::middleware(['auth', 'verified', 'user.state'])->group(function () {
+    // Profile completion: accessible after email verification, before full profile is submitted.
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('profile/complete', [CompleteProfileController::class, 'create'])->name('alumkit.profile.complete');
+        Route::post('profile/complete', [CompleteProfileController::class, 'store'])->name('alumkit.profile.complete.store');
+    });
+
+    // Protected routes: require auth, email verification, active/pending state, and completed profile.
+    Route::middleware(['auth', 'verified', 'user.state', 'complete-profile.check'])->group(function () {
         Route::get('dashboard', function () {
             /** @phpstan-ignore argument.type */
             return view('alumkit::layouts.dashboard');
