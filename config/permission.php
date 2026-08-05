@@ -44,6 +44,7 @@ return [
             'manage roles',
             'manage permissions',
             'manage members',
+            'manage educations',
             'view dashboard',
         ],
     ],

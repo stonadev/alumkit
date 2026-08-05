@@ -2,6 +2,7 @@
 
 namespace Workbench\App\Models;
 
+use Alumkit\Alumkit\Traits\HasEducations;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,9 +21,10 @@ use Workbench\Database\Factories\UserFactory;
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements MustVerifyEmailContract
 {
+    use HasEducations;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
     use HasRoles;
     use MustVerifyEmail;
     use TwoFactorAuthenticatable;

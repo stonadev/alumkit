@@ -19,4 +19,14 @@ return [
 
     'default_state' => UserState::Pending,
 
+    'education' => [
+        'levels' => [
+            'honors' => 'Honors',
+            'masters' => 'Masters',
+            'phd' => 'PhD',
+            'diploma' => 'Diploma',
+            'certificate' => 'Certificate',
+        ],
+    ],
+
 ];

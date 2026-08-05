@@ -5,39 +5,42 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Actions\Fortify;
 
 use Alumkit\Alumkit\Enums\UserState;
+use Alumkit\Alumkit\Http\Requests\RegisterUserRequest;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-    use PasswordValidationRules;
-
     /**
-     * @param  array<string, string>  $input
+     * @param  array<string, mixed>  $input
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users'),
-            ],
-            'password' => $this->passwordRules(),
-        ])->validate();
+        $request = new RegisterUserRequest;
 
-        /** @var User */
-        return config('alumkit.auth.user_model')::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-            'state' => config('alumkit.default_state', UserState::Pending)->value,
-        ]);
+        $validated = Validator::make($input, $request->rules())->validate();
+
+        /** @var User $user */
+        $user = DB::transaction(function () use ($validated) {
+            /** @var User $user */
+            $user = config('alumkit.auth.user_model')::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'state' => config('alumkit.default_state', UserState::Pending)->value,
+            ]);
+
+            foreach ($validated['educations'] as $education) {
+                /** @phpstan-ignore method.notFound */
+                $user->educations()->create($education);
+            }
+
+            return $user;
+        });
+
+        return $user;
     }
 }

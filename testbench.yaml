@@ -2,6 +2,7 @@ laravel: '@testbench'
 
 providers:
   - Workbench\App\Providers\WorkbenchServiceProvider
+  - Alumkit\Alumkit\AlumkitServiceProvider
 
 migrations:
   - database/migrations

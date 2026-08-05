@@ -86,8 +86,11 @@ it('registers a new user', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT'],
+        ],
     ])->assertRedirect();
 
     $this->assertDatabaseHas('users', [
@@ -104,7 +107,7 @@ it('validates registration fields', function () {
         'email' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['name', 'email', 'password']);
+    ])->assertSessionHasErrors(['name', 'email', 'password', 'educations']);
 });
 
 it('validates unique email on registration', function () {
@@ -113,8 +116,11 @@ it('validates unique email on registration', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT'],
+        ],
     ])->assertSessionHasErrors(['email']);
 });
 
