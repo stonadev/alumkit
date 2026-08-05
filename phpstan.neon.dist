@@ -19,3 +19,4 @@ parameters:
         -
             identifier: trait.unused
             path: src/Traits/*.php
+            # Trait is consumed by workbench User model and downstream apps, not within src/

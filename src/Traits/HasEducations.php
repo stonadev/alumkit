@@ -14,6 +14,9 @@ trait HasEducations
         return $this->hasMany(Education::class);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     public function addEducation(array $attributes): Education
     {
         return $this->educations()->create($attributes);

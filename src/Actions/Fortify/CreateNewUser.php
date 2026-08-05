@@ -7,6 +7,7 @@ namespace Alumkit\Alumkit\Actions\Fortify;
 use Alumkit\Alumkit\Enums\UserState;
 use Alumkit\Alumkit\Http\Requests\RegisterUserRequest;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -20,20 +21,25 @@ class CreateNewUser implements CreatesNewUsers
     {
         $request = new RegisterUserRequest;
 
-        Validator::make($input, $request->rules())->validate();
+        $validated = Validator::make($input, $request->rules())->validate();
 
-        /** @var User */
-        $user = config('alumkit.auth.user_model')::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-            'state' => config('alumkit.default_state', UserState::Pending)->value,
-        ]);
+        /** @var User $user */
+        $user = DB::transaction(function () use ($validated) {
+            /** @var User $user */
+            $user = config('alumkit.auth.user_model')::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'state' => config('alumkit.default_state', UserState::Pending)->value,
+            ]);
 
-        foreach ($input['educations'] as $education) {
-            /** @phpstan-ignore method.notFound */
-            $user->educations()->create($education);
-        }
+            foreach ($validated['educations'] as $education) {
+                /** @phpstan-ignore method.notFound */
+                $user->educations()->create($education);
+            }
+
+            return $user;
+        });
 
         return $user;
     }

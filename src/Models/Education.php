@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Models;
 
+use Alumkit\Alumkit\Enums\EducationLevel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -28,6 +29,7 @@ class Education extends Model
     protected function casts(): array
     {
         return [
+            'level' => EducationLevel::class,
             'start_year' => 'integer',
             'start_month' => 'integer',
             'end_year' => 'integer',

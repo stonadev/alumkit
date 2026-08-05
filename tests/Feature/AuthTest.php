@@ -86,8 +86,8 @@ it('registers a new user', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
         'educations' => [
             ['level' => 'masters', 'institution' => 'MIT'],
         ],
@@ -116,8 +116,8 @@ it('validates unique email on registration', function () {
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
         'educations' => [
             ['level' => 'masters', 'institution' => 'MIT'],
         ],

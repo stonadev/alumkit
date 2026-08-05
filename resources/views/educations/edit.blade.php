@@ -40,7 +40,7 @@
             </div>
 
             <div class="mt-6 flex items-center gap-4">
-                <x-button type="submit" :text="__('alumkit::education.education_updated')" />
+                <x-button type="submit" :text="__('alumkit::education.update_education')" />
                 <a href="{{ route('alumkit.educations.index') }}" class="text-gray-600 hover:text-gray-900">
                     {{ __('alumkit::dashboard.back_to_dashboard') }}
                 </a>

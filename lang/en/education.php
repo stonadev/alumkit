@@ -6,6 +6,7 @@ return [
     'education' => 'Education',
     'educations' => 'Educations',
     'add_education' => 'Add Education',
+    'update_education' => 'Update Education',
     'remove' => 'Remove',
     'level' => 'Level',
     'institution' => 'Institution',
