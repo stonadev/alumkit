@@ -13,7 +13,7 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 
 ## Primary Goal
 
-- apply the `lazycod3rs/alumkit` package's public API in the smallest correct way
+- apply the `stonadev/alumkit` package's public API in the smallest correct way
 
 ## Workflow
 

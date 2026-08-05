@@ -1,13 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "lazycod3rs/alumkit",
+    "name": "stonadev/alumkit",
     "description": "A Laravel toolkit for alumni management applications.",
     "keywords": [
         "laravel",
-        "lazycod3rs",
+        "stonadev",
         "alumkit"
     ],
-    "homepage": "https://github.com/lazycod3rs/alumkit",
+    "homepage": "https://github.com/stonadev/alumkit",
     "license": "MIT",
     "authors": [
         {
