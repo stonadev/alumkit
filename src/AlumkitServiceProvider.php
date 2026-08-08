@@ -56,6 +56,10 @@ class AlumkitServiceProvider extends ServiceProvider
             __DIR__.'/../config/permission.php' => config_path('permission.php'),
         ], ['alumkit-permission-config']);
 
+        $this->publishes([
+            __DIR__.'/../config/alumkit.php' => config_path('alumkit.php'),
+        ], ['alumkit-config']);
+
         $this->commands([
             AlumkitCommand::class,
             PublishCommand::class,

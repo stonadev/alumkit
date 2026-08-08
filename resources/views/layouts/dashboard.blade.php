@@ -40,6 +40,28 @@
                     </a>
                 @endcan
 
+                @foreach (config('alumkit.dashboard_nav', []) as $item)
+                    @if (! empty($item['children']) && is_array($item['children']))
+                        @if (empty($item['permission']) || auth()->user()->can($item['permission']))
+                            <p class="px-4 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                {{ $item['label'] }}
+                            </p>
+                            @foreach ($item['children'] as $child)
+                                @if (empty($child['permission']) || auth()->user()->can($child['permission']))
+                                    <a href="{{ route($child['route']) }}" class="flex items-center pl-8 pr-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        {{ $child['label'] }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        @endif
+                    @elseif (! empty($item['route']))
+                        @if (empty($item['permission']) || auth()->user()->can($item['permission']))
+                            <a href="{{ route($item['route']) }}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                {{ $item['label'] }}
+                            </a>
+                        @endif
+                    @endif
+                @endforeach
 
                 <a href="{{ route('alumkit.profile') }}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                     {{ __('alumkit::auth.profile') }}

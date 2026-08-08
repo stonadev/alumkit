@@ -22,13 +22,13 @@ composer require stonadev/alumkit
 
 The package registers its migrations — run `php artisan migrate` to create the tables.
 
-### Publishing the Permission Configuration
+### Publishing the Configuration
 
 ```bash
 php artisan alumkit:publish
 ```
 
-To overwrite an existing published file, use `php artisan alumkit:publish --force`.
+This copies both `config/permission.php` and `config/alumkit.php` to your app's `config/` directory. To overwrite existing published files, use `php artisan alumkit:publish --force`.
 
 ## Usage
 
@@ -85,6 +85,23 @@ Route::middleware('permission:manage events')->group(function () {
     Route::resource('events', EventController::class);
 });
 ```
+
+Add links for your features to the package dashboard sidebar via the published `config/alumkit.php`:
+
+```php
+// config/alumkit.php
+'dashboard_nav' => [
+    ['label' => 'Events', 'route' => 'events.index', 'permission' => 'manage events'],
+    [
+        'label' => 'Settings',
+        'children' => [
+            ['label' => 'General', 'route' => 'settings.general'],
+        ],
+    ],
+],
+```
+
+Links and group children render in the package dashboard sidebar; entries with a `permission` are hidden from users lacking that permission.
 
 #### Seeding the Admin User
 
