@@ -20,55 +20,12 @@ You can install the package via Composer:
 composer require stonadev/alumkit
 ```
 
-You may publish all of the package's resources at once:
-
-```bash
-php artisan vendor:publish --tag="alumkit"
-```
-
-Or, you may publish each resource individually:
-
-### Publishing the Configuration File
-
-```bash
-php artisan vendor:publish --tag="alumkit-config"
-```
-
-### Publishing and Running the Migrations
-
-```bash
-php artisan vendor:publish --tag="alumkit-migrations"
-php artisan migrate
-```
-
-### Publishing the Views
-
-```bash
-php artisan vendor:publish --tag="alumkit-views"
-```
-
-### Publishing the Translations
-
-```bash
-php artisan vendor:publish --tag="alumkit-lang"
-```
-
-### Publishing the Public Assets
-
-```bash
-php artisan vendor:publish --tag="alumkit-assets"
-```
+The package registers its migrations — run `php artisan migrate` to create the tables.
 
 ### Publishing the Permission Configuration
 
 ```bash
 php artisan vendor:publish --tag="alumkit-permission-config"
-```
-
-### Publishing the Seeders
-
-```bash
-php artisan vendor:publish --tag="alumkit-seeder"
 ```
 
 ## Usage
@@ -111,7 +68,13 @@ php artisan vendor:publish --tag="alumkit-permission-config"
 ],
 ```
 
-Then re-run the seeder. Custom permissions are created alongside the built-in ones and automatically assigned to the admin role.
+Then seed the roles and permissions:
+
+```bash
+php artisan alumkit:seed
+```
+
+Custom permissions are created alongside the built-in ones and automatically assigned to the admin role.
 
 Guard your own routes using the middleware aliases registered by the package:
 
@@ -131,7 +94,7 @@ The admin user created by `AlumkitUserSeeder` is configured via environment vari
 | `ALUMKIT_ADMIN_EMAIL` | `admin@example.com` |
 | `ALUMKIT_ADMIN_PASSWORD` | `password` |
 
-Set these in your app's `.env` before running the seeder. If you cache config
+Set these in your app's `.env` before running `php artisan alumkit:seed`. If you cache config
 (`php artisan config:cache`), re-cache after changing them. Values are read
 per-key, so setting only `ALUMKIT_ADMIN_EMAIL` keeps the name/password defaults.
 

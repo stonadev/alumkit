@@ -35,13 +35,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Alumkit\\Alumkit\\": "src/"
+            "Alumkit\\Alumkit\\": "src/",
+            "Alumkit\\Alumkit\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Alumkit\\Alumkit\\Tests\\": "tests/",
-            "Alumkit\\Alumkit\\Database\\Seeders\\": "database/seeders/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"

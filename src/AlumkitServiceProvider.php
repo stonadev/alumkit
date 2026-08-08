@@ -52,36 +52,8 @@ class AlumkitServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../config/alumkit.php' => config_path('alumkit.php'),
-        ], ['alumkit', 'alumkit-config']);
-
-        $this->publishes([
             __DIR__.'/../config/permission.php' => config_path('permission.php'),
-        ], ['alumkit', 'alumkit-permission-config']);
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/alumkit'),
-        ], ['alumkit', 'alumkit-views']);
-
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/alumkit'),
-        ], ['alumkit', 'alumkit-lang']);
-
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor/alumkit'),
-        ], ['alumkit', 'alumkit-assets']);
-
-        $this->publishesMigrations([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], ['alumkit', 'alumkit-migrations']);
-
-        $this->publishes([
-            __DIR__.'/../database/seeders/AlumkitRolesAndPermissionsSeeder.php' => database_path('seeders/AlumkitRolesAndPermissionsSeeder.php'),
-        ], ['alumkit', 'alumkit-seeder']);
-
-        $this->publishes([
-            __DIR__.'/../database/seeders/AlumkitUserSeeder.php' => database_path('seeders/AlumkitUserSeeder.php'),
-        ], ['alumkit', 'alumkit-seeder']);
+        ], ['alumkit-permission-config']);
 
         $this->commands([
             AlumkitCommand::class,
