@@ -105,6 +105,65 @@ Add links for your features to the package dashboard sidebar via the published `
 
 Links and group children render in the package dashboard sidebar; entries with a `permission` are hidden from users lacking that permission.
 
+### Adding a Custom Feature (e.g. Events)
+
+Alumkit is a toolkit — app-specific features like an events module are plain
+Laravel code in your app that plugs into the package's extension points.
+End to end:
+
+**1. Publish the config** (once, so your changes survive package updates):
+
+```bash
+php artisan alumkit:publish
+```
+
+**2. Register the permission** in `config/alumkit.php`, then seed. The
+permission is created and automatically assigned to the admin role:
+
+```php
+'permission' => [
+    'permissions' => ['manage events'],
+],
+```
+
+```bash
+php artisan alumkit:seed
+```
+
+**3. Build the feature as normal Laravel app code** — migration, `Event`
+model, `EventController`, and views. Nothing package-specific here.
+
+**4. Guard the routes** with the middleware aliases the package registers.
+The route names matter: `dashboard_nav` renders `route($item['route'])`, so
+the resource must produce `events.index`:
+
+```php
+Route::middleware(['web', 'auth', 'user.state', 'complete-profile.check', 'permission:manage events'])
+    ->prefix('dashboard')
+    ->group(function () {
+        Route::resource('events', EventController::class)->except(['show']);
+    });
+```
+
+**5. Add the sidebar entry** in `config/alumkit.php` — the package layout
+renders it automatically, permission-gated per item:
+
+```php
+'dashboard_nav' => [
+    ['label' => 'Events', 'route' => 'events.index', 'permission' => 'manage events'],
+],
+```
+
+**6. Render your views inside the package layout** to inherit the sidebar and
+auth chrome:
+
+```blade
+@extends('alumkit::layouts.dashboard')
+@section('content')
+    {{-- event CRUD --}}
+@endsection
+```
+
 #### Seeding the Admin User
 
 The admin user created by `AlumkitUserSeeder` is configured via environment variables:
