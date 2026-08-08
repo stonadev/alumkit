@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Database\Seeders;
 
+use Alumkit\Alumkit\Alumkit;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -15,14 +16,13 @@ class AlumkitRolesAndPermissionsSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $defaultPermissions = config('permission.alumkit.default_permissions', [
-            'manage roles',
-            'manage permissions',
-            'manage members',
-            'view dashboard',
-        ]);
+        // Package permissions — always seeded, cannot be removed by the consumer app.
+        foreach (Alumkit::PERMISSIONS as $permission) {
+            Permission::findOrCreate($permission);
+        }
 
-        foreach ($defaultPermissions as $permission) {
+        // Consumer app extensions via config('permission.alumkit.custom_permissions').
+        foreach ((array) config('permission.alumkit.permissions', []) as $permission) {
             Permission::findOrCreate($permission);
         }
 

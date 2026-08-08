@@ -22,6 +22,52 @@ it('creates the expected permissions', function () {
     expect($permissions)->toHaveCount(5);
 });
 
+it('always seeds base permissions regardless of config', function () {
+    $this->app['config']->set('permission.alumkit.permissions', []);
+
+    $this->seed(AlumkitRolesAndPermissionsSeeder::class);
+
+    $permissions = Permission::pluck('name')->toArray();
+
+    expect($permissions)->toHaveCount(5);
+    expect($permissions)->toContain('manage roles');
+    expect($permissions)->toContain('manage permissions');
+    expect($permissions)->toContain('manage members');
+    expect($permissions)->toContain('manage educations');
+    expect($permissions)->toContain('view dashboard');
+});
+
+it('seeds custom permissions from config alongside base permissions', function () {
+    $this->app['config']->set('permission.alumkit.permissions', [
+        'manage events',
+        'manage announcements',
+    ]);
+
+    $this->seed(AlumkitRolesAndPermissionsSeeder::class);
+
+    $permissions = Permission::pluck('name')->toArray();
+
+    expect($permissions)->toHaveCount(7);
+    expect($permissions)->toContain('manage events');
+    expect($permissions)->toContain('manage announcements');
+    // Base permissions still present.
+    expect($permissions)->toContain('manage roles');
+    expect($permissions)->toContain('view dashboard');
+});
+
+it('assigns all permissions including custom to the admin role', function () {
+    $this->app['config']->set('permission.alumkit.permissions', [
+        'manage events',
+    ]);
+
+    $this->seed(AlumkitRolesAndPermissionsSeeder::class);
+
+    $adminRole = Role::findByName('admin');
+
+    expect($adminRole->permissions->count())->toBe(6);
+    expect($adminRole->permissions->pluck('name')->toArray())->toContain('manage events');
+});
+
 it('creates the expected roles', function () {
     $this->seed(AlumkitRolesAndPermissionsSeeder::class);
 

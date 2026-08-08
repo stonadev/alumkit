@@ -40,12 +40,13 @@ return [
 
     'alumkit' => [
         'default_roles' => ['admin', 'moderator', 'member'],
-        'default_permissions' => [
-            'manage roles',
-            'manage permissions',
-            'manage members',
-            'manage educations',
-            'view dashboard',
-        ],
+        /*
+        |-----------------------------------------------------------------------
+        | Permissions
+        |-----------------------------------------------------------------------
+        | Add your app-specific permissions here. Package permissions (defined
+        | in Alumkit::PERMISSIONS) are always seeded and cannot be removed.
+        */
+        'permissions' => [],
     ],
 ];

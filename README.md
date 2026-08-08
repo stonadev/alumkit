@@ -59,9 +59,67 @@ php artisan vendor:publish --tag="alumkit-lang"
 php artisan vendor:publish --tag="alumkit-assets"
 ```
 
+### Publishing the Permission Configuration
+
+```bash
+php artisan vendor:publish --tag="alumkit-permission-config"
+```
+
+### Publishing the Seeders
+
+```bash
+php artisan vendor:publish --tag="alumkit-seeder"
+```
+
 ## Usage
 
-<!-- Add a basic usage example here. -->
+### Permissions
+
+The package ships with a role-based permission system powered by [Spatie Laravel Permission](https://github.com/spatie/laravel-permission).
+
+#### Built-in Roles and Permissions
+
+Three roles are seeded by default:
+
+| Role | Permissions |
+|---|---|
+| **admin** | All permissions |
+| **moderator** | `manage members`, `view dashboard` |
+| **member** | _(none)_ |
+
+The following permissions are always seeded and cannot be removed:
+
+- `manage roles`
+- `manage permissions`
+- `manage members`
+- `manage educations`
+- `view dashboard`
+
+#### Extending with Custom Permissions
+
+To add permissions for your app's features, publish the permission config and add entries to `permissions`:
+
+```bash
+php artisan vendor:publish --tag="alumkit-permission-config"
+```
+
+```php
+// config/permission.php
+'permissions' => [
+    'manage events',
+    'manage announcements',
+],
+```
+
+Then re-run the seeder. Custom permissions are created alongside the built-in ones and automatically assigned to the admin role.
+
+Guard your own routes using the middleware aliases registered by the package:
+
+```php
+Route::middleware('permission:manage events')->group(function () {
+    Route::resource('events', EventController::class);
+});
+```
 
 ## Changelog
 
