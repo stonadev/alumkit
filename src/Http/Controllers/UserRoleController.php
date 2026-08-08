@@ -51,7 +51,7 @@ class UserRoleController extends Controller
 
         // Prevent self-demotion: don't allow removing own admin role
         if ($request->user()->getKey() === $targetUser->getKey()) {
-            $defaultRoles = config('permission.alumkit.default_roles', ['admin', 'moderator', 'member']);
+            $defaultRoles = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member']);
             $adminRole = $defaultRoles[0] ?? 'admin';
 
             if ($targetUser->hasRole($adminRole) && ! in_array($adminRole, $requestedRoles)) {

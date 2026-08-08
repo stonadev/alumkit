@@ -25,7 +25,6 @@ class AlumkitServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/alumkit.php', 'alumkit');
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
-        $this->mergeConfigFrom(__DIR__.'/../config/permission.php', 'permission');
 
         $this->app->singleton(Alumkit::class);
     }
@@ -51,10 +50,6 @@ class AlumkitServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             return;
         }
-
-        $this->publishes([
-            __DIR__.'/../config/permission.php' => config_path('permission.php'),
-        ], ['alumkit-permission-config']);
 
         $this->publishes([
             __DIR__.'/../config/alumkit.php' => config_path('alumkit.php'),

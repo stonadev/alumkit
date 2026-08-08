@@ -28,7 +28,7 @@ The package registers its migrations — run `php artisan migrate` to create the
 php artisan alumkit:publish
 ```
 
-This copies both `config/permission.php` and `config/alumkit.php` to your app's `config/` directory. To overwrite existing published files, use `php artisan alumkit:publish --force`.
+This copies `config/alumkit.php` to your app's `config/` directory. To overwrite an existing published file, use `php artisan alumkit:publish --force`.
 
 ## Usage
 
@@ -56,17 +56,19 @@ The following permissions are always seeded and cannot be removed:
 
 #### Extending with Custom Permissions
 
-To add permissions for your app's features, publish the permission config and add entries to `permissions`:
+To add permissions for your app's features, publish the config and add entries to `permission.permissions`:
 
 ```bash
 php artisan alumkit:publish
 ```
 
 ```php
-// config/permission.php
-'permissions' => [
-    'manage events',
-    'manage announcements',
+// config/alumkit.php
+'permission' => [
+    'permissions' => [
+        'manage events',
+        'manage announcements',
+    ],
 ],
 ```
 

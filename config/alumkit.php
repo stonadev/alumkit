@@ -19,6 +19,18 @@ return [
 
     'default_state' => UserState::Pending,
 
+    'permission' => [
+        'default_roles' => ['admin', 'moderator', 'member'],
+        /*
+        |-----------------------------------------------------------------------
+        | Permissions
+        |-----------------------------------------------------------------------
+        | Add your app-specific permissions here. Package permissions (defined
+        | in Alumkit::PERMISSIONS) are always seeded and cannot be removed.
+        */
+        'permissions' => [],
+    ],
+
     'dashboard_nav' => [
         // A link:            ['label' => 'Events', 'route' => 'events.index', 'permission' => 'manage events']
         // permission is optional; omitted -> visible to all authenticated users.

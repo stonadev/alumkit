@@ -41,7 +41,7 @@ it('registers the artisan command', function () {
 });
 
 it('publishes all Alumkit resources', function () {
-    $path = config_path('permission.php');
+    $path = config_path('alumkit.php');
 
     try {
         @unlink($path); // idempotent: no stale file from prior runs
@@ -49,14 +49,14 @@ it('publishes all Alumkit resources', function () {
         $this->artisan('alumkit:publish')->assertSuccessful();
 
         expect(file_exists($path))->toBeTrue();
-        expect((array) include $path)->toHaveKey('alumkit'); // proves it's OUR permission config
+        expect((array) include $path)->toHaveKey('auth'); // proves it's OUR alumkit config
     } finally {
         @unlink($path); // leave the testbench skeleton clean
     }
 });
 
 it('skips existing files and overwrites with --force', function () {
-    $path = config_path('permission.php');
+    $path = config_path('alumkit.php');
 
     try {
         @unlink($path);
@@ -70,7 +70,7 @@ it('skips existing files and overwrites with --force', function () {
 
         // --force: package copy restored
         $this->artisan('alumkit:publish', ['--force' => true])->assertSuccessful();
-        expect((array) include $path)->toHaveKey('alumkit');
+        expect((array) include $path)->toHaveKey('auth');
     } finally {
         @unlink($path); // leave the testbench skeleton clean
     }
