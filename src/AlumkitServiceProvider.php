@@ -9,6 +9,7 @@ use Alumkit\Alumkit\Actions\Fortify\ResetUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
+use Alumkit\Alumkit\Console\Commands\PublishCommand;
 use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Http\Request;
@@ -24,7 +25,6 @@ class AlumkitServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/alumkit.php', 'alumkit');
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
-        $this->mergeConfigFrom(__DIR__.'/../config/permission.php', 'permission');
 
         $this->app->singleton(Alumkit::class);
     }
@@ -53,42 +53,11 @@ class AlumkitServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../config/alumkit.php' => config_path('alumkit.php'),
-        ], ['alumkit', 'alumkit-config']);
-
-        $this->publishes([
-            __DIR__.'/../config/fortify.php' => config_path('fortify.php'),
-        ], ['alumkit', 'alumkit-fortify-config']);
-
-        $this->publishes([
-            __DIR__.'/../config/permission.php' => config_path('permission.php'),
-        ], ['alumkit', 'alumkit-permission-config']);
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/alumkit'),
-        ], ['alumkit', 'alumkit-views']);
-
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/alumkit'),
-        ], ['alumkit', 'alumkit-lang']);
-
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor/alumkit'),
-        ], ['alumkit', 'alumkit-assets']);
-
-        $this->publishesMigrations([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], ['alumkit', 'alumkit-migrations']);
-
-        $this->publishes([
-            __DIR__.'/../database/seeders/AlumkitRolesAndPermissionsSeeder.php' => database_path('seeders/AlumkitRolesAndPermissionsSeeder.php'),
-        ], ['alumkit', 'alumkit-seeder']);
-
-        $this->publishes([
-            __DIR__.'/../database/seeders/AlumkitUserSeeder.php' => database_path('seeders/AlumkitUserSeeder.php'),
-        ], ['alumkit', 'alumkit-seeder']);
+        ], ['alumkit-config']);
 
         $this->commands([
             AlumkitCommand::class,
+            PublishCommand::class,
         ]);
     }
 

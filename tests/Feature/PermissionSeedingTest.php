@@ -23,7 +23,7 @@ it('creates the expected permissions', function () {
 });
 
 it('always seeds base permissions regardless of config', function () {
-    $this->app['config']->set('permission.alumkit.permissions', []);
+    $this->app['config']->set('alumkit.permission.permissions', []);
 
     $this->seed(AlumkitRolesAndPermissionsSeeder::class);
 
@@ -38,7 +38,7 @@ it('always seeds base permissions regardless of config', function () {
 });
 
 it('seeds custom permissions from config alongside base permissions', function () {
-    $this->app['config']->set('permission.alumkit.permissions', [
+    $this->app['config']->set('alumkit.permission.permissions', [
         'manage events',
         'manage announcements',
     ]);
@@ -56,7 +56,7 @@ it('seeds custom permissions from config alongside base permissions', function (
 });
 
 it('assigns all permissions including custom to the admin role', function () {
-    $this->app['config']->set('permission.alumkit.permissions', [
+    $this->app['config']->set('alumkit.permission.permissions', [
         'manage events',
     ]);
 

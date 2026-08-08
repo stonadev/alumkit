@@ -21,12 +21,12 @@ class AlumkitRolesAndPermissionsSeeder extends Seeder
             Permission::findOrCreate($permission);
         }
 
-        // Consumer app extensions via config('permission.alumkit.custom_permissions').
-        foreach ((array) config('permission.alumkit.permissions', []) as $permission) {
+        // Consumer app extensions via config('alumkit.permission.permissions').
+        foreach ((array) config('alumkit.permission.permissions', []) as $permission) {
             Permission::findOrCreate($permission);
         }
 
-        $defaultRoles = config('permission.alumkit.default_roles', ['admin', 'moderator', 'member']);
+        $defaultRoles = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member']);
 
         foreach ($defaultRoles as $roleName) {
             Role::findOrCreate($roleName);

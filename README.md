@@ -20,56 +20,15 @@ You can install the package via Composer:
 composer require stonadev/alumkit
 ```
 
-You may publish all of the package's resources at once:
+The package registers its migrations — run `php artisan migrate` to create the tables.
+
+### Publishing the Configuration
 
 ```bash
-php artisan vendor:publish --tag="alumkit"
+php artisan alumkit:publish
 ```
 
-Or, you may publish each resource individually:
-
-### Publishing the Configuration File
-
-```bash
-php artisan vendor:publish --tag="alumkit-config"
-```
-
-### Publishing and Running the Migrations
-
-```bash
-php artisan vendor:publish --tag="alumkit-migrations"
-php artisan migrate
-```
-
-### Publishing the Views
-
-```bash
-php artisan vendor:publish --tag="alumkit-views"
-```
-
-### Publishing the Translations
-
-```bash
-php artisan vendor:publish --tag="alumkit-lang"
-```
-
-### Publishing the Public Assets
-
-```bash
-php artisan vendor:publish --tag="alumkit-assets"
-```
-
-### Publishing the Permission Configuration
-
-```bash
-php artisan vendor:publish --tag="alumkit-permission-config"
-```
-
-### Publishing the Seeders
-
-```bash
-php artisan vendor:publish --tag="alumkit-seeder"
-```
+This copies `config/alumkit.php` to your app's `config/` directory. To overwrite an existing published file, use `php artisan alumkit:publish --force`.
 
 ## Usage
 
@@ -97,21 +56,29 @@ The following permissions are always seeded and cannot be removed:
 
 #### Extending with Custom Permissions
 
-To add permissions for your app's features, publish the permission config and add entries to `permissions`:
+To add permissions for your app's features, publish the config and add entries to `permission.permissions`:
 
 ```bash
-php artisan vendor:publish --tag="alumkit-permission-config"
+php artisan alumkit:publish
 ```
 
 ```php
-// config/permission.php
-'permissions' => [
-    'manage events',
-    'manage announcements',
+// config/alumkit.php
+'permission' => [
+    'permissions' => [
+        'manage events',
+        'manage announcements',
+    ],
 ],
 ```
 
-Then re-run the seeder. Custom permissions are created alongside the built-in ones and automatically assigned to the admin role.
+Then seed the roles and permissions:
+
+```bash
+php artisan alumkit:seed
+```
+
+Custom permissions are created alongside the built-in ones and automatically assigned to the admin role.
 
 Guard your own routes using the middleware aliases registered by the package:
 
@@ -120,6 +87,96 @@ Route::middleware('permission:manage events')->group(function () {
     Route::resource('events', EventController::class);
 });
 ```
+
+Add links for your features to the package dashboard sidebar via the published `config/alumkit.php`:
+
+```php
+// config/alumkit.php
+'dashboard_nav' => [
+    ['label' => 'Events', 'route' => 'events.index', 'permission' => 'manage events'],
+    [
+        'label' => 'Settings',
+        'children' => [
+            ['label' => 'General', 'route' => 'settings.general'],
+        ],
+    ],
+],
+```
+
+Links and group children render in the package dashboard sidebar; entries with a `permission` are hidden from users lacking that permission.
+
+### Adding a Custom Feature (e.g. Events)
+
+Alumkit is a toolkit — app-specific features like an events module are plain
+Laravel code in your app that plugs into the package's extension points.
+End to end:
+
+**1. Publish the config** (once, so your changes survive package updates):
+
+```bash
+php artisan alumkit:publish
+```
+
+**2. Register the permission** in `config/alumkit.php`, then seed. The
+permission is created and automatically assigned to the admin role:
+
+```php
+'permission' => [
+    'permissions' => ['manage events'],
+],
+```
+
+```bash
+php artisan alumkit:seed
+```
+
+**3. Build the feature as normal Laravel app code** — migration, `Event`
+model, `EventController`, and views. Nothing package-specific here.
+
+**4. Guard the routes** with the middleware aliases the package registers.
+The route names matter: `dashboard_nav` renders `route($item['route'])`, so
+the resource must produce `events.index`:
+
+```php
+Route::middleware(['web', 'auth', 'user.state', 'complete-profile.check', 'permission:manage events'])
+    ->prefix('dashboard')
+    ->group(function () {
+        Route::resource('events', EventController::class)->except(['show']);
+    });
+```
+
+**5. Add the sidebar entry** in `config/alumkit.php` — the package layout
+renders it automatically, permission-gated per item:
+
+```php
+'dashboard_nav' => [
+    ['label' => 'Events', 'route' => 'events.index', 'permission' => 'manage events'],
+],
+```
+
+**6. Render your views inside the package layout** to inherit the sidebar and
+auth chrome:
+
+```blade
+@extends('alumkit::layouts.dashboard')
+@section('content')
+    {{-- event CRUD --}}
+@endsection
+```
+
+#### Seeding the Admin User
+
+The admin user created by `AlumkitUserSeeder` is configured via environment variables:
+
+| Variable | Default |
+|---|---|
+| `ALUMKIT_ADMIN_NAME` | `Admin` |
+| `ALUMKIT_ADMIN_EMAIL` | `admin@example.com` |
+| `ALUMKIT_ADMIN_PASSWORD` | `password` |
+
+Set these in your app's `.env` before running `php artisan alumkit:seed`. If you cache config
+(`php artisan config:cache`), re-cache after changing them. Values are read
+per-key, so setting only `ALUMKIT_ADMIN_EMAIL` keeps the name/password defaults.
 
 ## Changelog
 
