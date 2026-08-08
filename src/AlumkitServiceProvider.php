@@ -9,6 +9,7 @@ use Alumkit\Alumkit\Actions\Fortify\ResetUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
+use Alumkit\Alumkit\Console\Commands\PublishCommand;
 use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Http\Request;
@@ -57,6 +58,7 @@ class AlumkitServiceProvider extends ServiceProvider
 
         $this->commands([
             AlumkitCommand::class,
+            PublishCommand::class,
         ]);
     }
 

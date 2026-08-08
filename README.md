@@ -25,8 +25,10 @@ The package registers its migrations — run `php artisan migrate` to create the
 ### Publishing the Permission Configuration
 
 ```bash
-php artisan vendor:publish --tag="alumkit-permission-config"
+php artisan alumkit:publish
 ```
+
+To overwrite an existing published file, use `php artisan alumkit:publish --force`.
 
 ## Usage
 
@@ -57,7 +59,7 @@ The following permissions are always seeded and cannot be removed:
 To add permissions for your app's features, publish the permission config and add entries to `permissions`:
 
 ```bash
-php artisan vendor:publish --tag="alumkit-permission-config"
+php artisan alumkit:publish
 ```
 
 ```php

@@ -39,3 +39,39 @@ it('registers the artisan command', function () {
     expect(Permission::count())->toBeGreaterThan(0);
     expect(User::where('email', 'admin@example.com')->exists())->toBeTrue();
 });
+
+it('publishes all Alumkit resources', function () {
+    $path = config_path('permission.php');
+
+    try {
+        @unlink($path); // idempotent: no stale file from prior runs
+
+        $this->artisan('alumkit:publish')->assertSuccessful();
+
+        expect(file_exists($path))->toBeTrue();
+        expect((array) include $path)->toHaveKey('alumkit'); // proves it's OUR permission config
+    } finally {
+        @unlink($path); // leave the testbench skeleton clean
+    }
+});
+
+it('skips existing files and overwrites with --force', function () {
+    $path = config_path('permission.php');
+
+    try {
+        @unlink($path);
+
+        $this->artisan('alumkit:publish')->assertSuccessful();
+        file_put_contents($path, "<?php\n\nreturn ['stale' => true];\n");
+
+        // default: skip-existing, stale file survives
+        $this->artisan('alumkit:publish')->assertSuccessful();
+        expect((array) include $path)->toEqual(['stale' => true]);
+
+        // --force: package copy restored
+        $this->artisan('alumkit:publish', ['--force' => true])->assertSuccessful();
+        expect((array) include $path)->toHaveKey('alumkit');
+    } finally {
+        @unlink($path); // leave the testbench skeleton clean
+    }
+});
