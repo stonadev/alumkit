@@ -56,10 +56,6 @@ class AlumkitServiceProvider extends ServiceProvider
         ], ['alumkit', 'alumkit-config']);
 
         $this->publishes([
-            __DIR__.'/../config/fortify.php' => config_path('fortify.php'),
-        ], ['alumkit', 'alumkit-fortify-config']);
-
-        $this->publishes([
             __DIR__.'/../config/permission.php' => config_path('permission.php'),
         ], ['alumkit', 'alumkit-permission-config']);
 

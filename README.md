@@ -121,6 +121,20 @@ Route::middleware('permission:manage events')->group(function () {
 });
 ```
 
+#### Seeding the Admin User
+
+The admin user created by `AlumkitUserSeeder` is configured via environment variables:
+
+| Variable | Default |
+|---|---|
+| `ALUMKIT_ADMIN_NAME` | `Admin` |
+| `ALUMKIT_ADMIN_EMAIL` | `admin@example.com` |
+| `ALUMKIT_ADMIN_PASSWORD` | `password` |
+
+Set these in your app's `.env` before running the seeder. If you cache config
+(`php artisan config:cache`), re-cache after changing them. Values are read
+per-key, so setting only `ALUMKIT_ADMIN_EMAIL` keeps the name/password defaults.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

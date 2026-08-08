@@ -21,7 +21,7 @@ class AlumkitRolesAndPermissionsSeeder extends Seeder
             Permission::findOrCreate($permission);
         }
 
-        // Consumer app extensions via config('permission.alumkit.custom_permissions').
+        // Consumer app extensions via config('permission.alumkit.permissions').
         foreach ((array) config('permission.alumkit.permissions', []) as $permission) {
             Permission::findOrCreate($permission);
         }
