@@ -36,7 +36,7 @@ class CompleteProfileController extends Controller
             'educations.*.start_month' => ['nullable', 'integer', 'between:1,12'],
             'educations.*.end_year' => ['nullable', 'integer', 'digits:4', 'gte:educations.*.start_year'],
             'educations.*.end_month' => ['nullable', 'integer', 'between:1,12'],
-            'careers' => ['required', 'array', 'min:1'],
+            'careers' => ['nullable', 'array'],
             'careers.*.job_title' => ['required', 'string', 'max:255'],
             'careers.*.company' => ['required', 'string', 'max:255'],
             'careers.*.employment_type' => ['required', Rule::in(array_column(EmploymentType::cases(), 'value'))],
@@ -57,7 +57,7 @@ class CompleteProfileController extends Controller
             $user->educations()->create($education);
         }
 
-        foreach ($validated['careers'] as $career) {
+        foreach ($validated['careers'] ?? [] as $career) {
             /** @phpstan-ignore method.notFound */
             $user->careers()->create($career);
         }

@@ -127,7 +127,7 @@
             {{-- Career Section --}}
             <div
                 x-data="{
-                    careers: [{ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' }],
+                    careers: [],
                     add() {
                         this.careers.push({ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' });
                     },
@@ -152,7 +152,7 @@
 
                 <template x-for="(career, index) in careers" :key="index">
                     <div class="rounded-lg border border-gray-200 p-4 space-y-4 dark:border-gray-700">
-                        <div class="flex justify-end" x-show="careers.length > 1">
+                        <div class="flex justify-end" x-show="careers.length > 0">
                             <x-button
                                 type="button"
                                 x-on:click="remove(index)"
