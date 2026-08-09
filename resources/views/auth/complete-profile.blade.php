@@ -278,7 +278,7 @@
                 </template>
             </div>
 
-            <x-button type="submit" block :text="__('alumkit::auth.submit_for_approval')" />
+            <x-button type="submit" block :text="$isAdmin ? __('alumkit::auth.submit') : __('alumkit::auth.submit_for_approval')" />
         </form>
 
         @slot('footer')

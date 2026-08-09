@@ -82,3 +82,47 @@ it('redirects to profile completion when education is missing', function () {
         ->get(route('alumkit.dashboard'))
         ->assertRedirect(route('alumkit.profile.complete'));
 });
+
+it('still requires the admin to complete the profile', function () {
+    $this->user->assignRole('admin');
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.dashboard'))
+        ->assertRedirect(route('alumkit.profile.complete'));
+});
+
+it('does not show the approval banner to the admin after submission', function () {
+    $this->user->assignRole('admin');
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.profile.complete.store'), [
+            'educations' => [
+                ['level' => 'masters', 'institution' => 'MIT'],
+            ],
+        ])
+        ->assertRedirect(route('alumkit.dashboard'))
+        ->assertSessionMissing('status');
+
+    $this->assertDatabaseHas('educations', [
+        'user_id' => $this->user->id,
+        'level' => 'masters',
+        'institution' => 'MIT',
+    ]);
+});
+
+it('shows "Submit for Approval" on the form for non-admins', function () {
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile.complete'))
+        ->assertOk()
+        ->assertSee('Submit for Approval');
+});
+
+it('shows "Submit" on the form for admins', function () {
+    $this->user->assignRole('admin');
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile.complete'))
+        ->assertOk()
+        ->assertDontSee('Submit for Approval')
+        ->assertSee('Submit');
+});

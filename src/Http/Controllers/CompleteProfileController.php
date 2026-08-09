@@ -14,13 +14,15 @@ use Illuminate\View\View;
 
 class CompleteProfileController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
         $levels = config('alumkit.education.levels', []);
         $employmentTypes = config('alumkit.career.employment_types', []);
+        $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
+        $isAdmin = $request->user()->hasRole($adminRole);
 
         /** @var View $view */
-        $view = view('alumkit::auth.complete-profile', compact('levels', 'employmentTypes'));
+        $view = view('alumkit::auth.complete-profile', compact('levels', 'employmentTypes', 'isAdmin'));
 
         return $view;
     }
@@ -62,7 +64,13 @@ class CompleteProfileController extends Controller
             $user->careers()->create($career);
         }
 
-        return redirect()->route('alumkit.dashboard')
-            ->with('status', __('alumkit::auth.profile_completed'));
+        $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
+
+        if (! $user->hasRole($adminRole)) {
+            return redirect()->route('alumkit.dashboard')
+                ->with('status', __('alumkit::auth.profile_completed'));
+        }
+
+        return redirect()->route('alumkit.dashboard');
     }
 }
