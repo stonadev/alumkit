@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Tests;
 
 use Alumkit\Alumkit\AlumkitServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Route;
@@ -21,6 +23,10 @@ abstract class TestCase extends Orchestra
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Testbench's app builder never calls withEvents(), so the framework's
+        // email-verification listener is missing. Register it like a real app.
+        $this->app['events']->listen(Registered::class, SendEmailVerificationNotification::class);
 
         Factory::guessFactoryNamesUsing(function (string $modelName) {
             return 'Workbench\\Database\\Factories\\'.class_basename($modelName).'Factory';
