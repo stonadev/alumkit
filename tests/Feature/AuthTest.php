@@ -199,7 +199,8 @@ it('renders the profile page for verified users', function () {
     $this->actingAs($user)
         ->get(route('alumkit.profile'))
         ->assertOk()
-        ->assertSee(__('alumkit::auth.profile'));
+        ->assertSee(__('alumkit::auth.profile'))
+        ->assertSee(__('alumkit::auth.logout'));
 });
 
 it('updates user profile information', function () {

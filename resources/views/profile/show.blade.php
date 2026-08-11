@@ -3,7 +3,7 @@
     use Laravel\Fortify\Features;
 @endphp
 
-@extends('alumkit::layouts.app')
+@extends('alumkit::layouts.dashboard')
 
 @section('content')
     <div class="space-y-6">
