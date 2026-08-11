@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/*
+ * Compile the utilities used by the package Blade views.
+ * The package ships the compiled output in public/alumkit.css and serves it
+ * at /alumkit/style/alumkit.css; rebuild with `npm run build:css`.
+ */
+@source "../views";
