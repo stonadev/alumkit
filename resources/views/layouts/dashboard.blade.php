@@ -41,6 +41,12 @@
                     </a>
                 @endcan
 
+                @if (auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value)
+                    <a href="{{ route('alumkit.posts.index') }}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        {{ __('alumkit::post.posts') }}
+                    </a>
+                @endif
+
                 @foreach (config('alumkit.dashboard_nav', []) as $item)
                     @if (! empty($item['children']) && is_array($item['children']))
                         @if (empty($item['permission']) || auth()->user()->can($item['permission']))

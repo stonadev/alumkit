@@ -10,6 +10,7 @@ use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
+use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Http\Request;
@@ -115,5 +116,6 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->app->make('router')->aliasMiddleware('role_or_permission', RoleOrPermissionMiddleware::class);
         $this->app->make('router')->aliasMiddleware('user.state', CheckUserState::class);
         $this->app->make('router')->aliasMiddleware('complete-profile.check', CompleteProfileCheck::class);
+        $this->app->make('router')->aliasMiddleware('user.approved', CheckUserApproved::class);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
+use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
@@ -20,6 +21,10 @@ Route::get('alumkit/style/alumkit.css', function () {
 });
 
 Route::middleware(['web'])->group(function () {
+    // Public blog: visible to guests, published posts only.
+    Route::get('posts', [PostController::class, 'publicIndex'])->name('alumkit.posts.public.index');
+    Route::get('posts/{post}', [PostController::class, 'publicShow'])->name('alumkit.posts.public.show');
+
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('profile/complete', [CompleteProfileController::class, 'create'])->name('alumkit.profile.complete');
@@ -49,6 +54,10 @@ Route::middleware(['web'])->group(function () {
 
             Route::middleware('permission:manage careers')->group(function () {
                 Route::resource('careers', CareerController::class)->except(['show']);
+            });
+
+            Route::middleware('user.approved')->group(function () {
+                Route::resource('posts', PostController::class)->except(['show']);
             });
 
             Route::middleware('permission:manage members')->group(function () {
