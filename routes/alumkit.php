@@ -10,6 +10,15 @@ use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
 use Illuminate\Support\Facades\Route;
 
+// Package stylesheet: compiled Tailwind CSS for the package Blade views.
+Route::get('alumkit/style/alumkit.css', function () {
+    $path = __DIR__.'/../public/alumkit.css';
+
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
+
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {

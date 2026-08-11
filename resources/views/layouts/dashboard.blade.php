@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __('alumkit::auth.dashboard') }} — {{ config('app.name', 'AlumKit') }}</title>
     @tallStackUiStyle
+    <link rel="stylesheet" href="{{ url('alumkit/style/alumkit.css') }}">
     <style>[x-cloak] { display: none !important; }</style>
 </head>
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
