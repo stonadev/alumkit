@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Facades\Alumkit;
 use Alumkit\Alumkit\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
 
@@ -169,58 +171,34 @@ it('forbids pending users from the create post form', function () {
         ->assertForbidden();
 });
 
-it('renders the public posts index for guests', function () {
-    Post::create([
-        'user_id' => $this->user->id,
-        'title' => 'Public One',
-        'body' => 'Everyone can read this',
-        'published_at' => now(),
-    ]);
-
-    $this->get(route('alumkit.posts.public.index'))
-        ->assertOk()
-        ->assertSee('Public One');
+it('does not register public blog routes', function () {
+    expect(Route::has('alumkit.posts.public.index'))->toBeFalse();
+    expect(Route::has('alumkit.posts.public.show'))->toBeFalse();
 });
 
-it('hides drafts from the public posts index', function () {
-    Post::create([
-        'user_id' => $this->user->id,
-        'title' => 'Public One',
-        'body' => 'Body',
-        'published_at' => now(),
-    ]);
-    Post::create([
-        'user_id' => $this->user->id,
-        'title' => 'Secret Draft',
-        'body' => 'Body',
-    ]);
+it('exposes published posts through the facade API', function () {
+    Post::create(['user_id' => $this->user->id, 'title' => 'Old Draft', 'body' => 'x']);
+    $older = Post::create(['user_id' => $this->user->id, 'title' => 'Older Published', 'body' => 'x', 'published_at' => now()->subDay()]);
+    $newer = Post::create(['user_id' => $this->user->id, 'title' => 'Newest Published', 'body' => 'x', 'published_at' => now()]);
 
-    $this->get(route('alumkit.posts.public.index'))
-        ->assertOk()
-        ->assertSee('Public One')
-        ->assertDontSee('Secret Draft');
+    // Distinct created_at, since SQLite stores timestamps at second precision and same-second inserts tie.
+    $older->forceFill(['created_at' => now()->subDays(2)])->save();
+    $newer->forceFill(['created_at' => now()->subDay()])->save();
+
+    $posts = Alumkit::publishedPosts()->get();
+
+    expect($posts->pluck('title')->all())->toBe(['Newest Published', 'Older Published']);
+    expect($posts->first()->relationLoaded('user'))->toBeTrue();
 });
 
-it('renders a published post for guests', function () {
-    Post::create([
-        'user_id' => $this->user->id,
-        'title' => 'Read Me',
-        'body' => 'Hello world body',
-        'published_at' => now(),
-    ]);
+it('returns the most recent published posts through the facade API', function () {
+    foreach (['P1', 'P2', 'P3', 'P4'] as $i => $title) {
+        $post = Post::create(['user_id' => $this->user->id, 'title' => $title, 'body' => 'x', 'published_at' => now()->subHours(4 - $i)]);
 
-    $this->get(route('alumkit.posts.public.show', Post::where('title', 'Read Me')->first()))
-        ->assertOk()
-        ->assertSee('Hello world body');
-});
+        // Distinct created_at, since SQLite stores timestamps at second precision and same-second inserts tie.
+        $post->forceFill(['created_at' => now()->subHours(4 - $i)])->save();
+    }
 
-it('returns 404 for draft posts on the public show route', function () {
-    $post = Post::create([
-        'user_id' => $this->user->id,
-        'title' => 'Hidden Draft',
-        'body' => 'Body',
-    ]);
-
-    $this->get(route('alumkit.posts.public.show', $post))
-        ->assertNotFound();
+    expect(Alumkit::recentPosts(2)->pluck('title')->all())->toBe(['P4', 'P3']);
+    expect(Alumkit::recentPosts(0))->toBeEmpty();
 });

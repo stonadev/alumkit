@@ -164,6 +164,45 @@ auth chrome:
 @endsection
 ```
 
+### Public Blog API
+
+The package ships no public blog routes — register your own `/posts` and
+`/posts/{post}` routes in `routes/web.php` and render them from the facade API:
+
+```php
+Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('posts/{post}', [PostController::class, 'show'])->name('posts.show');
+```
+
+API reference:
+
+- `Alumkit::publishedPosts()` — Eloquent builder of published posts (newest
+  first, author eager-loaded); compose with `->get()`, `->paginate()`,
+  `->where(...)`.
+- `Alumkit::recentPosts(int $limit = 5)` — collection of the `$limit` most
+  recent published posts.
+
+In the app's controller, render from the API — e.g.
+`view('posts.index', ['posts' => Alumkit::publishedPosts()->paginate(10)])`
+for the list, and for the detail `$post = Post::published()->findOrFail($id)`
+(404s drafts) — importing `Alumkit\Alumkit\Facades\Alumkit` and
+`Alumkit\Alumkit\Models\Post`.
+
+Homepage "recent posts" block:
+
+```blade
+<h2>Recent posts</h2>
+<ul>
+    @foreach (\Alumkit\Alumkit\Facades\Alumkit::recentPosts(5) as $post)
+        <li><a href="{{ route('posts.show', $post) }}">{{ $post->title }}</a></li>
+    @endforeach
+</ul>
+```
+
+(Route name `posts.show` is the app's own; escape/format as needed.)
+
+The dashboard screens are package-owned and not overridable by design.
+
 #### Seeding the Admin User
 
 The admin user created by `AlumkitUserSeeder` is configured via environment variables:

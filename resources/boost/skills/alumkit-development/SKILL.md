@@ -40,6 +40,12 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 - the package dashboard layout renders `config('alumkit.dashboard_nav')`; each item is `['label' => ..., 'route' => ..., 'permission' => ...]` (permission optional) and groups nest one level via `children`
 - routes named in `dashboard_nav` must exist; the permission entry hides the link from users lacking it
 
+#### Public blog
+
+- the package registers no public blog routes — register the app's own `/posts` and `/posts/{post}` routes and render them from the facade API: `Alumkit::publishedPosts()` (builder, newest first, author loaded) and `Alumkit::recentPosts($limit)` for a homepage block
+- for a detail page, `Post::published()->findOrFail($id)` 404s drafts
+- dashboard screens are package-owned and not overridable
+
 #### Custom features (e.g. Events)
 
 - a feature is plain Laravel app code (migration, model, controller, views) plugged into package extension points:

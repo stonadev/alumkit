@@ -14,28 +14,6 @@ use Illuminate\View\View;
 
 class PostController extends Controller
 {
-    public function publicIndex(): View
-    {
-        $posts = Post::published()->with('user')->latest()->get();
-
-        /** @var View $view */
-        $view = view('alumkit::posts.public.index', compact('posts'));
-
-        return $view;
-    }
-
-    public function publicShow(Post $post): View
-    {
-        abort_unless($post->isPublished(), 404);
-
-        $post->loadMissing('user');
-
-        /** @var View $view */
-        $view = view('alumkit::posts.public.show', compact('post'));
-
-        return $view;
-    }
-
     public function index(Request $request): View
     {
         $posts = Post::where('user_id', $request->user()->id)->latest()->get();

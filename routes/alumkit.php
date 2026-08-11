@@ -21,10 +21,6 @@ Route::get('alumkit/style/alumkit.css', function () {
 });
 
 Route::middleware(['web'])->group(function () {
-    // Public blog: visible to guests, published posts only.
-    Route::get('posts', [PostController::class, 'publicIndex'])->name('alumkit.posts.public.index');
-    Route::get('posts/{post}', [PostController::class, 'publicShow'])->name('alumkit.posts.public.show');
-
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('profile/complete', [CompleteProfileController::class, 'create'])->name('alumkit.profile.complete');

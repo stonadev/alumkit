@@ -14,10 +14,8 @@ return [
     'published' => 'Published',
     'draft' => 'Draft',
     'publish' => 'Publish',
-    'author' => 'Author',
     'post_created' => 'Post created successfully.',
     'post_updated' => 'Post updated successfully.',
     'post_deleted' => 'Post deleted successfully.',
     'no_posts' => 'No posts yet.',
-    'no_published_posts' => 'No published posts yet.',
 ];
