@@ -217,6 +217,42 @@ Set these in your app's `.env` before running `php artisan alumkit:seed`. If you
 (`php artisan config:cache`), re-cache after changing them. Values are read
 per-key, so setting only `ALUMKIT_ADMIN_EMAIL` keeps the name/password defaults.
 
+### Field components — Link field
+
+Alumkit ships reusable Blade field components so forms in your own views stay
+consistent with the package. The first one is a link field: a control that
+opens a modal where you set a label and a URL. While typing the URL, it
+suggests the app's named routes that have no required parameters (matched by
+route name and URI); you can still type any custom URL.
+
+```blade
+<form method="POST" action="{{ route('events.store') }}">
+    @csrf
+
+    <x-alumkit::link-field name="website" label="Website" value="https://example.com" />
+
+    <x-button type="submit" :text="__('Save')" />
+</form>
+```
+
+Contract:
+
+- `name` (required) — the form key. The component posts two hidden inputs,
+  `{name}[label]` and `{name}[url]`, always present (empty strings when
+  unset). Read them together:
+  ```php
+  $link = $request->input('website'); // ['label' => ..., 'url' => ...]
+  ```
+- `label` (optional) — the field title shown above the control (the label of
+  the link itself is authored inside the modal).
+- `value` (optional) — the initial URL. Pass `old('website.url')` to keep
+  the value across a validation round-trip.
+
+The URL input suggests up to 8 named routes without required parameters while
+you type; picking one fills the link label from the route name (editable in
+the modal). The component needs Livewire, which is already installed as a
+dependency of TallStackUi.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

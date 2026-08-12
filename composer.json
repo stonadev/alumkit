@@ -20,6 +20,7 @@
         "php": "^8.3",
         "illuminate/support": "^12.0||^13.0",
         "laravel/fortify": "^1.37.2",
+        "livewire/livewire": "^3.5.0|^4.3.0",
         "spatie/laravel-permission": "^8.3",
         "tallstackui/tallstackui": "^3.0"
     },

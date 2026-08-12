@@ -54,6 +54,13 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
   3. add the nav entry to `dashboard_nav`
   4. extend `alumkit::layouts.dashboard` in views to inherit the sidebar and auth chrome
 
+#### Field components — Link field
+
+- render `<x-alumkit::link-field name="website" label="Website" value="https://example.com" />` inside consumer forms to add a link field (modal with label + URL inputs)
+- the component posts `{name}[label]` and `{name}[url]` hidden inputs (always present, empty string when unset); read both via `$request->input('website')`
+- `name` is required (plain key, no brackets); `label` is the field title; `value` is the initial URL (pass `old('website.url')` on validation round-trips)
+- the URL input suggests up to 8 of the app's named routes without required parameters while typing; custom URLs are always allowed; picking a route auto-fills the link label from the route name (editable in the modal)
+
 ## Rules, References, and Templates
 
 Read before executing:

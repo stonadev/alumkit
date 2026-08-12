@@ -10,12 +10,14 @@ use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
+use Alumkit\Alumkit\Http\Livewire\LinkField;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
+use Livewire\Livewire;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
@@ -39,6 +41,8 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/alumkit.php');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
+
+        Livewire::component('alumkit.link-field', LinkField::class);
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'alumkit');
 
