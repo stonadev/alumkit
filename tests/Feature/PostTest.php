@@ -30,7 +30,8 @@ it('renders the posts index for approved users', function () {
 it('renders the create post form for approved users', function () {
     $this->actingAs($this->user)
         ->get(route('alumkit.posts.create'))
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('data-alumkit-editor');
 });
 
 it('creates a post as a draft by default', function () {

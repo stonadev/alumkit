@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
+use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 // Package stylesheet: compiled Tailwind CSS for the package Blade views.
 Route::get('alumkit/style/alumkit.css', function () {
@@ -20,11 +22,38 @@ Route::get('alumkit/style/alumkit.css', function () {
     return response()->file($path, ['Content-Type' => 'text/css']);
 });
 
+// Package editor bundle: compiled Editor.js field assets.
+Route::get('alumkit/style/alumkit-editor.js', function () {
+    $path = __DIR__.'/../public/alumkit-editor.js';
+
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'application/javascript']);
+});
+
+Route::get('alumkit/style/alumkit-editor.css', function () {
+    $path = __DIR__.'/../public/alumkit-editor.css';
+
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
+
+// Editor image uploads: streamed through the package (no storage:link requirement).
+Route::get('alumkit/style/editor-images/{file}', function (string $file) {
+    $path = 'editor-images/'.basename($file);
+
+    abort_unless(Storage::disk('public')->exists($path), 404);
+
+    return Storage::disk('public')->response($path);
+})->name('alumkit.editor.image.show')->where('file', '[\w.\-]+');
+
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('profile/complete', [CompleteProfileController::class, 'create'])->name('alumkit.profile.complete');
         Route::post('profile/complete', [CompleteProfileController::class, 'store'])->name('alumkit.profile.complete.store');
+        Route::post('alumkit/editor/image', [EditorImageController::class, 'store'])->name('alumkit.editor.image');
     });
 
     // Protected routes: require auth, email verification, active/pending state, and completed profile.

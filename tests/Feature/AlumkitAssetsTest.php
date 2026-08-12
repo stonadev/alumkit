@@ -12,6 +12,18 @@ it('serves the compiled package stylesheet', function () {
         ->assertHeader('Content-Type', 'text/css; charset=utf-8');
 });
 
+it('serves the compiled editor bundle', function () {
+    $this->get('alumkit/style/alumkit-editor.js')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'application/javascript');
+});
+
+it('serves the compiled editor stylesheet', function () {
+    $this->get('alumkit/style/alumkit-editor.css')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/css; charset=utf-8');
+});
+
 it('ships the utilities used by the package views', function () {
     $css = file_get_contents(__DIR__.'/../../public/alumkit.css');
 

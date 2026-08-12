@@ -13,10 +13,7 @@
                 <x-input name="title" :label="__('alumkit::post.title')" :value="old('title')" required />
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {{ __('alumkit::post.body') }}
-                    </label>
-                    <textarea name="body" rows="8" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">{{ old('body') }}</textarea>
+                    <x-alumkit::editor-field name="body" :label="__('alumkit::post.body')" :value="old('body')" />
                     @error('body')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
