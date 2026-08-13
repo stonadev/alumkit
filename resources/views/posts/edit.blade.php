@@ -20,11 +20,7 @@
                     @enderror
                 </div>
 
-                <label class="flex items-center gap-2">
-                    <input type="hidden" name="published" value="0">
-                    <input type="checkbox" name="published" value="1" @checked($post->isPublished()) class="rounded border-gray-300 text-navy focus:ring-gold/50">
-                    <span class="text-sm text-gray-700">{{ __('alumkit::post.publish') }}</span>
-                </label>
+                <x-alumkit::checkbox name="published" :label="__('alumkit::post.publish')" :checked="$post->isPublished()" />
             </div>
 
             <div class="mt-6 flex items-center gap-4">

@@ -217,13 +217,16 @@ Set these in your app's `.env` before running `php artisan alumkit:seed`. If you
 (`php artisan config:cache`), re-cache after changing them. Values are read
 per-key, so setting only `ALUMKIT_ADMIN_EMAIL` keeps the name/password defaults.
 
-### Field components — Link field
+### Field components
 
 Alumkit ships reusable Blade field components so forms in your own views stay
-consistent with the package. The first one is a link field: a control that
-opens a modal where you set a label and a URL. While typing the URL, it
-suggests the app's named routes that have no required parameters (matched by
-route name and URI); you can still type any custom URL.
+consistent with the package.
+
+#### Link field
+
+A control that opens a modal where you set a label and a URL. While typing the
+URL, it suggests the app's named routes that have no required parameters
+(matched by route name and URI); you can still type any custom URL.
 
 ```blade
 <form method="POST" action="{{ route('events.store') }}">
@@ -252,6 +255,41 @@ The URL input suggests up to 8 named routes without required parameters while
 you type; picking one fills the link label from the route name (editable in
 the modal). The component needs Livewire, which is already installed as a
 dependency of TallStackUi.
+
+#### Select
+
+```blade
+<x-alumkit::select name="level" :label="__('education.level')"
+    :options="['honors' => 'Honors', 'phd' => 'PhD']" value="phd" required />
+```
+
+Contract: `name` (required), `label` (optional), `options` (associative
+array of value → label, default `[]`), `value` (optional, the selected
+value), `required` (optional). Renders label, select, and validation error
+for `name`.
+
+#### Textarea
+
+```blade
+<x-alumkit::textarea name="description" :label="__('career.description')"
+    value="Old text" rows="6" required />
+```
+
+Contract: `name` (required), `label` (optional), `value` (optional, initial
+text), `rows` (optional, default `4`), `required` (optional). Renders label,
+textarea, and validation error for `name`.
+
+#### Checkbox
+
+```blade
+<x-alumkit::checkbox name="published" :label="__('post.publish')" :checked="$post->isPublished()" />
+```
+
+Contract: `name` (required), `label` (optional), `value` (optional, checked
+value, default `1`), `uncheckedValue` (optional, default `0`), `checked`
+(optional, default `false`). Renders a hidden `uncheckedValue` input plus the
+checkbox, so the field always submits. Extra attributes (for example
+`x-model`) are forwarded to the checkbox input.
 
 ## Changelog
 

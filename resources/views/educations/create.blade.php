@@ -10,19 +10,7 @@
             @csrf
 
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ __('alumkit::education.level') }}
-                    </label>
-                    <select name="level" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-navy focus:ring-gold/50">
-                        @foreach ($levels as $value => $label)
-                            <option value="{{ $value }}" @selected(old('level') === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    @error('level')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-alumkit::select name="level" :label="__('alumkit::education.level')" :options="$levels" :value="old('level')" required />
 
                 <x-input name="institution" :label="__('alumkit::education.institution')" :value="old('institution')" required />
                 <x-input name="subject" :label="__('alumkit::education.subject')" :value="old('subject')" />

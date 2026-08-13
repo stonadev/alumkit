@@ -11,19 +11,7 @@
             @method('PUT')
 
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ __('alumkit::career.employment_type') }}
-                    </label>
-                    <select name="employment_type" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-navy focus:ring-gold/50">
-                        @foreach ($employmentTypes as $value => $label)
-                            <option value="{{ $value }}" @selected($career->employment_type->value === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    @error('employment_type')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-alumkit::select name="employment_type" :label="__('alumkit::career.employment_type')" :options="$employmentTypes" :value="$career->employment_type->value" required />
 
                 <x-input name="job_title" :label="__('alumkit::career.job_title')" :value="$career->job_title" required />
                 <x-input name="company" :label="__('alumkit::career.company')" :value="$career->company" required />
@@ -35,26 +23,14 @@
                     <x-input type="number" name="start_month" :label="__('alumkit::career.start_month')" :value="$career->start_month" min="1" max="12" />
                 </div>
 
-                <label class="flex items-center gap-2">
-                    <input type="hidden" name="is_current" value="0">
-                    <input type="checkbox" name="is_current" id="currently_working" value="1" x-model="is_current" class="rounded border-gray-300 text-navy focus:ring-gold/50">
-                    <span class="text-sm text-gray-700">{{ __('alumkit::career.currently_working') }}</span>
-                </label>
+                <x-alumkit::checkbox name="is_current" :label="__('alumkit::career.currently_working')" x-model="is_current" />
 
                 <div class="grid grid-cols-2 gap-4" x-show="!is_current">
                     <x-input type="number" name="end_year" :label="__('alumkit::career.end_year')" :value="$career->end_year" min="1900" max="2099" />
                     <x-input type="number" name="end_month" :label="__('alumkit::career.end_month')" :value="$career->end_month" min="1" max="12" />
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ __('alumkit::career.description') }}
-                    </label>
-                    <textarea name="description" rows="4" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-navy focus:ring-gold/50">{{ $career->description }}</textarea>
-                    @error('description')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-alumkit::textarea name="description" :label="__('alumkit::career.description')" :value="$career->description" />
             </div>
 
             <div class="mt-6 flex items-center gap-4">
