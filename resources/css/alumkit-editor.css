@@ -1,3 +1,10 @@
 .alumkit-editor-holder {
     min-height: 220px;
 }
+
+/* Move block-tool actions (type picker) outside the narrow editor's right edge. */
+@media (min-width: 651px) {
+    .codex-editor--narrow .ce-toolbar__actions {
+        right: calc(100% + 32px);
+    }
+}
