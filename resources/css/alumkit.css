@@ -27,6 +27,39 @@
     --color-error: #ba1a1a;
 }
 
+/*
+ * TallStackUI components default to their indigo `primary` scale.
+ * Remap it to the Oxford Navy ramp so every primary-colored control
+ * (x-button, links, toggles) matches the theme. Unlayered `:root` beats
+ * tallstackui.css's `@layer theme` declarations.
+ */
+:root {
+    --color-primary-50: #ffffff;
+    --color-primary-100: #e9edf2;
+    --color-primary-200: #d4dce6;
+    --color-primary-300: #b9c6d6;
+    --color-primary-400: #93a7bf;
+    --color-primary-500: #000a1e;
+    --color-primary-600: #002147;
+    --color-primary-700: #001a3a;
+    --color-primary-800: #001226;
+    --color-primary-900: #000d1f;
+}
+
+/*
+ * DESIGN.md Shapes + focus states:
+ * - Buttons use the Soft 0.25rem radius (TallStackUI defaults to rounded-md).
+ * - On focus the border goes Oxford Navy with a subtle 2px Academy Gold glow;
+ *   TallStackUI rings use --tw-ring-color, so remap the primary ring here.
+ */
+button[role="button"].rounded-md {
+    border-radius: 0.25rem;
+}
+
+.ring-primary-500:focus {
+    --tw-ring-color: rgba(119, 90, 25, 0.5);
+}
+
 @layer base {
     body {
         @apply bg-surface text-on-surface font-sans antialiased;
@@ -53,11 +86,11 @@
 
     /* Primary button: Oxford Navy, white text, no gradient. */
     .btn-primary {
-        @apply inline-flex items-center justify-center rounded bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-700;
+        @apply inline-flex items-center justify-center rounded bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-700 focus-visible:ring-2 focus-visible:ring-gold/50;
     }
 
     /* Secondary button: transparent, 1px Oxford Navy border. */
     .btn-secondary {
-        @apply inline-flex items-center justify-center rounded border border-navy px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-white;
+        @apply inline-flex items-center justify-center rounded border border-navy px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-white focus-visible:ring-2 focus-visible:ring-gold/50;
     }
 }
