@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $user_id
+ * @property string|null $thumbnail
  * @property Carbon|null $published_at
  */
 class Post extends Model
@@ -23,8 +24,16 @@ class Post extends Model
         'user_id',
         'title',
         'body',
+        'thumbnail',
         'published_at',
     ];
+
+    public function thumbnailUrl(): ?string
+    {
+        return $this->thumbnail
+            ? route('alumkit.posts.thumbnail', basename($this->thumbnail))
+            : null;
+    }
 
     /** @return array<string, string> */
     protected function casts(): array
