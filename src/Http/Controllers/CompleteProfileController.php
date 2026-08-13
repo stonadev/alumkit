@@ -54,6 +54,8 @@ class CompleteProfileController extends Controller
 
         $user = $request->user();
 
+        $user->profile()->firstOrCreate();
+
         foreach ($validated['educations'] as $education) {
             /** @phpstan-ignore method.notFound */
             $user->educations()->create($education);

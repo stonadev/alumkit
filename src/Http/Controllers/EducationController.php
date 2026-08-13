@@ -15,7 +15,7 @@ class EducationController extends Controller
 {
     public function index(): View
     {
-        $educations = Education::with('user')->latest()->get();
+        $educations = Education::with('profile')->latest()->get();
 
         /** @var View $view */
         $view = view('alumkit::educations.index', compact('educations'));

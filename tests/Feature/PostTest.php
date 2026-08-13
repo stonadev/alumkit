@@ -17,6 +17,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->approved()->create();
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 });
 
@@ -174,6 +175,7 @@ it('deletes a post', function () {
 
 it('forbids editing another users post', function () {
     $other = User::factory()->approved()->create();
+    $other->profile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford']);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
@@ -184,6 +186,7 @@ it('forbids editing another users post', function () {
 
 it('forbids updating another users post', function () {
     $other = User::factory()->approved()->create();
+    $other->profile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford']);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
@@ -197,6 +200,7 @@ it('forbids updating another users post', function () {
 
 it('forbids deleting another users post', function () {
     $other = User::factory()->approved()->create();
+    $other->profile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford']);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
@@ -207,6 +211,7 @@ it('forbids deleting another users post', function () {
 
 it('lists only the authors own posts on the index', function () {
     $other = User::factory()->approved()->create();
+    $other->profile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford']);
 
     Post::create(['user_id' => $this->user->id, 'title' => 'My Post', 'body' => 'Body']);
@@ -221,6 +226,7 @@ it('lists only the authors own posts on the index', function () {
 
 it('forbids pending users from the posts index', function () {
     $pendingUser = User::factory()->create();
+    $pendingUser->profile()->create();
     $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 
     $this->actingAs($pendingUser)
@@ -230,6 +236,7 @@ it('forbids pending users from the posts index', function () {
 
 it('forbids pending users from the create post form', function () {
     $pendingUser = User::factory()->create();
+    $pendingUser->profile()->create();
     $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 
     $this->actingAs($pendingUser)

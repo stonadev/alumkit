@@ -14,10 +14,12 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create(['state' => UserState::Active->value]);
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->targetUser = User::factory()->create(['state' => UserState::Pending->value]);
+    $this->targetUser->profile()->create();
     $this->targetUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
     $this->targetUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });

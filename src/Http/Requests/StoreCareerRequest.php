@@ -21,7 +21,7 @@ class StoreCareerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
+            'profile_id' => ['required', 'exists:profiles,id'],
             'job_title' => ['required', 'string', 'max:255'],
             'company' => ['required', 'string', 'max:255'],
             'employment_type' => ['required', Rule::in(array_column(EmploymentType::cases(), 'value'))],

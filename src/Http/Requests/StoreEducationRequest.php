@@ -21,7 +21,7 @@ class StoreEducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
+            'profile_id' => ['required', 'exists:profiles,id'],
             'level' => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],
             'institution' => ['required', 'string', 'max:255'],
             'subject' => ['nullable', 'string', 'max:255'],

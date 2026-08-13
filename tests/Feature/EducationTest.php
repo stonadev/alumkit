@@ -14,6 +14,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create();
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });
@@ -48,7 +49,7 @@ it('creates an education record', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
             'subject' => 'Computer Science',
@@ -60,7 +61,7 @@ it('creates an education record', function () {
         ->assertRedirect(route('alumkit.educations.index'));
 
     $this->assertDatabaseHas('educations', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
         'subject' => 'Computer Science',
@@ -77,11 +78,11 @@ it('validates education required fields', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => '',
+            'profile_id' => '',
             'level' => '',
             'institution' => '',
         ])
-        ->assertSessionHasErrors(['user_id', 'level', 'institution']);
+        ->assertSessionHasErrors(['profile_id', 'level', 'institution']);
 });
 
 it('validates education level against config', function () {
@@ -90,7 +91,7 @@ it('validates education level against config', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'invalid_level',
             'institution' => 'MIT',
         ])
@@ -102,7 +103,7 @@ it('renders the edit education form', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'phd',
         'institution' => 'Stanford',
     ]);
@@ -117,7 +118,7 @@ it('updates an education record', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -143,7 +144,7 @@ it('deletes an education record', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'diploma',
         'institution' => 'Community College',
     ]);
@@ -164,7 +165,7 @@ it('denies access to create education form without permission', function () {
 it('denies access to store education without permission', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
         ])
@@ -173,7 +174,7 @@ it('denies access to store education without permission', function () {
 
 it('denies access to edit education form without permission', function () {
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -185,7 +186,7 @@ it('denies access to edit education form without permission', function () {
 
 it('denies access to update education without permission', function () {
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -200,7 +201,7 @@ it('denies access to update education without permission', function () {
 
 it('denies access to delete education without permission', function () {
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -216,11 +217,11 @@ it('validates non-existent user_id on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => 99999,
+            'profile_id' => 99999,
             'level' => 'masters',
             'institution' => 'MIT',
         ])
-        ->assertSessionHasErrors(['user_id']);
+        ->assertSessionHasErrors(['profile_id']);
 });
 
 it('validates start_year digits on store', function () {
@@ -229,7 +230,7 @@ it('validates start_year digits on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
             'start_year' => 20200,
@@ -243,7 +244,7 @@ it('validates month range on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
             'start_month' => 13,
@@ -257,7 +258,7 @@ it('validates end_year gte start_year on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
             'start_year' => 2022,
@@ -271,7 +272,7 @@ it('validates level on update', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -289,7 +290,7 @@ it('validates institution required on update', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
@@ -307,7 +308,7 @@ it('validates end_year gte start_year on update', function () {
     $this->user->givePermissionTo('manage educations');
 
     $education = Education::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);

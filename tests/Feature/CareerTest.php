@@ -14,6 +14,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create();
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });
@@ -48,7 +49,7 @@ it('creates a career record', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Software Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -63,7 +64,7 @@ it('creates a career record', function () {
         ->assertRedirect(route('alumkit.careers.index'));
 
     $this->assertDatabaseHas('careers', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Software Engineer',
         'company' => 'Google',
         'employment_type' => 'full_time',
@@ -83,12 +84,12 @@ it('validates career required fields', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => '',
+            'profile_id' => '',
             'job_title' => '',
             'company' => '',
             'employment_type' => '',
         ])
-        ->assertSessionHasErrors(['user_id', 'job_title', 'company', 'employment_type']);
+        ->assertSessionHasErrors(['profile_id', 'job_title', 'company', 'employment_type']);
 });
 
 it('validates career employment type against enum', function () {
@@ -97,7 +98,7 @@ it('validates career employment type against enum', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'invalid_type',
@@ -111,7 +112,7 @@ it('validates end_year format', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -126,7 +127,7 @@ it('accepts is_current for current position', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -136,7 +137,7 @@ it('accepts is_current for current position', function () {
         ->assertRedirect(route('alumkit.careers.index'));
 
     $this->assertDatabaseHas('careers', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'is_current' => true,
         'end_year' => null,
     ]);
@@ -147,7 +148,7 @@ it('renders the edit career form', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -164,7 +165,7 @@ it('updates a career record', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -195,7 +196,7 @@ it('deletes a career record', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Intern',
         'company' => 'Startup',
         'employment_type' => 'internship',
@@ -218,7 +219,7 @@ it('denies access to create career form without permission', function () {
 it('denies access to store career without permission', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -228,7 +229,7 @@ it('denies access to store career without permission', function () {
 
 it('denies access to edit career form without permission', function () {
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -242,7 +243,7 @@ it('denies access to edit career form without permission', function () {
 
 it('denies access to update career without permission', function () {
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -260,7 +261,7 @@ it('denies access to update career without permission', function () {
 
 it('denies access to delete career without permission', function () {
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -278,12 +279,12 @@ it('validates non-existent user_id on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => 99999,
+            'profile_id' => 99999,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
         ])
-        ->assertSessionHasErrors(['user_id']);
+        ->assertSessionHasErrors(['profile_id']);
 });
 
 it('validates start_year digits on store', function () {
@@ -292,7 +293,7 @@ it('validates start_year digits on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -307,7 +308,7 @@ it('validates month range on store', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.careers.store'), [
-            'user_id' => $this->user->id,
+            'profile_id' => $this->user->profile->id,
             'job_title' => 'Engineer',
             'company' => 'Google',
             'employment_type' => 'full_time',
@@ -321,7 +322,7 @@ it('validates employment_type on update', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -342,7 +343,7 @@ it('validates job_title required on update', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',
@@ -363,7 +364,7 @@ it('validates end_year format on update', function () {
     $this->user->givePermissionTo('manage careers');
 
     $career = Career::create([
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Microsoft',
         'employment_type' => 'full_time',

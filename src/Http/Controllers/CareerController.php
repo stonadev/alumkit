@@ -15,7 +15,7 @@ class CareerController extends Controller
 {
     public function index(): View
     {
-        $careers = Career::with('user')->latest()->get();
+        $careers = Career::with('profile')->latest()->get();
 
         /** @var View $view */
         $view = view('alumkit::careers.index', compact('careers'));

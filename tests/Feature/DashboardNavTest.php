@@ -13,6 +13,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create();
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });

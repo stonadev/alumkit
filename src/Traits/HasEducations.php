@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Traits;
 
 use Alumkit\Alumkit\Models\Education;
+use Alumkit\Alumkit\Models\Profile;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 trait HasEducations
 {
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
+    }
+
     public function educations(): HasMany
     {
-        return $this->hasMany(Education::class);
+        return $this->profile->educations();
     }
 
     /**

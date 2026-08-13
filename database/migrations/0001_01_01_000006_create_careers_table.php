@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('careers', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('profile_id')->constrained()->cascadeOnDelete();
             $table->string('job_title');
             $table->string('company');
             $table->string('employment_type');

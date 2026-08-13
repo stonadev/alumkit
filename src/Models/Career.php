@@ -19,7 +19,7 @@ class Career extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'user_id',
+        'profile_id',
         'job_title',
         'company',
         'employment_type',
@@ -54,9 +54,8 @@ class Career extends Model
     /**
      * @phpstan-ignore missingType.generics
      */
-    public function user(): BelongsTo
+    public function profile(): BelongsTo
     {
-        /** @phpstan-ignore argument.templateType */
-        return $this->belongsTo(config('alumkit.auth.user_model'));
+        return $this->belongsTo(Profile::class);
     }
 }

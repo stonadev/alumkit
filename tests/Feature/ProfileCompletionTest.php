@@ -25,12 +25,12 @@ it('accepts a profile with education but no careers', function () {
         ->assertSessionHas('status');
 
     $this->assertDatabaseHas('educations', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
 
-    $this->assertDatabaseMissing('careers', ['user_id' => $this->user->id]);
+    $this->assertDatabaseMissing('careers', ['profile_id' => $this->user->profile->id]);
 });
 
 it('accepts a profile with education and careers', function () {
@@ -47,13 +47,13 @@ it('accepts a profile with education and careers', function () {
         ->assertSessionHas('status');
 
     $this->assertDatabaseHas('educations', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
 
     $this->assertDatabaseHas('careers', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'job_title' => 'Developer',
         'company' => 'Acme',
         'employment_type' => 'full_time',
@@ -70,6 +70,7 @@ it('rejects a profile without education', function () {
 });
 
 it('does not require careers to access protected routes', function () {
+    $this->user->profile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
 
     $this->actingAs($this->user)
@@ -104,7 +105,7 @@ it('does not show the approval banner to the admin after submission', function (
         ->assertSessionMissing('status');
 
     $this->assertDatabaseHas('educations', [
-        'user_id' => $this->user->id,
+        'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
     ]);

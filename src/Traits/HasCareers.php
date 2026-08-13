@@ -11,7 +11,7 @@ trait HasCareers
 {
     public function careers(): HasMany
     {
-        return $this->hasMany(Career::class);
+        return $this->profile->careers();
     }
 
     /**
