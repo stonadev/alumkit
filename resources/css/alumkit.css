@@ -71,6 +71,18 @@ button[role="button"].rounded-md {
     h3 {
         font-family: var(--font-serif);
     }
+
+    /*
+     * Consistent horizontal padding for every text-like input.
+     * TallStackUI's x-input ships with no px; selects/textareas already use
+     * px-3. Element-level utilities (icon/prefix paddings) still win over
+     * this base rule. Checkboxes, radios, and hidden inputs are excluded.
+     */
+    input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+    select,
+    textarea {
+        @apply px-3;
+    }
 }
 
 @layer components {
