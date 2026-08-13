@@ -1,6 +1,6 @@
 <div>
     @if ($fieldLabel)
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
             {{ $fieldLabel }}
         </label>
     @endif
@@ -10,10 +10,10 @@
 
     @if ($url)
         <div class="flex items-center gap-4">
-            <a href="{{ $url }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-500">
+            <a href="{{ $url }}" target="_blank" rel="noopener" class="text-sm text-navy hover:text-gold">
                 {{ $label ?: $url }}
             </a>
-            <button type="button" wire:click="$set('showModal', true)" class="text-blue-600 hover:text-blue-900">
+            <button type="button" wire:click="$set('showModal', true)" class="text-navy hover:text-gold">
                 {{ __('alumkit::link-field.edit_link') }}
             </button>
             <button type="button" wire:click="clear" class="text-red-600 hover:text-red-900">
@@ -34,7 +34,7 @@
                      :label="__('alumkit::link-field.url')" placeholder="https://" />
 
             @if ($url && empty($suggestions))
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p class="text-sm text-gray-600">
                     {{ __('alumkit::link-field.no_matching_routes') }}
                 </p>
             @endif
@@ -44,8 +44,8 @@
                     @foreach ($suggestions as $suggestion)
                         <li :wire:key="'suggestion-'.$suggestion['name']">
                             <button type="button" wire:click="pickRoute('{{ $suggestion['name'] }}')" class="w-full text-left">
-                                <span class="block text-sm font-medium text-gray-900 dark:text-white">{{ $suggestion['name'] }}</span>
-                                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ $suggestion['url'] }}</span>
+                                <span class="block text-sm font-medium text-navy">{{ $suggestion['name'] }}</span>
+                                <span class="block text-xs text-gray-500">{{ $suggestion['url'] }}</span>
                             </button>
                         </li>
                     @endforeach
@@ -56,7 +56,7 @@
         <x-slot:footer>
             <x-button outline x-on:click="$tsui.close.modal('alumkit-link-field-modal-'.$this->getId())" :text="__('alumkit::link-field.cancel')" />
             <button type="button" wire:click="save" :disabled="! $url"
-                    class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
+                    class="inline-flex items-center justify-center rounded-md bg-navy px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-navy-700 disabled:opacity-50">
                 {{ __('alumkit::link-field.save') }}
             </button>
         </x-slot:footer>

@@ -60,7 +60,7 @@ Route::middleware(['web'])->group(function () {
     Route::middleware(['auth', 'verified', 'user.state', 'complete-profile.check'])->group(function () {
         Route::get('dashboard', function () {
             /** @phpstan-ignore argument.type */
-            return view('alumkit::layouts.dashboard');
+            return view('alumkit::dashboard');
         })->name('alumkit.dashboard');
 
         Route::get('profile', function () {

@@ -1,7 +1,7 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <h1 class="text-2xl font-bold text-navy mb-6">
         {{ __('alumkit::dashboard.edit_role') }}
     </h1>
 
@@ -13,7 +13,7 @@
             <x-input name="name" :label="__('alumkit::dashboard.role_name')" :value="$role->name" required />
 
             <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ __('alumkit::dashboard.select_permissions') }}
                 </label>
 
@@ -31,7 +31,7 @@
 
             <div class="mt-6 flex items-center gap-4">
                 <x-button type="submit" :text="__('alumkit::dashboard.edit_role')" />
-                <a href="{{ route('alumkit.roles.index') }}" class="text-gray-600 hover:text-gray-900">
+                <a href="{{ route('alumkit.roles.index') }}" class="text-gray-600 hover:text-navy">
                     {{ __('alumkit::dashboard.back_to_dashboard') }}
                 </a>
             </div>

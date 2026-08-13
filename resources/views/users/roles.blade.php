@@ -1,13 +1,13 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <h1 class="text-2xl font-bold text-navy mb-6">
         {{ __('alumkit::dashboard.assign_roles') }}
     </h1>
 
     <x-card>
         <div class="mb-4">
-            <p class="text-gray-600 dark:text-gray-400">
+            <p class="text-gray-600">
                 {{ __('alumkit::dashboard.user_name') }}: <strong>{{ $user->name }}</strong>
                 ({{ __('alumkit::dashboard.user_email') }}: {{ $user->email }})
             </p>
@@ -18,7 +18,7 @@
             @method('PUT')
 
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ __('alumkit::dashboard.select_roles') }}
                 </label>
 
@@ -36,7 +36,7 @@
 
             <div class="mt-6 flex items-center gap-4">
                 <x-button type="submit" :text="__('alumkit::dashboard.assign_roles')" />
-                <a href="{{ route('alumkit.dashboard') }}" class="text-gray-600 hover:text-gray-900">
+                <a href="{{ route('alumkit.dashboard') }}" class="text-gray-600 hover:text-navy">
                     {{ __('alumkit::dashboard.back_to_dashboard') }}
                 </a>
             </div>

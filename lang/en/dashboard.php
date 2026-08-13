@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 return [
     'dashboard' => 'Dashboard',
+    'menu' => 'Menu',
+    'welcome_back' => 'Welcome back, :name',
+    'welcome_text' => 'Your alumni network brings mentorship, careers, and community together — all in one place.',
+    'quick_links' => 'Quick Links',
+    'open' => 'Open',
+    'careers_description' => 'Curate the alumni career directory and employment listings.',
+    'posts_description' => 'Share news, stories, and announcements with the network.',
+    'manage_your_profile' => 'Manage Your Profile',
+    'profile_cta' => 'Keep your education and career history current so classmates, mentors, and administrators can find you.',
+    'view_profile' => 'View Profile',
     'roles' => 'Roles',
     'user_roles' => 'User Roles',
     'create_role' => 'Create Role',

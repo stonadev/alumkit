@@ -9,7 +9,7 @@
     <div class="space-y-6">
         <x-card>
             <div class="text-center">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-navy">
                     {{ __('alumkit::auth.profile') }}
                 </h1>
             </div>
@@ -17,14 +17,14 @@
 
         @if (Features::enabled(Features::updateProfileInformation()))
             <x-card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 class="text-lg font-semibold text-navy">
                     {{ __('alumkit::auth.update_info') }}
                 </h2>
 
                 <x-errors />
 
                 @if (session('status') === 'profile-information-updated')
-                    <div class="mt-2 text-sm text-green-600 dark:text-green-400">
+                    <div class="mt-2 text-sm text-green-600">
                         {{ __('alumkit::auth.profile_updated') }}
                     </div>
                 @endif
@@ -56,14 +56,14 @@
 
         @if (Features::enabled(Features::updatePasswords()))
             <x-card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 class="text-lg font-semibold text-navy">
                     {{ __('alumkit::auth.update_password') }}
                 </h2>
 
                 <x-errors />
 
                 @if (session('status') === 'password-updated')
-                    <div class="mt-2 text-sm text-green-600 dark:text-green-400">
+                    <div class="mt-2 text-sm text-green-600">
                         {{ __('alumkit::auth.password_updated') }}
                     </div>
                 @endif
@@ -98,18 +98,18 @@
 
         @if (Features::enabled(Features::twoFactorAuthentication()))
             <x-card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 class="text-lg font-semibold text-navy">
                     {{ __('alumkit::auth.two_factor_auth') }}
                 </h2>
 
                 @if (session('status') === 'two-factor-authentication-enabled')
-                    <div class="mt-4 text-sm text-green-600 dark:text-green-400">
+                    <div class="mt-4 text-sm text-green-600">
                         {{ __('alumkit::auth.two_factor_enabled') }}
                     </div>
 
                     @if (session('confirmation') === 'required')
                         <div class="mt-4 space-y-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="text-sm text-gray-600">
                                 {{ __('alumkit::auth.two_factor_scan_qr') }}
                             </p>
 
@@ -117,9 +117,9 @@
                                 {!! Auth::user()->twoFactorQrCodeSvg() !!}
                             </div>
 
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="text-sm text-gray-600">
                                 {{ __('alumkit::auth.two_factor_setup_key') }}
-                                <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                <code class="bg-gray-100 px-2 py-1 rounded">
                                     {{ decrypt(Auth::user()->two_factor_secret) }}
                                 </code>
                             </p>
@@ -142,10 +142,10 @@
 
                     @if (session('recoveryCodes'))
                         <div class="mt-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="text-sm text-gray-600">
                                 {{ __('alumkit::auth.two_factor_recovery_codes') }}
                             </p>
-                            <div class="mt-2 bg-gray-100 dark:bg-gray-800 rounded-md p-4">
+                            <div class="mt-2 bg-gray-100 rounded-md p-4">
                                 @foreach (session('recoveryCodes') as $code)
                                     <code class="block text-sm">{{ $code }}</code>
                                 @endforeach
@@ -155,7 +155,7 @@
                 @endif
 
                 @if (session('status') === 'two-factor-authentication-confirmed')
-                    <div class="mt-4 text-sm text-green-600 dark:text-green-400">
+                    <div class="mt-4 text-sm text-green-600">
                         {{ __('alumkit::auth.two_factor_confirmed') }}
                     </div>
 
@@ -186,7 +186,7 @@
         @endif
 
         <div class="text-center">
-            <a href="{{ route('alumkit.dashboard') }}" class="text-sm text-indigo-600 hover:text-indigo-500">
+            <a href="{{ route('alumkit.dashboard') }}" class="text-sm text-navy hover:text-gold">
                 {{ __('alumkit::auth.back_to_dashboard') }}
             </a>
         </div>

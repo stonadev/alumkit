@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-navy">
             {{ __('alumkit::career.careers') }}
         </h1>
 
@@ -15,13 +15,13 @@
 
     <x-card>
         @if ($careers->isEmpty())
-            <p class="text-gray-600 dark:text-gray-400">
+            <p class="text-gray-600">
                 {{ __('alumkit::career.no_careers') }}
             </p>
         @else
             <table class="w-full">
                 <thead>
-                    <tr class="border-b dark:border-gray-700">
+                    <tr class="border-b">
                         <th class="text-left py-3 px-4">{{ __('alumkit::career.job_title') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::career.company') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::career.employment_type') }}</th>
@@ -31,17 +31,17 @@
                 </thead>
                 <tbody>
                     @foreach ($careers as $career)
-                        <tr class="border-b dark:border-gray-700">
+                        <tr class="border-b">
                             <td class="py-3 px-4 font-medium">
                                 {{ $career->job_title }}
                             </td>
-                            <td class="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            <td class="py-3 px-4 text-gray-600">
                                 {{ $career->company }}
                             </td>
-                            <td class="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            <td class="py-3 px-4 text-gray-600">
                                 {{ config("alumkit.career.employment_types.{$career->employment_type->value}", $career->employment_type->value) }}
                             </td>
-                            <td class="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            <td class="py-3 px-4 text-gray-600">
                                 {{ $career->start_year ?? '—' }}
                                 @if ($career->start_month)
                                     / {{ $career->start_month }}
@@ -58,7 +58,7 @@
                             </td>
                             <td class="py-3 px-4 text-right">
                                 @can('manage careers')
-                                    <a href="{{ route('alumkit.careers.edit', $career) }}" class="text-blue-600 hover:text-blue-900 mr-3">
+                                    <a href="{{ route('alumkit.careers.edit', $career) }}" class="text-navy hover:text-gold mr-3">
                                         {{ __('alumkit::dashboard.edit') }}
                                     </a>
 

@@ -1,7 +1,7 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <h1 class="text-2xl font-bold text-navy mb-6">
         {{ __('alumkit::education.education') }}
     </h1>
 
@@ -12,10 +12,10 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ __('alumkit::education.level') }}
                     </label>
-                    <select name="level" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+                    <select name="level" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-navy focus:ring-gold/50">
                         @foreach ($levels as $value => $label)
                             <option value="{{ $value }}" @selected($education->level === $value)>{{ $label }}</option>
                         @endforeach
@@ -41,7 +41,7 @@
 
             <div class="mt-6 flex items-center gap-4">
                 <x-button type="submit" :text="__('alumkit::education.update_education')" />
-                <a href="{{ route('alumkit.educations.index') }}" class="text-gray-600 hover:text-gray-900">
+                <a href="{{ route('alumkit.educations.index') }}" class="text-gray-600 hover:text-navy">
                     {{ __('alumkit::dashboard.back_to_dashboard') }}
                 </a>
             </div>

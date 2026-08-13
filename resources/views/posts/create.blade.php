@@ -1,7 +1,7 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <h1 class="text-2xl font-bold text-navy mb-6">
         {{ __('alumkit::post.new_post') }}
     </h1>
 
@@ -21,14 +21,14 @@
 
                 <label class="flex items-center gap-2">
                     <input type="hidden" name="published" value="0">
-                    <input type="checkbox" name="published" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ __('alumkit::post.publish') }}</span>
+                    <input type="checkbox" name="published" value="1" class="rounded border-gray-300 text-navy focus:ring-gold/50">
+                    <span class="text-sm text-gray-700">{{ __('alumkit::post.publish') }}</span>
                 </label>
             </div>
 
             <div class="mt-6 flex items-center gap-4">
                 <x-button type="submit" :text="__('alumkit::post.new_post')" />
-                <a href="{{ route('alumkit.posts.index') }}" class="text-gray-600 hover:text-gray-900">
+                <a href="{{ route('alumkit.posts.index') }}" class="text-gray-600 hover:text-navy">
                     {{ __('alumkit::dashboard.back_to_dashboard') }}
                 </a>
             </div>
