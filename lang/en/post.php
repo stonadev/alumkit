@@ -14,6 +14,8 @@ return [
     'published' => 'Published',
     'draft' => 'Draft',
     'publish' => 'Publish',
+    'thumbnail' => 'Thumbnail',
+    'select_thumbnail' => 'Select an image',
     'post_created' => 'Post created successfully.',
     'post_updated' => 'Post updated successfully.',
     'post_deleted' => 'Post deleted successfully.',

@@ -5,7 +5,9 @@ declare(strict_types=1);
 use Alumkit\Alumkit\Facades\Alumkit;
 use Alumkit\Alumkit\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
 
@@ -69,6 +71,69 @@ it('validates post required fields', function () {
             'body' => '',
         ])
         ->assertSessionHasErrors(['title', 'body']);
+});
+
+it('creates a post with a thumbnail', function () {
+    Storage::fake('public');
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.posts.store'), [
+            'title' => 'Thumbnailed Post',
+            'body' => 'Has an image',
+            'thumbnail' => UploadedFile::fake()->image('thumb.jpg'),
+        ])
+        ->assertRedirect(route('alumkit.posts.index'));
+
+    $post = Post::where('title', 'Thumbnailed Post')->first();
+
+    expect($post->thumbnail)->not->toBeNull();
+    Storage::disk('public')->assertExists('post-thumbnails/'.basename($post->thumbnail));
+});
+
+it('serves the post thumbnail through the package route', function () {
+    Storage::fake('public');
+
+    $post = Post::create([
+        'user_id' => $this->user->id,
+        'title' => 'With Thumbnail',
+        'body' => 'Body',
+        'thumbnail' => 'post-thumbnails/thumb.jpg',
+    ]);
+
+    Storage::disk('public')->put('post-thumbnails/thumb.jpg', 'fake-image');
+
+    $this->get(route('alumkit.posts.thumbnail', basename($post->thumbnail)))->assertOk();
+});
+
+it('validates thumbnail must be an image', function () {
+    Storage::fake('public');
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.posts.store'), [
+            'title' => 'Bad Thumbnail',
+            'body' => 'Body',
+            'thumbnail' => UploadedFile::fake()->create('doc.txt', 1),
+        ])
+        ->assertSessionHasErrors(['thumbnail']);
+});
+
+it('updates a post thumbnail on edit', function () {
+    Storage::fake('public');
+
+    $post = Post::create(['user_id' => $this->user->id, 'title' => 'Old', 'body' => 'Body']);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.posts.update', $post), [
+            'title' => 'Old',
+            'body' => 'Body',
+            'thumbnail' => UploadedFile::fake()->image('new-thumb.jpg'),
+        ])
+        ->assertRedirect(route('alumkit.posts.index'));
+
+    $fresh = $post->fresh();
+
+    expect($fresh->thumbnail)->not->toBeNull();
+    Storage::disk('public')->assertExists('post-thumbnails/'.basename($fresh->thumbnail));
 });
 
 it('renders the edit post form for the author', function () {

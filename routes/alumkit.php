@@ -28,6 +28,15 @@ Route::get('alumkit/style/editor-images/{file}', function (string $file) {
     return Storage::disk('public')->response($path);
 })->name('alumkit.editor.image.show')->where('file', '[\w.\-]+');
 
+// Post thumbnails: streamed through the package (no storage:link requirement).
+Route::get('alumkit/style/post-thumbnails/{file}', function (string $file) {
+    $path = 'post-thumbnails/'.basename($file);
+
+    abort_unless(Storage::disk('public')->exists($path), 404);
+
+    return Storage::disk('public')->response($path);
+})->name('alumkit.posts.thumbnail')->where('file', '[\w.\-]+');
+
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {

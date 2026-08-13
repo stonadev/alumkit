@@ -34,8 +34,16 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request): RedirectResponse
     {
+        $data = $request->validated();
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('post-thumbnails', 'public');
+            abort_unless(is_string($path), 500);
+            $data['thumbnail'] = $path;
+        }
+
         Post::create([
-            ...$request->validated(),
+            ...$data,
             'user_id' => $request->user()->id,
             'published_at' => $request->boolean('published') ? now() : null,
         ]);
@@ -58,8 +66,16 @@ class PostController extends Controller
     {
         abort_unless($post->user_id === $request->user()->id, 403);
 
+        $data = $request->validated();
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('post-thumbnails', 'public');
+            abort_unless(is_string($path), 500);
+            $data['thumbnail'] = $path;
+        }
+
         $post->update([
-            ...$request->validated(),
+            ...$data,
             'published_at' => $request->boolean('published') ? now() : null,
         ]);
 

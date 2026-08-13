@@ -22,6 +22,7 @@ class StorePostRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'published' => ['sometimes', 'boolean'],
+            'thumbnail' => ['nullable', 'image', 'max:2048'],
         ];
     }
 }
