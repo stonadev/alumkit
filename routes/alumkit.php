@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Http\Controllers\AssetController;
 use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
@@ -13,31 +14,10 @@ use Alumkit\Alumkit\Http\Controllers\UserStateController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-// Package stylesheet: compiled Tailwind CSS for the package Blade views.
-Route::get('alumkit/style/alumkit.css', function () {
-    $path = __DIR__.'/../public/alumkit.css';
-
-    abort_unless(is_file($path), 404);
-
-    return response()->file($path, ['Content-Type' => 'text/css']);
-});
-
-// Package editor bundle: compiled Editor.js field assets.
-Route::get('alumkit/style/alumkit-editor.js', function () {
-    $path = __DIR__.'/../public/alumkit-editor.js';
-
-    abort_unless(is_file($path), 404);
-
-    return response()->file($path, ['Content-Type' => 'application/javascript']);
-});
-
-Route::get('alumkit/style/alumkit-editor.css', function () {
-    $path = __DIR__.'/../public/alumkit-editor.css';
-
-    abort_unless(is_file($path), 404);
-
-    return response()->file($path, ['Content-Type' => 'text/css']);
-});
+// Package assets: compiled CSS/JS served straight from vendor, so
+// `composer update stonadev/alumkit` alone ships new styles and scripts.
+Route::get('alumkit/style/{file}', AssetController::class)
+    ->where('file', '[A-Za-z0-9._-]+');
 
 // Editor image uploads: streamed through the package (no storage:link requirement).
 Route::get('alumkit/style/editor-images/{file}', function (string $file) {
