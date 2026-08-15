@@ -56,18 +56,9 @@
                 }"
                 class="space-y-3"
             >
-                <div class="flex items-center justify-between">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {{ __('alumkit::education.education') }}
-                    </label>
-                    <x-button
-                        type="button"
-                        x-on:click="add()"
-                        :text="__('alumkit::education.add_education')"
-                       xs
-                       outline
-                    />
-                </div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ __('alumkit::education.education') }}
+                </label>
 
                 <template x-for="(edu, index) in educations" :key="index">
                     <div class="rounded-lg border border-gray-200 p-4 space-y-4 dark:border-gray-700">
@@ -156,6 +147,15 @@
                         </div>
                     </div>
                 </template>
+
+                <x-button
+                    type="button"
+                    x-on:click="add()"
+                    :text="__('alumkit::education.add_education')"
+                    xs
+                    outline
+                    block
+                />
             </div>
             </div>
 
@@ -173,18 +173,9 @@
                 }"
                 class="space-y-3"
             >
-                <div class="flex items-center justify-between">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {{ __('alumkit::career.career') }}
-                    </label>
-                    <x-button
-                        type="button"
-                        x-on:click="add()"
-                        :text="__('alumkit::career.add_career')"
-                       xs
-                       outline
-                    />
-                </div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ __('alumkit::career.career') }}
+                </label>
 
                 <template x-for="(career, index) in careers" :key="index">
                     <div class="rounded-lg border border-gray-200 p-4 space-y-4 dark:border-gray-700">
@@ -312,6 +303,15 @@
                         </div>
                     </div>
                 </template>
+
+                <x-button
+                    type="button"
+                    x-on:click="add()"
+                    :text="__('alumkit::career.add_career')"
+                    xs
+                    outline
+                    block
+                />
             </div>
             </div>
 
