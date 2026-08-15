@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'details' => 'Profile Details',
     'photo' => 'Photo',
+    'choose_photo' => 'Choose photo',
     'date_of_birth' => 'Date of Birth',
     'gender' => 'Gender',
     'blood_group' => 'Blood Group',
