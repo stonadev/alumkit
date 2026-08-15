@@ -251,3 +251,11 @@ it('rejects password update with wrong current password', function () {
             'password_confirmation' => 'new-password',
         ])->assertSessionHasErrors(['current_password']);
 });
+
+it('redirects authenticated users from login to dashboard', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('login'))
+        ->assertRedirect(route('alumkit.dashboard'));
+});

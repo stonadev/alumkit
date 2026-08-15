@@ -14,6 +14,7 @@ use Alumkit\Alumkit\Http\Livewire\LinkField;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserState;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
@@ -72,6 +73,8 @@ class AlumkitServiceProvider extends ServiceProvider
             'fortify.home' => '/dashboard',
             'fortify.redirects.login' => '/dashboard',
         ]);
+
+        RedirectIfAuthenticated::redirectUsing(fn () => route('alumkit.dashboard'));
     }
 
     protected function configureFortifyViews(): void
