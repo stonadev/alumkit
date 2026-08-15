@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Requests;
 
-use Alumkit\Alumkit\Enums\EducationLevel;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateEducationRequest extends FormRequest
 {
@@ -21,7 +19,7 @@ class UpdateEducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'level' => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],
+            'level' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
             'subject' => ['nullable', 'string', 'max:255'],
             'start_year' => ['nullable', 'integer', 'digits:4'],

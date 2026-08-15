@@ -42,15 +42,9 @@ return [
     ],
 
     'education' => [
-        'levels' => [
-            'honors' => 'Honors',
-            'masters' => 'Masters',
-            'phd' => 'PhD',
-            'diploma' => 'Diploma',
-            'certificate' => 'Certificate',
-        ],
+        'levels' => ['Honors', 'Masters', 'PhD', 'Diploma', 'Certificate'],
 
-        // Suggested institutions and subjects for the education form fields.
+        // Suggested levels, institutions and subjects for the education form fields.
         // Consumers seed these lists; users may still type any value.
         'institutions' => [],
         'subjects' => [],

@@ -10,7 +10,7 @@
             @csrf
 
             <div class="space-y-4">
-                <x-alumkit::select name="level" :label="__('alumkit::education.level')" :options="$levels" :value="old('level')" required />
+                <x-alumkit::suggest name="level" :label="__('alumkit::education.level')" :value="old('level')" :suggestions="config('alumkit.education.levels', [])" required />
 
                 <x-alumkit::suggest name="institution" :label="__('alumkit::education.institution')" :value="old('institution')" :suggestions="config('alumkit.education.institutions', [])" required />
                 <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="old('subject')" :suggestions="config('alumkit.education.subjects', [])" />

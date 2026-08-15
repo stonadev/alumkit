@@ -11,7 +11,7 @@
             @method('PUT')
 
             <div class="space-y-4">
-                <x-alumkit::select name="level" :label="__('alumkit::education.level')" :options="$levels" :value="$education->level?->value" required />
+                <x-alumkit::suggest name="level" :label="__('alumkit::education.level')" :value="$education->level" :suggestions="config('alumkit.education.levels', [])" required />
 
                 <x-alumkit::suggest name="institution" :label="__('alumkit::education.institution')" :value="$education->institution" :suggestions="config('alumkit.education.institutions', [])" required />
                 <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="$education->subject" :suggestions="config('alumkit.education.subjects', [])" />

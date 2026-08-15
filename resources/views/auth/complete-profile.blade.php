@@ -46,9 +46,9 @@
             <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
             <div
                 x-data="{
-                    educations: [{ level: '{{ array_key_first(config('alumkit.education.levels', [])) }}', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
+                    educations: [{ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
                     add() {
-                        this.educations.push({ level: '{{ array_key_first(config('alumkit.education.levels', [])) }}', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
+                        this.educations.push({ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
                     },
                     remove(index) {
                         this.educations.splice(index, 1);
@@ -73,21 +73,13 @@
                             />
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                {{ __('alumkit::education.level') }}
-                            </label>
-                            <select
-                                x-bind:name="'educations[' + index + '][level]'"
-                                x-model="edu.level"
-                                required
-                                class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                            >
-                                @foreach (config('alumkit.education.levels', []) as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <x-alumkit::suggest
+                            x-bind:name="'educations[' + index + '][level]'"
+                            x-model="edu.level"
+                            :label="__('alumkit::education.level')"
+                            :suggestions="config('alumkit.education.levels', [])"
+                            required
+                        />
 
                         <x-alumkit::suggest
                             x-bind:name="'educations[' + index + '][institution]'"

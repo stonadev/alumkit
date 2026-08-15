@@ -32,11 +32,12 @@ This copies `config/alumkit.php` to your app's `config/` directory. To overwrite
 
 ### Education field suggestions
 
-While typing the institution and subject fields on education forms, the package suggests values seeded in the published config; users can pick one or type any value:
+While typing the level, institution and subject fields on education forms, the package suggests values seeded in the published config; users can pick one or type any value:
 
 ```php
 // config/alumkit.php
 'education' => [
+    'levels' => ['Honors', 'Masters'],
     'institutions' => ['University of Dhaka', 'MIT', 'Stanford'],
     'subjects' => ['Computer Science', 'Physics'],
 ],

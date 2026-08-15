@@ -43,16 +43,19 @@ it('renders the create education form for users with manage educations permissio
         ->assertOk();
 });
 
-it('renders institution and subject suggestions from config on the create form', function () {
+it('renders level, institution and subject suggestions from config on the create form', function () {
     Permission::findOrCreate('manage educations');
     $this->user->givePermissionTo('manage educations');
 
+    config()->set('alumkit.education.levels', ['Honors', 'Trade School']);
     config()->set('alumkit.education.institutions', ['MIT', 'Stanford']);
     config()->set('alumkit.education.subjects', ['Computer Science', 'Physics']);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.educations.create'))
         ->assertOk()
+        ->assertSee('Honors', false)
+        ->assertSee('Trade School', false)
         ->assertSee('MIT', false)
         ->assertSee('Stanford', false)
         ->assertSee('role="listbox"', false)
@@ -102,17 +105,23 @@ it('validates education required fields', function () {
         ->assertSessionHasErrors(['profile_id', 'level', 'institution']);
 });
 
-it('validates education level against config', function () {
+it('accepts a custom education level not listed in config', function () {
     Permission::findOrCreate('manage educations');
     $this->user->givePermissionTo('manage educations');
 
     $this->actingAs($this->user)
         ->post(route('alumkit.educations.store'), [
             'profile_id' => $this->user->profile->id,
-            'level' => 'invalid_level',
+            'level' => 'Trade School',
             'institution' => 'MIT',
         ])
-        ->assertSessionHasErrors(['level']);
+        ->assertRedirect(route('alumkit.educations.index'));
+
+    $this->assertDatabaseHas('educations', [
+        'profile_id' => $this->user->profile->id,
+        'level' => 'Trade School',
+        'institution' => 'MIT',
+    ]);
 });
 
 it('renders the edit education form', function () {
@@ -284,7 +293,7 @@ it('validates end_year gte start_year on store', function () {
         ->assertSessionHasErrors(['end_year']);
 });
 
-it('validates level on update', function () {
+it('accepts a custom education level on update', function () {
     Permission::findOrCreate('manage educations');
     $this->user->givePermissionTo('manage educations');
 
@@ -296,10 +305,16 @@ it('validates level on update', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.educations.update', $education), [
-            'level' => 'invalid_level',
+            'level' => 'Trade School',
             'institution' => 'MIT',
         ])
-        ->assertSessionHasErrors(['level']);
+        ->assertRedirect(route('alumkit.educations.index'));
+
+    $this->assertDatabaseHas('educations', [
+        'id' => $education->id,
+        'level' => 'Trade School',
+        'institution' => 'MIT',
+    ]);
 });
 
 it('validates institution required on update', function () {

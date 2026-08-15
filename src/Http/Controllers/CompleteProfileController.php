@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Actions\UpdateProfileDetails;
-use Alumkit\Alumkit\Enums\EducationLevel;
 use Alumkit\Alumkit\Enums\EmploymentType;
 use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
 use Alumkit\Alumkit\Models\Profile;
@@ -19,13 +18,12 @@ class CompleteProfileController extends Controller
 {
     public function create(Request $request): View
     {
-        $levels = config('alumkit.education.levels', []);
         $employmentTypes = config('alumkit.career.employment_types', []);
         $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
         $isAdmin = $request->user()->hasRole($adminRole);
 
         /** @var View $view */
-        $view = view('alumkit::auth.complete-profile', compact('levels', 'employmentTypes', 'isAdmin'));
+        $view = view('alumkit::auth.complete-profile', compact('employmentTypes', 'isAdmin'));
 
         return $view;
     }
@@ -35,7 +33,7 @@ class CompleteProfileController extends Controller
         $validated = $request->validated(); // detail fields (FormRequest)
         $validated = array_merge($validated, $request->validate([
             'educations' => ['required', 'array', 'min:1'],
-            'educations.*.level' => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],
+            'educations.*.level' => ['required', 'string', 'max:255'],
             'educations.*.institution' => ['required', 'string', 'max:255'],
             'educations.*.subject' => ['nullable', 'string', 'max:255'],
             'educations.*.start_year' => ['nullable', 'integer', 'digits:4'],

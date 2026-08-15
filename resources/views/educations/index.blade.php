@@ -32,7 +32,7 @@
                     @foreach ($educations as $education)
                         <tr class="border-b">
                             <td class="py-3 px-4 font-medium">
-                                {{ config("alumkit.education.levels.{$education->level->value}", $education->level->value) }}
+                                {{ $education->level }}
                             </td>
                             <td class="py-3 px-4 text-gray-600">
                                 {{ $education->institution }}

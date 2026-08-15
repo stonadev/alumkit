@@ -25,12 +25,11 @@ class EducationController extends Controller
 
     public function create(): View
     {
-        $levels = config('alumkit.education.levels', []);
         $userModel = config('alumkit.auth.user_model');
         $users = $userModel::all();
 
         /** @var View $view */
-        $view = view('alumkit::educations.create', compact('levels', 'users'));
+        $view = view('alumkit::educations.create', compact('users'));
 
         return $view;
     }
@@ -45,10 +44,8 @@ class EducationController extends Controller
 
     public function edit(Education $education): View
     {
-        $levels = config('alumkit.education.levels', []);
-
         /** @var View $view */
-        $view = view('alumkit::educations.edit', compact('education', 'levels'));
+        $view = view('alumkit::educations.edit', compact('education'));
 
         return $view;
     }
