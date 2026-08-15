@@ -22,6 +22,17 @@ composer require stonadev/alumkit
 
 The package registers its migrations — run `php artisan migrate` to create the tables.
 
+### The User Model
+
+Registration and the profile-completion flow are gated on email verification.
+Your `App\Models\User` **must** implement
+`Illuminate\Contracts\Auth\MustVerifyEmail` (with the `MustVerifyEmail` trait)
+and use the package's `HasEducations`, `HasCareers`, and `HasRoles` traits —
+see `workbench/app/Models/User.php` for the reference implementation. Without
+the `MustVerifyEmail` contract the framework's `verified` middleware silently
+passes unverified users, so a fresh registration lands on `/profile/complete`
+instead of the verification notice, and no verification email is sent.
+
 ### Publishing the Configuration
 
 ```bash
