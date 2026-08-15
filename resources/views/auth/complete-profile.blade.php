@@ -6,10 +6,44 @@
             {{ __('alumkit::auth.complete_profile_text') }}
         </p>
 
-        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4">
+        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ step: 1 }" x-ref="form">
             @csrf
 
+            <ol aria-label="{{ __('alumkit::auth.complete_profile') }}" class="mx-auto mb-6 flex w-full max-w-xs items-center text-xs">
+                {{-- Node 1: Education --}}
+                <li class="flex flex-1 items-center" :aria-current="step === 1 ? 'step' : null">
+                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+                          :class="step > 1 ? 'border-navy bg-navy text-white' : (step === 1 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400')">
+                        <span x-show="step > 1" x-cloak>&#10003;</span>
+                        <span x-show="step <= 1" x-cloak>1</span>
+                    </span>
+                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 1 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::education.education') }}</span>
+                    <span class="mx-2 h-px flex-1" :class="step > 1 ? 'bg-navy' : 'bg-gray-300'"></span>
+                </li>
+                {{-- Node 2: Career --}}
+                <li class="flex flex-1 items-center" :aria-current="step === 2 ? 'step' : null">
+                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+                          :class="step > 2 ? 'border-navy bg-navy text-white' : (step === 2 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400')">
+                        <span x-show="step > 2" x-cloak>&#10003;</span>
+                        <span x-show="step <= 2" x-cloak>2</span>
+                    </span>
+                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 2 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::career.career') }}</span>
+                    <span class="mx-2 h-px flex-1" :class="step > 2 ? 'bg-navy' : 'bg-gray-300'"></span>
+                </li>
+                {{-- Node 3: Profile Details --}}
+                <li class="flex items-center" :aria-current="step === 3 ? 'step' : null">
+                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+                          :class="step === 3 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400'">
+                        3
+                    </span>
+                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 3 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::profile.details') }}</span>
+                </li>
+            </ol>
+
+            <p class="mb-4 text-center text-xs text-gray-500 sm:hidden">{{ __('alumkit::auth.step') }} <span x-text="step" class="font-semibold text-navy"></span> {{ __('alumkit::auth.of') }} 3</p>
+
             {{-- Education Section --}}
+            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
             <div
                 x-data="{
                     educations: [{ level: '{{ array_key_first(config('alumkit.education.levels', [])) }}', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
@@ -123,8 +157,10 @@
                     </div>
                 </template>
             </div>
+            </div>
 
             {{-- Career Section --}}
+            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
             <div
                 x-data="{
                     careers: [],
@@ -277,8 +313,10 @@
                     </div>
                 </template>
             </div>
+            </div>
 
             {{-- Profile Details Section --}}
+            <div x-show="step === 3" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
             <div class="space-y-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::profile.details') }}
@@ -374,8 +412,33 @@
                     </div>
                 </div>
             </div>
+            </div>
 
-            <x-button type="submit" block :text="$isAdmin ? __('alumkit::auth.submit') : __('alumkit::auth.submit_for_approval')" />
+            <div class="flex items-center justify-between gap-2 pt-2">
+                <x-button
+                    type="button"
+                    x-show="step > 1"
+                    x-cloak
+                    x-on:click="step--"
+                    :text="__('alumkit::auth.back')"
+                    outline
+                />
+                <div class="flex justify-end">
+                    <x-button
+                        type="button"
+                        x-show="step < 3"
+                        x-cloak
+                        x-on:click="$refs.form.reportValidity() && step++"
+                        :text="__('alumkit::auth.next')"
+                    />
+                    <x-button
+                        type="submit"
+                        x-show="step === 3"
+                        x-cloak
+                        :text="$isAdmin ? __('alumkit::auth.submit') : __('alumkit::auth.submit_for_approval')"
+                    />
+                </div>
+            </div>
         </form>
 
         @slot('footer')
