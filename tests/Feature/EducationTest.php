@@ -43,6 +43,23 @@ it('renders the create education form for users with manage educations permissio
         ->assertOk();
 });
 
+it('renders institution and subject suggestions from config on the create form', function () {
+    Permission::findOrCreate('manage educations');
+    $this->user->givePermissionTo('manage educations');
+
+    config()->set('alumkit.education.institutions', ['MIT', 'Stanford']);
+    config()->set('alumkit.education.subjects', ['Computer Science', 'Physics']);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.educations.create'))
+        ->assertOk()
+        ->assertSee('MIT', false)
+        ->assertSee('Stanford', false)
+        ->assertSee('role="listbox"', false)
+        ->assertSee('Computer Science', false)
+        ->assertSee('Physics', false);
+});
+
 it('creates an education record', function () {
     Permission::findOrCreate('manage educations');
     $this->user->givePermissionTo('manage educations');

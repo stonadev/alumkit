@@ -13,8 +13,8 @@
             <div class="space-y-4">
                 <x-alumkit::select name="level" :label="__('alumkit::education.level')" :options="$levels" :value="$education->level?->value" required />
 
-                <x-input name="institution" :label="__('alumkit::education.institution')" :value="$education->institution" required />
-                <x-input name="subject" :label="__('alumkit::education.subject')" :value="$education->subject" />
+                <x-alumkit::suggest name="institution" :label="__('alumkit::education.institution')" :value="$education->institution" :suggestions="config('alumkit.education.institutions', [])" required />
+                <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="$education->subject" :suggestions="config('alumkit.education.subjects', [])" />
 
                 <div class="grid grid-cols-2 gap-4">
                     <x-input type="number" name="start_year" :label="__('alumkit::education.start_year')" :value="$education->start_year" min="1900" max="2099" />

@@ -49,6 +49,11 @@ return [
             'diploma' => 'Diploma',
             'certificate' => 'Certificate',
         ],
+
+        // Suggested institutions and subjects for the education form fields.
+        // Consumers seed these lists; users may still type any value.
+        'institutions' => [],
+        'subjects' => [],
     ],
 
     'career' => [

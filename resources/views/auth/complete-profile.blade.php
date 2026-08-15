@@ -89,19 +89,19 @@
                             </select>
                         </div>
 
-                        <x-input
-                            type="text"
+                        <x-alumkit::suggest
                             x-bind:name="'educations[' + index + '][institution]'"
                             x-model="edu.institution"
                             :label="__('alumkit::education.institution')"
+                            :suggestions="config('alumkit.education.institutions', [])"
                             required
                         />
 
-                        <x-input
-                            type="text"
+                        <x-alumkit::suggest
                             x-bind:name="'educations[' + index + '][subject]'"
                             x-model="edu.subject"
                             :label="__('alumkit::education.subject')"
+                            :suggestions="config('alumkit.education.subjects', [])"
                         />
 
                         <div class="grid grid-cols-2 gap-4">

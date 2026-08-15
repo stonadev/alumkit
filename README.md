@@ -30,6 +30,18 @@ php artisan alumkit:publish
 
 This copies `config/alumkit.php` to your app's `config/` directory. To overwrite an existing published file, use `php artisan alumkit:publish --force`.
 
+### Education field suggestions
+
+While typing the institution and subject fields on education forms, the package suggests values seeded in the published config; users can pick one or type any value:
+
+```php
+// config/alumkit.php
+'education' => [
+    'institutions' => ['University of Dhaka', 'MIT', 'Stanford'],
+    'subjects' => ['Computer Science', 'Physics'],
+],
+```
+
 ## Usage
 
 ### Permissions

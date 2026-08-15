@@ -25,6 +25,7 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         config(['cache.default' => 'array']);
         config(['alumkit.auth.user_model' => User::class]);
+        config(['alumkit.education.institutions' => ['University of Dhaka', 'MIT', 'Stanford'], 'alumkit.education.subjects' => ['Computer Science', 'Physics']]);
 
         // Testbench's skeleton app never calls withEvents(), so wire the
         // framework's email-verification listener like a real Laravel app.
