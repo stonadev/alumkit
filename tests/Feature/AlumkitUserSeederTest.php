@@ -31,6 +31,18 @@ it('does not duplicate the admin user on re-seed', function () {
     expect(User::where('email', 'admin@example.com')->count())->toBe(1);
 });
 
+it('verifies an existing unverified admin on re-seed', function () {
+    User::create([
+        'name' => 'Admin',
+        'email' => 'admin@example.com',
+        'password' => Hash::make('password'),
+    ]);
+
+    $this->seed([AlumkitRolesAndPermissionsSeeder::class, AlumkitUserSeeder::class]);
+
+    expect(User::where('email', 'admin@example.com')->first()->email_verified_at)->not->toBeNull();
+});
+
 it('uses default admin credentials when unconfigured', function () {
     $this->seed([AlumkitRolesAndPermissionsSeeder::class, AlumkitUserSeeder::class]);
 

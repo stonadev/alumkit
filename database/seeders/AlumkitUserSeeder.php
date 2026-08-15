@@ -28,7 +28,7 @@ class AlumkitUserSeeder extends Seeder
             return;
         }
 
-        $user = $userModel::firstOrCreate(
+        $user = $userModel::updateOrCreate(
             ['email' => config('alumkit.seeder.admin_email', 'admin@example.com')],
             [
                 'name' => config('alumkit.seeder.admin_name', 'Admin'),
