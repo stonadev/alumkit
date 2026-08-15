@@ -347,17 +347,11 @@
                            x-on:change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     <x-input
                         type="date"
                         name="date_of_birth"
                         :label="__('alumkit::profile.date_of_birth')"
-                    />
-
-                    <x-input
-                        type="url"
-                        name="website"
-                        :label="__('alumkit::profile.website')"
                     />
                 </div>
 
@@ -375,7 +369,7 @@
                     />
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     <x-input
                         type="text"
                         name="present_address"
@@ -405,6 +399,12 @@
                         name="social_links[linkedin]"
                         :label="__('alumkit::profile.linkedin')"
                     />
+
+                    <x-input
+                        type="url"
+                        name="website"
+                        :label="__('alumkit::profile.website')"
+                    />
                 </div>
 
                 <div>
@@ -412,7 +412,7 @@
                         {{ __('alumkit::profile.emergency_contact') }}
                     </label>
 
-                    <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="mt-4 grid grid-cols-1 gap-4">
                         <x-input
                             type="text"
                             name="emergency_contact[name]"
