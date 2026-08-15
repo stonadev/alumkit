@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
+use Alumkit\Alumkit\Actions\UpdateProfileDetails;
 use Alumkit\Alumkit\Enums\EducationLevel;
 use Alumkit\Alumkit\Enums\EmploymentType;
+use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
+use Alumkit\Alumkit\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -27,9 +30,10 @@ class CompleteProfileController extends Controller
         return $view;
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ProfileDetailsRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validated(); // detail fields (FormRequest)
+        $validated = array_merge($validated, $request->validate([
             'educations' => ['required', 'array', 'min:1'],
             'educations.*.level' => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],
             'educations.*.institution' => ['required', 'string', 'max:255'],
@@ -50,11 +54,14 @@ class CompleteProfileController extends Controller
             'careers.*.end_year' => ['nullable', 'integer', 'digits:4'],
             'careers.*.end_month' => ['nullable', 'integer', 'between:1,12'],
             'careers.*.description' => ['nullable', 'string'],
-        ]);
+        ]));
 
         $user = $request->user();
 
-        $user->profile()->firstOrCreate();
+        /** @var Profile $profile */
+        $profile = $user->profile()->firstOrCreate();
+
+        (new UpdateProfileDetails)->handle($profile, $validated, $request->file('photo'));
 
         foreach ($validated['educations'] as $education) {
             /** @phpstan-ignore method.notFound */

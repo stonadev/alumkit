@@ -8,6 +8,7 @@ use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
+use Alumkit\Alumkit\Http\Controllers\ProfileDetailsController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
@@ -37,6 +38,15 @@ Route::get('alumkit/style/post-thumbnails/{file}', function (string $file) {
     return Storage::disk('public')->response($path);
 })->name('alumkit.posts.thumbnail')->where('file', '[\w.\-]+');
 
+// Profile photos: streamed through the package (no storage:link requirement).
+Route::get('alumkit/style/profile-photos/{file}', function (string $file) {
+    $path = 'profile-photos/'.basename($file);
+
+    abort_unless(Storage::disk('public')->exists($path), 404);
+
+    return Storage::disk('public')->response($path);
+})->name('alumkit.profile.photo.show')->where('file', '[\w.\-]+');
+
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
     Route::middleware(['auth', 'verified'])->group(function () {
@@ -56,6 +66,8 @@ Route::middleware(['web'])->group(function () {
             /** @phpstan-ignore argument.type */
             return view('alumkit::profile.show');
         })->name('alumkit.profile');
+
+        Route::put('profile/details', [ProfileDetailsController::class, 'update'])->name('alumkit.profile.details.update');
 
         Route::prefix('dashboard')->name('alumkit.')->group(function () {
             Route::middleware('permission:manage roles')->group(function () {

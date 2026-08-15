@@ -54,6 +54,132 @@
             </x-card>
         @endif
 
+        <x-card>
+            <h2 class="text-lg font-semibold text-navy">
+                {{ __('alumkit::profile.details') }}
+            </h2>
+
+            <x-errors />
+
+            @if (session('status') === 'profile-details-updated')
+                <div class="mt-2 text-sm text-green-600">
+                    {{ __('alumkit::profile.updated') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('alumkit.profile.details.update') }}" enctype="multipart/form-data" class="mt-4 space-y-4">
+                @csrf
+                @method('PUT')
+
+                @if (Auth::user()->profile->photoUrl())
+                    <img src="{{ Auth::user()->profile->photoUrl() }}" class="h-24 w-24 rounded-lg object-cover" alt="{{ __('alumkit::profile.photo') }}">
+                @endif
+
+                <x-input type="file" name="photo" :label="__('alumkit::profile.photo')" />
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-input
+                        type="date"
+                        name="date_of_birth"
+                        :value="old('date_of_birth', Auth::user()->profile->date_of_birth?->format('Y-m-d'))"
+                        :label="__('alumkit::profile.date_of_birth')"
+                    />
+
+                    <x-input
+                        type="url"
+                        name="website"
+                        :value="old('website', Auth::user()->profile->website)"
+                        :label="__('alumkit::profile.website')"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-alumkit::select
+                        name="gender"
+                        :options="\Alumkit\Alumkit\Enums\Gender::options()"
+                        :value="old('gender', Auth::user()->profile->gender?->value)"
+                        :label="__('alumkit::profile.gender')"
+                    />
+
+                    <x-alumkit::select
+                        name="blood_group"
+                        :options="\Alumkit\Alumkit\Enums\BloodGroup::options()"
+                        :value="old('blood_group', Auth::user()->profile->blood_group?->value)"
+                        :label="__('alumkit::profile.blood_group')"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-input
+                        type="text"
+                        name="present_address"
+                        :value="old('present_address', Auth::user()->profile->present_address)"
+                        :label="__('alumkit::profile.present_address')"
+                    />
+
+                    <x-input
+                        type="text"
+                        name="permanent_address"
+                        :value="old('permanent_address', Auth::user()->profile->permanent_address)"
+                        :label="__('alumkit::profile.permanent_address')"
+                    />
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('alumkit::profile.social_links') }}
+                    </label>
+
+                    <x-input
+                        type="url"
+                        name="social_links[facebook]"
+                        :value="old('social_links.facebook', Auth::user()->profile->social_links['facebook'] ?? '')"
+                        :label="__('alumkit::profile.facebook')"
+                    />
+
+                    <x-input
+                        type="url"
+                        name="social_links[linkedin]"
+                        :value="old('social_links.linkedin', Auth::user()->profile->social_links['linkedin'] ?? '')"
+                        :label="__('alumkit::profile.linkedin')"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('alumkit::profile.emergency_contact') }}
+                    </label>
+
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        <x-input
+                            type="text"
+                            name="emergency_contact[name]"
+                            :value="old('emergency_contact.name', Auth::user()->profile->emergency_contact['name'] ?? '')"
+                            :label="__('alumkit::profile.emergency_contact_name')"
+                        />
+
+                        <x-input
+                            type="text"
+                            name="emergency_contact[phone]"
+                            :value="old('emergency_contact.phone', Auth::user()->profile->emergency_contact['phone'] ?? '')"
+                            :label="__('alumkit::profile.emergency_contact_phone')"
+                        />
+                    </div>
+
+                    <div class="mt-4">
+                        <x-input
+                            type="text"
+                            name="emergency_contact[relation]"
+                            :value="old('emergency_contact.relation', Auth::user()->profile->emergency_contact['relation'] ?? '')"
+                            :label="__('alumkit::profile.emergency_contact_relation')"
+                        />
+                    </div>
+                </div>
+
+                <x-button type="submit" :text="__('alumkit::profile.save')" />
+            </form>
+        </x-card>
+
         @if (Features::enabled(Features::updatePasswords()))
             <x-card>
                 <h2 class="text-lg font-semibold text-navy">

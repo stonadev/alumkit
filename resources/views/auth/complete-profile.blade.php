@@ -6,7 +6,7 @@
             {{ __('alumkit::auth.complete_profile_text') }}
         </p>
 
-        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" class="space-y-4">
+        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
             {{-- Education Section --}}
@@ -276,6 +276,103 @@
                         </div>
                     </div>
                 </template>
+            </div>
+
+            {{-- Profile Details Section --}}
+            <div class="space-y-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ __('alumkit::profile.details') }}
+                </label>
+
+                <x-input type="file" name="photo" :label="__('alumkit::profile.photo')" />
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-input
+                        type="date"
+                        name="date_of_birth"
+                        :label="__('alumkit::profile.date_of_birth')"
+                    />
+
+                    <x-input
+                        type="url"
+                        name="website"
+                        :label="__('alumkit::profile.website')"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-alumkit::select
+                        name="gender"
+                        :options="\Alumkit\Alumkit\Enums\Gender::options()"
+                        :label="__('alumkit::profile.gender')"
+                    />
+
+                    <x-alumkit::select
+                        name="blood_group"
+                        :options="\Alumkit\Alumkit\Enums\BloodGroup::options()"
+                        :label="__('alumkit::profile.blood_group')"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-input
+                        type="text"
+                        name="present_address"
+                        :label="__('alumkit::profile.present_address')"
+                    />
+
+                    <x-input
+                        type="text"
+                        name="permanent_address"
+                        :label="__('alumkit::profile.permanent_address')"
+                    />
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('alumkit::profile.social_links') }}
+                    </label>
+
+                    <x-input
+                        type="url"
+                        name="social_links[facebook]"
+                        :label="__('alumkit::profile.facebook')"
+                    />
+
+                    <x-input
+                        type="url"
+                        name="social_links[linkedin]"
+                        :label="__('alumkit::profile.linkedin')"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('alumkit::profile.emergency_contact') }}
+                    </label>
+
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        <x-input
+                            type="text"
+                            name="emergency_contact[name]"
+                            :label="__('alumkit::profile.emergency_contact_name')"
+                        />
+
+                        <x-input
+                            type="text"
+                            name="emergency_contact[phone]"
+                            :label="__('alumkit::profile.emergency_contact_phone')"
+                        />
+                    </div>
+
+                    <div class="mt-4">
+                        <x-input
+                            type="text"
+                            name="emergency_contact[relation]"
+                            :label="__('alumkit::profile.emergency_contact_relation')"
+                        />
+                    </div>
+                </div>
             </div>
 
             <x-button type="submit" block :text="$isAdmin ? __('alumkit::auth.submit') : __('alumkit::auth.submit_for_approval')" />

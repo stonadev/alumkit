@@ -13,6 +13,15 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            $table->string('photo_path')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('blood_group')->nullable();
+            $table->string('present_address')->nullable();
+            $table->string('permanent_address')->nullable();
+            $table->json('social_links')->nullable();
+            $table->string('website')->nullable();
+            $table->json('emergency_contact')->nullable();
             $table->timestamps();
         });
     }
