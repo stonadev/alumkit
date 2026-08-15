@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 /*
+ * Heritage & Horizon is a single light theme (see DESIGN.md). Tailwind's
+ * default `dark:` variant follows prefers-color-scheme, so an OS in dark
+ * mode would flip package pages dark. Re-scope it to a `.dark` class that
+ * is never applied, making every `dark:` utility inert.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
  * Compile the utilities used by the package Blade views.
  * The package ships the compiled output in public/alumkit.css and serves it
  * at /alumkit/style/alumkit.css; rebuild with `npm run build:css`.
