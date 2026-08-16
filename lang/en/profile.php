@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'details' => 'Profile Details',
+    'security' => 'Security',
     'photo' => 'Photo',
     'choose_photo' => 'Choose photo',
     'date_of_birth' => 'Date of Birth',

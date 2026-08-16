@@ -8,7 +8,9 @@ use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
+use Alumkit\Alumkit\Http\Controllers\ProfileCareerController;
 use Alumkit\Alumkit\Http\Controllers\ProfileDetailsController;
+use Alumkit\Alumkit\Http\Controllers\ProfileEducationController;
 use Alumkit\Alumkit\Http\Controllers\RoleController;
 use Alumkit\Alumkit\Http\Controllers\UserRoleController;
 use Alumkit\Alumkit\Http\Controllers\UserStateController;
@@ -62,14 +64,27 @@ Route::middleware(['web'])->group(function () {
             return view('alumkit::dashboard');
         })->name('alumkit.dashboard');
 
-        Route::get('profile', function () {
-            /** @phpstan-ignore argument.type */
-            return view('alumkit::profile.show');
-        })->name('alumkit.profile');
-
-        Route::put('profile/details', [ProfileDetailsController::class, 'update'])->name('alumkit.profile.details.update');
-
         Route::prefix('dashboard')->name('alumkit.')->group(function () {
+            Route::get('profile', function () {
+                /** @phpstan-ignore argument.type */
+                return view('alumkit::profile.show');
+            })->name('profile');
+
+            Route::put('profile/details', [ProfileDetailsController::class, 'update'])->name('profile.details.update');
+
+            Route::prefix('profile')->name('profile.')->group(function () {
+                Route::get('educations/create', [ProfileEducationController::class, 'create'])->name('educations.create');
+                Route::post('educations', [ProfileEducationController::class, 'store'])->name('educations.store');
+                Route::get('educations/{education}/edit', [ProfileEducationController::class, 'edit'])->name('educations.edit');
+                Route::put('educations/{education}', [ProfileEducationController::class, 'update'])->name('educations.update');
+                Route::delete('educations/{education}', [ProfileEducationController::class, 'destroy'])->name('educations.destroy');
+
+                Route::get('careers/create', [ProfileCareerController::class, 'create'])->name('careers.create');
+                Route::post('careers', [ProfileCareerController::class, 'store'])->name('careers.store');
+                Route::get('careers/{career}/edit', [ProfileCareerController::class, 'edit'])->name('careers.edit');
+                Route::put('careers/{career}', [ProfileCareerController::class, 'update'])->name('careers.update');
+                Route::delete('careers/{career}', [ProfileCareerController::class, 'destroy'])->name('careers.destroy');
+            });
             Route::middleware('permission:manage roles')->group(function () {
                 Route::resource('roles', RoleController::class)->except(['show']);
             });
