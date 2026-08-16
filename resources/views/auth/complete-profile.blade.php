@@ -9,6 +9,24 @@
         <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ step: 1 }" x-ref="form">
             @csrf
 
+            @php
+                // Restore typed values on validation failure; the education step
+                // always starts with at least one empty row.
+                $defaultEducation = ['level' => '', 'institution' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'end_year' => '', 'end_month' => ''];
+                $oldEducations = array_map(
+                    fn (array $e): array => array_merge($defaultEducation, $e),
+                    old('educations', []) ?: [$defaultEducation],
+                );
+                $oldCareers = array_map(function (array $c): array {
+                    $c['is_current'] = ($c['is_current'] ?? false) == '1';
+
+                    return array_merge([
+                        'job_title' => '', 'company' => '', 'employment_type' => '', 'industry' => '', 'location' => '',
+                        'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => '', 'description' => '',
+                    ], $c);
+                }, old('careers', []));
+            @endphp
+
             <ol aria-label="{{ __('alumkit::auth.complete_profile') }}" class="mx-auto mb-6 flex w-full max-w-xs items-center text-xs">
                 {{-- Node 1: Education --}}
                 <li class="flex flex-1 items-center" :aria-current="step === 1 ? 'step' : null">
@@ -46,7 +64,7 @@
             <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
             <div
                 x-data="{
-                    educations: [{ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' }],
+                    educations: {{ Js::from($oldEducations) }},
                     add() {
                         this.educations.push({ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
                     },
@@ -155,7 +173,7 @@
             <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
             <div
                 x-data="{
-                    careers: [],
+                    careers: {{ Js::from($oldCareers) }},
                     add() {
                         this.careers.push({ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' });
                     },
@@ -343,6 +361,7 @@
                     <x-input
                         type="date"
                         name="date_of_birth"
+                        :value="old('date_of_birth')"
                         :label="__('alumkit::profile.date_of_birth')"
                     />
                 </div>
@@ -350,12 +369,14 @@
                 <div class="grid grid-cols-2 gap-4">
                     <x-alumkit::select
                         name="gender"
+                        :value="old('gender')"
                         :options="\Alumkit\Alumkit\Enums\Gender::options()"
                         :label="__('alumkit::profile.gender')"
                     />
 
                     <x-alumkit::select
                         name="blood_group"
+                        :value="old('blood_group')"
                         :options="\Alumkit\Alumkit\Enums\BloodGroup::options()"
                         :label="__('alumkit::profile.blood_group')"
                     />
@@ -365,12 +386,14 @@
                     <x-input
                         type="text"
                         name="present_address"
+                        :value="old('present_address')"
                         :label="__('alumkit::profile.present_address')"
                     />
 
                     <x-input
                         type="text"
                         name="permanent_address"
+                        :value="old('permanent_address')"
                         :label="__('alumkit::profile.permanent_address')"
                     />
                 </div>
@@ -383,18 +406,21 @@
                     <x-input
                         type="url"
                         name="social_links[facebook]"
+                        :value="old('social_links.facebook')"
                         :label="__('alumkit::profile.facebook')"
                     />
 
                     <x-input
                         type="url"
                         name="social_links[linkedin]"
+                        :value="old('social_links.linkedin')"
                         :label="__('alumkit::profile.linkedin')"
                     />
 
                     <x-input
                         type="url"
                         name="website"
+                        :value="old('website')"
                         :label="__('alumkit::profile.website')"
                     />
                 </div>
@@ -408,12 +434,14 @@
                         <x-input
                             type="text"
                             name="emergency_contact[name]"
+                            :value="old('emergency_contact.name')"
                             :label="__('alumkit::profile.emergency_contact_name')"
                         />
 
                         <x-input
                             type="text"
                             name="emergency_contact[phone]"
+                            :value="old('emergency_contact.phone')"
                             :label="__('alumkit::profile.emergency_contact_phone')"
                         />
                     </div>
@@ -422,6 +450,7 @@
                         <x-input
                             type="text"
                             name="emergency_contact[relation]"
+                            :value="old('emergency_contact.relation')"
                             :label="__('alumkit::profile.emergency_contact_relation')"
                         />
                     </div>

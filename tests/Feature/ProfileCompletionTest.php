@@ -127,3 +127,55 @@ it('shows "Submit" on the form for admins', function () {
         ->assertDontSee('Submit for Approval')
         ->assertSee('Submit');
 });
+
+it('redirects away from the completion form once the profile exists', function () {
+    $this->user->profile()->create();
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile.complete'))
+        ->assertRedirect(route('alumkit.dashboard'));
+});
+
+it('does not write again when the profile already exists', function () {
+    $this->user->profile()->create();
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.profile.complete.store'), [
+            'educations' => [
+                ['level' => 'phd', 'institution' => 'Oxford'],
+            ],
+        ])
+        ->assertRedirect(route('alumkit.dashboard'));
+
+    $this->assertDatabaseMissing('educations', ['level' => 'phd']);
+    $this->assertDatabaseHas('educations', [
+        'profile_id' => $this->user->profile->id,
+        'institution' => 'MIT',
+    ]);
+});
+
+it('restores submitted values when validation fails', function () {
+    $this->actingAs($this->user)
+        ->from(route('alumkit.profile.complete'))
+        ->post(route('alumkit.profile.complete.store'), [
+            'educations' => [
+                ['level' => 'masters', 'institution' => 'MIT', 'start_month' => 13],
+            ],
+            'careers' => [
+                ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
+            ],
+            'date_of_birth' => '1990-01-01',
+            'present_address' => 'Dhaka',
+        ])
+        ->assertSessionHasErrors(['educations.0.start_month'])
+        ->assertRedirect(route('alumkit.profile.complete'));
+
+    $this->get(route('alumkit.profile.complete'))
+        ->assertOk()
+        ->assertSee('MIT')
+        ->assertSee('Developer')
+        ->assertSee('Dhaka')
+        ->assertSee('1990-01-01');
+});

@@ -16,8 +16,12 @@ use Illuminate\View\View;
 
 class CompleteProfileController extends Controller
 {
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
+        if ($request->user()->profile()->exists()) {
+            return redirect()->route('alumkit.dashboard');
+        }
+
         $employmentTypes = config('alumkit.career.employment_types', []);
         $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
         $isAdmin = $request->user()->hasRole($adminRole);
@@ -30,6 +34,10 @@ class CompleteProfileController extends Controller
 
     public function store(ProfileDetailsRequest $request): RedirectResponse
     {
+        if ($request->user()->profile()->exists()) {
+            return redirect()->route('alumkit.dashboard');
+        }
+
         $validated = $request->validated(); // detail fields (FormRequest)
         $validated = array_merge($validated, $request->validate([
             'educations' => ['required', 'array', 'min:1'],

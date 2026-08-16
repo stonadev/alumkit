@@ -116,6 +116,8 @@ it('renders the profile details form', function () {
 });
 
 it('stores profile details during profile completion', function () {
+    $this->user->profile()->delete();
+
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
