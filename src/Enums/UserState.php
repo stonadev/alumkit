@@ -20,7 +20,7 @@ enum UserState: string
             self::Pending => [self::Active, self::Rejected],
             self::Active => [self::Suspended],
             self::Suspended => [self::Active],
-            default => [],
+            self::Rejected => [self::Pending],
         };
     }
 

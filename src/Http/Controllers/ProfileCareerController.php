@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
+use Alumkit\Alumkit\Actions\ResubmitProfileForReview;
 use Alumkit\Alumkit\Http\Requests\StoreProfileCareerRequest;
 use Alumkit\Alumkit\Http\Requests\UpdateProfileCareerRequest;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +27,7 @@ class ProfileCareerController extends Controller
     public function store(StoreProfileCareerRequest $request): RedirectResponse
     {
         $request->user()->careers()->create($request->validated());
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#career')
             ->with('status', __('alumkit::career.career_created'));
@@ -46,6 +48,7 @@ class ProfileCareerController extends Controller
     {
         $career = $request->user()->careers()->findOrFail($career);
         $career->update($request->validated());
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#career')
             ->with('status', __('alumkit::career.career_updated'));
@@ -54,6 +57,7 @@ class ProfileCareerController extends Controller
     public function destroy(Request $request, int $career): RedirectResponse
     {
         $request->user()->careers()->findOrFail($career)->delete();
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#career')
             ->with('status', __('alumkit::career.career_deleted'));

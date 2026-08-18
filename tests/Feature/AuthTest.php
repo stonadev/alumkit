@@ -48,6 +48,36 @@ it('logs in with valid credentials', function () {
     $this->assertAuthenticatedAs($user);
 });
 
+it('logs in a rejected user', function () {
+    $user = User::factory()->create(['state' => 'rejected']);
+    $user->profile()->create();
+
+    $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertRedirect(route('alumkit.dashboard'));
+
+    $this->assertAuthenticatedAs($user);
+
+    $this->get(route('alumkit.dashboard'))->assertOk();
+});
+
+it('logs in a suspended user', function () {
+    $user = User::factory()->create(['state' => 'suspended']);
+    $user->profile()->create();
+
+    $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertRedirect(route('alumkit.dashboard'));
+
+    $this->assertAuthenticatedAs($user);
+
+    $this->get(route('alumkit.dashboard'))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.account_suspended'));
+});
+
 it('rejects invalid credentials', function () {
     $user = User::factory()->create();
 

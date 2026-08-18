@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -113,6 +114,18 @@ it('renders the profile details form', function () {
         ->get(route('alumkit.profile'))
         ->assertOk()
         ->assertSee(__('alumkit::profile.details'));
+});
+
+it('resubmits a rejected user for review on profile update', function () {
+    $this->user->update(['state' => 'rejected']);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'website' => 'https://example.com',
+        ])
+        ->assertRedirect(route('alumkit.profile'));
+
+    expect($this->user->fresh()->state)->toBe(UserState::Pending->value);
 });
 
 it('stores profile details during profile completion', function () {

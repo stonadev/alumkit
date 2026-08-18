@@ -40,11 +40,14 @@ it('allows suspended to active transition', function () {
     expect(UserState::Suspended->canTransitionTo(UserState::Active))->toBeTrue();
 });
 
+it('allows rejected to pending transition', function () {
+    expect(UserState::Rejected->canTransitionTo(UserState::Pending))->toBeTrue();
+});
+
 it('blocks invalid transitions', function () {
     expect(UserState::Active->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Active->canTransitionTo(UserState::Rejected))->toBeFalse();
     expect(UserState::Rejected->canTransitionTo(UserState::Active))->toBeFalse();
-    expect(UserState::Rejected->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Rejected))->toBeFalse();
 });
@@ -67,6 +70,22 @@ it('updates user state with manage members permission', function () {
         ->assertSessionHas('status');
 
     expect($this->targetUser->fresh()->state)->toBe(UserState::Active->value);
+});
+
+it('re-queues a rejected user via manage members permission', function () {
+    Permission::findOrCreate('manage members');
+    $this->user->givePermissionTo('manage members');
+
+    $this->targetUser->update(['state' => UserState::Rejected->value]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.users.state.update', $this->targetUser), [
+            'state' => UserState::Pending->value,
+        ])
+        ->assertRedirect(route('alumkit.users.index'))
+        ->assertSessionHas('status');
+
+    expect($this->targetUser->fresh()->state)->toBe(UserState::Pending->value);
 });
 
 it('denies state update without manage members permission', function () {
@@ -104,20 +123,33 @@ it('validates state parameter', function () {
         ->assertSessionHasErrors('state');
 });
 
-it('blocks suspended user from accessing dashboard', function () {
+it('allows suspended user to access dashboard', function () {
+    Permission::findOrCreate('manage roles');
+    $this->user->givePermissionTo('manage roles');
     $this->user->update(['state' => UserState::Suspended->value]);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.dashboard'))
-        ->assertRedirect(route('login'));
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.account_suspended'))
+        ->assertDontSee(__('alumkit::dashboard.quick_links'))
+        ->assertDontSee(route('alumkit.profile'));
 });
 
-it('blocks rejected user from accessing dashboard', function () {
+it('redirects suspended user away from profile', function () {
+    $this->user->update(['state' => UserState::Suspended->value]);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile'))
+        ->assertRedirect(route('alumkit.dashboard'));
+});
+
+it('allows rejected user to access dashboard', function () {
     $this->user->update(['state' => UserState::Rejected->value]);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.dashboard'))
-        ->assertRedirect(route('login'));
+        ->assertOk();
 });
 
 it('allows active user to access dashboard', function () {

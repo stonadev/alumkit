@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Workbench\App\Models\User;
@@ -62,6 +63,18 @@ it('stores an education record on the authenticated users profile', function () 
         'level' => 'masters',
         'institution' => 'MIT',
     ]);
+});
+
+it('resubmits a rejected user for review when education changes', function () {
+    $this->user->update(['state' => 'rejected']);
+
+    $this->post(route('alumkit.profile.educations.store'), [
+        'level' => 'masters',
+        'institution' => 'MIT',
+    ])
+        ->assertRedirect(route('alumkit.profile').'#education');
+
+    expect($this->user->fresh()->state)->toBe(UserState::Pending->value);
 });
 
 it('validates required education fields on store', function () {

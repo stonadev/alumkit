@@ -98,14 +98,16 @@
                     @endif
                 @endforeach
 
-                @php $profileActive = request()->routeIs('alumkit.profile'); @endphp
-                <a href="{{ route('alumkit.profile') }}"
-                   class="relative flex items-center px-6 py-2.5 text-sm font-medium transition-colors {{ $profileActive ? 'text-navy bg-surface-container' : 'text-on-surface-variant hover:text-navy hover:bg-surface-container/60' }}">
-                    @if ($profileActive)
-                        <span class="absolute left-0 inset-y-0 w-1 bg-gold" aria-hidden="true"></span>
-                    @endif
-                    {{ __('alumkit::auth.profile') }}
-                </a>
+                @if (Auth::user()->state !== \Alumkit\Alumkit\Enums\UserState::Suspended->value)
+                    @php $profileActive = request()->routeIs('alumkit.profile'); @endphp
+                    <a href="{{ route('alumkit.profile') }}"
+                       class="relative flex items-center px-6 py-2.5 text-sm font-medium transition-colors {{ $profileActive ? 'text-navy bg-surface-container' : 'text-on-surface-variant hover:text-navy hover:bg-surface-container/60' }}">
+                        @if ($profileActive)
+                            <span class="absolute left-0 inset-y-0 w-1 bg-gold" aria-hidden="true"></span>
+                        @endif
+                        {{ __('alumkit::auth.profile') }}
+                    </a>
+                @endif
             </nav>
 
             <div class="p-4 border-t border-outline-variant/60">

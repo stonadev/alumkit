@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
+use Alumkit\Alumkit\Actions\ResubmitProfileForReview;
 use Alumkit\Alumkit\Actions\UpdateProfileDetails;
 use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
 use Alumkit\Alumkit\Models\Profile;
@@ -17,6 +18,7 @@ class ProfileDetailsController extends Controller
         /** @var Profile $profile */
         $profile = $request->user()->profile()->firstOrCreate(); // route group guarantees existence; firstOrCreate avoids a null-profile fatal on direct hits
         (new UpdateProfileDetails)->handle($profile, $request->validated(), $request->file('photo'));
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect()->route('alumkit.profile')->with('status', 'profile-details-updated');
     }
