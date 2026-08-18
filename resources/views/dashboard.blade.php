@@ -2,6 +2,12 @@
 
 @section('content')
     <div class="space-y-12">
+        @if (Auth::user()->state === \Alumkit\Alumkit\Enums\UserState::Suspended->value)
+            <div class="rounded-lg border border-error/25 bg-error/5 px-4 py-3 text-sm text-error">
+                {{ __('alumkit::dashboard.account_suspended') }}
+            </div>
+        @endif
+
         {{-- Hero --}}
         <section class="flex flex-wrap items-end justify-between gap-6">
             <div class="max-w-2xl">
@@ -27,7 +33,7 @@
             $links = array_values(array_filter($links, fn ($link) => $link['show']));
         @endphp
 
-        @if (! empty($links))
+        @if (Auth::user()->state !== \Alumkit\Alumkit\Enums\UserState::Suspended->value && ! empty($links))
             <section>
                 <h2 class="font-serif text-xl font-semibold text-navy">
                     {{ __('alumkit::dashboard.quick_links') }}
@@ -48,6 +54,7 @@
             </section>
         @endif
 
+        @if (Auth::user()->state !== \Alumkit\Alumkit\Enums\UserState::Suspended->value)
         {{-- Heritage accent: high-prestige content --}}
         <section class="card border-l-4 border-gold p-8 sm:p-10">
             <p class="label-caps text-gold">Heritage</p>
@@ -61,5 +68,6 @@
                 {{ __('alumkit::dashboard.view_profile') }}
             </a>
         </section>
+        @endif
     </div>
 @endsection

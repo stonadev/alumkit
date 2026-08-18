@@ -12,7 +12,7 @@ use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
 use Alumkit\Alumkit\Http\Livewire\LinkField;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
-use Alumkit\Alumkit\Http\Middleware\CheckUserState;
+use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
@@ -121,7 +121,7 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->app->make('router')->aliasMiddleware('role', RoleMiddleware::class);
         $this->app->make('router')->aliasMiddleware('permission', PermissionMiddleware::class);
         $this->app->make('router')->aliasMiddleware('role_or_permission', RoleOrPermissionMiddleware::class);
-        $this->app->make('router')->aliasMiddleware('user.state', CheckUserState::class);
+        $this->app->make('router')->aliasMiddleware('user.suspended', CheckUserSuspended::class);
         $this->app->make('router')->aliasMiddleware('complete-profile.check', CompleteProfileCheck::class);
         $this->app->make('router')->aliasMiddleware('user.approved', CheckUserApproved::class);
     }

@@ -9,14 +9,12 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CompleteProfileCheck
+class CheckUserSuspended
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
-
-        if ($user && $user->state !== UserState::Suspended->value && $user->profile()->exists() === false) {
-            return redirect()->route('alumkit.profile.complete');
+        if ($request->user() && $request->user()->state === UserState::Suspended->value) {
+            return redirect()->route('alumkit.dashboard');
         }
 
         return $next($request);

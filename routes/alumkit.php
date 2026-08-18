@@ -51,20 +51,21 @@ Route::get('alumkit/style/profile-photos/{file}', function (string $file) {
 
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth', 'verified', 'user.suspended'])->group(function () {
         Route::get('profile/complete', [CompleteProfileController::class, 'create'])->name('alumkit.profile.complete');
         Route::post('profile/complete', [CompleteProfileController::class, 'store'])->name('alumkit.profile.complete.store');
         Route::post('alumkit/editor/image', [EditorImageController::class, 'store'])->name('alumkit.editor.image');
     });
 
-    // Protected routes: require auth, email verification, active/pending state, and completed profile.
-    Route::middleware(['auth', 'verified', 'user.state', 'complete-profile.check'])->group(function () {
+    // Protected routes: require auth, email verification, and completed profile.
+    // Suspended users keep /dashboard access; sub-routes redirect back via user.suspended.
+    Route::middleware(['auth', 'verified', 'complete-profile.check'])->group(function () {
         Route::get('dashboard', function () {
             /** @phpstan-ignore argument.type */
             return view('alumkit::dashboard');
         })->name('alumkit.dashboard');
 
-        Route::prefix('dashboard')->name('alumkit.')->group(function () {
+        Route::prefix('dashboard')->name('alumkit.')->middleware('user.suspended')->group(function () {
             Route::get('profile', function () {
                 /** @phpstan-ignore argument.type */
                 return view('alumkit::profile.show');

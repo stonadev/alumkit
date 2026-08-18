@@ -33,7 +33,7 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 
 - built-in permissions (`manage roles`, `manage permissions`, `manage members`, `manage educations`, `view dashboard`) are always seeded and cannot be removed
 - to add app permissions, publish the config and extend `permission.permissions`; run `php artisan alumkit:seed` to create them and assign them to the admin role
-- guard app routes with the registered middleware aliases: `permission:manage events`, `role:admin`, `role_or_permission:...`, plus `user.state` and `complete-profile.check`
+- guard app routes with the registered middleware aliases: `permission:manage events`, `role:admin`, `role_or_permission:...`, plus `user.suspended` and `complete-profile.check`
 
 #### Dashboard sidebar
 
@@ -50,7 +50,7 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 
 - a feature is plain Laravel app code (migration, model, controller, views) plugged into package extension points:
   1. add the permission to `permission.permissions` and run `php artisan alumkit:seed`
-  2. define routes under the package middleware stack (`web`, `auth`, `user.state`, `complete-profile.check`, `permission:manage events`); `Route::resource` names like `events.index` are what `dashboard_nav` resolves
+  2. define routes under the package middleware stack (`web`, `auth`, `user.suspended`, `complete-profile.check`, `permission:manage events`); `Route::resource` names like `events.index` are what `dashboard_nav` resolves
   3. add the nav entry to `dashboard_nav`
   4. extend `alumkit::layouts.dashboard` in views to inherit the sidebar and auth chrome
 

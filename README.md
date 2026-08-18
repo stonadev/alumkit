@@ -162,7 +162,7 @@ The route names matter: `dashboard_nav` renders `route($item['route'])`, so
 the resource must produce `events.index`:
 
 ```php
-Route::middleware(['web', 'auth', 'user.state', 'complete-profile.check', 'permission:manage events'])
+Route::middleware(['web', 'auth', 'user.suspended', 'complete-profile.check', 'permission:manage events'])
     ->prefix('dashboard')
     ->group(function () {
         Route::resource('events', EventController::class)->except(['show']);

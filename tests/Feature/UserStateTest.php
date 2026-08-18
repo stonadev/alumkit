@@ -123,12 +123,25 @@ it('validates state parameter', function () {
         ->assertSessionHasErrors('state');
 });
 
-it('blocks suspended user from accessing dashboard', function () {
+it('allows suspended user to access dashboard', function () {
+    Permission::findOrCreate('manage roles');
+    $this->user->givePermissionTo('manage roles');
     $this->user->update(['state' => UserState::Suspended->value]);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.dashboard'))
-        ->assertRedirect(route('login'));
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.account_suspended'))
+        ->assertDontSee(__('alumkit::dashboard.quick_links'))
+        ->assertDontSee(route('alumkit.profile'));
+});
+
+it('redirects suspended user away from profile', function () {
+    $this->user->update(['state' => UserState::Suspended->value]);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile'))
+        ->assertRedirect(route('alumkit.dashboard'));
 });
 
 it('allows rejected user to access dashboard', function () {
