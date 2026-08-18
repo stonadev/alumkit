@@ -41,6 +41,39 @@ it('shows all users with the all filter', function () {
         ->assertSee('Active Member');
 });
 
+it('filters users by rejected state', function () {
+    $rejected = User::factory()->create(['name' => 'Rejected Member', 'state' => 'rejected']);
+    $rejected->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'rejected']))
+        ->assertOk()
+        ->assertSee('Rejected Member')
+        ->assertDontSee('Pending Member')
+        ->assertDontSee('Active Member');
+});
+
+it('filters users by suspended state', function () {
+    $suspended = User::factory()->create(['name' => 'Suspended Member', 'state' => 'suspended']);
+    $suspended->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'suspended']))
+        ->assertOk()
+        ->assertSee('Suspended Member')
+        ->assertDontSee('Pending Member')
+        ->assertDontSee('Active Member');
+});
+
+it('defaults to the all filter when no pending users exist', function () {
+    User::query()->where('state', 'pending')->delete();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index'))
+        ->assertOk()
+        ->assertSee('Active Member');
+});
+
 it('falls back to pending for unknown filter values', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'bogus']))

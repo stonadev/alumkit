@@ -17,15 +17,23 @@ class UserRoleController extends Controller
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
 
-        $filter = $request->query('filter', 'pending');
-        $filter = in_array($filter, ['pending', 'all'], true) ? $filter : 'pending';
+        $allowed = ['pending', 'rejected', 'suspended', 'all'];
+        $filter = $request->query('filter');
+
+        if (! in_array($filter, $allowed, true)) {
+            $filter = $userModel::query()->where('state', UserState::Pending->value)->exists()
+                ? 'pending'
+                : 'all';
+        }
 
         $query = $userModel::query()->with(['roles', 'profile.educations', 'profile.careers']);
 
-        if ($filter === 'pending') {
+        if ($filter === 'all') {
+            $query->orderBy('name');
+        } elseif ($filter === 'pending') {
             $query->where('state', UserState::Pending->value)->orderBy('created_at');
         } else {
-            $query->orderBy('name');
+            $query->where('state', $filter)->orderBy('name');
         }
 
         /** @var View $view */
