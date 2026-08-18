@@ -103,6 +103,7 @@ Route::middleware(['web'])->group(function () {
 
             Route::middleware('permission:manage members')->group(function () {
                 Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
+                Route::get('users/{user}', [UserRoleController::class, 'show'])->name('users.show');
                 Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
                 Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
                 Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');

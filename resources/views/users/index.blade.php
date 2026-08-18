@@ -5,61 +5,60 @@
         {{ __('alumkit::dashboard.manage_user_roles') }}
     </h1>
 
-    <x-card>
-        @if ($users->isEmpty())
-            <p class="text-gray-600">
-                {{ __('alumkit::dashboard.no_users') }}
+    <nav class="mb-6 flex gap-1 border-b border-outline-variant/60">
+        <a href="{{ route('alumkit.users.index', ['filter' => 'pending']) }}"
+           class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors {{ $filter === 'pending' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent' }}">
+            {{ __('alumkit::dashboard.filter_pending') }}
+        </a>
+        <a href="{{ route('alumkit.users.index', ['filter' => 'all']) }}"
+           class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors {{ $filter === 'all' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent' }}">
+            {{ __('alumkit::dashboard.filter_all') }}
+        </a>
+    </nav>
+
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        @forelse ($users as $u)
+            @php
+                $profile = $u->profile;
+                $latestEducation = $profile ? $profile->educations->sortByDesc('start_year')->first() : null;
+                $career = $profile ? ($profile->careers->firstWhere('is_current', true) ?? $profile->careers->first()) : null;
+            @endphp
+
+            <x-card>
+                <div class="flex items-center gap-4">
+                    @if ($profile?->photoUrl())
+                        <img src="{{ $profile->photoUrl() }}" alt="{{ $u->name }}" class="h-16 w-16 rounded-full object-cover">
+                    @else
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-lg font-semibold text-navy">
+                            {{ \Illuminate\Support\Str::initials($u->name) }}
+                        </div>
+                    @endif
+                    <div class="min-w-0 flex-1">
+                        <h2 class="truncate text-lg font-semibold text-navy">{{ $u->name }}</h2>
+                        <p class="truncate text-sm text-on-surface-variant">{{ $u->email }}</p>
+                    </div>
+                    @include('alumkit::users.partials.state-badge', ['state' => $u->state])
+                </div>
+
+                <p class="mt-3 text-sm text-on-surface-variant">{{ $u->roles->pluck('name')->implode(', ') }}</p>
+
+                @if ($latestEducation)
+                    <p class="mt-1 text-sm text-on-surface-variant">{{ $latestEducation->level }} · {{ $latestEducation->institution }}</p>
+                @endif
+                @if ($career)
+                    <p class="mt-1 text-sm text-on-surface-variant">{{ $career->job_title }} · {{ $career->company }}</p>
+                @endif
+
+                <div class="mt-4 border-t pt-4">
+                    <a href="{{ route('alumkit.users.show', $u) }}" class="text-navy hover:text-gold">
+                        {{ __('alumkit::dashboard.review_user') }}
+                    </a>
+                </div>
+            </x-card>
+        @empty
+            <p class="col-span-full text-sm text-on-surface-variant">
+                {{ $filter === 'pending' ? __('alumkit::dashboard.no_pending_users') : __('alumkit::dashboard.no_users') }}
             </p>
-        @else
-            <table class="w-full">
-                <thead>
-                    <tr class="border-b">
-                        <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.user_name') }}</th>
-                        <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.user_email') }}</th>
-                        <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.state') }}</th>
-                        <th class="text-left py-3 px-4">{{ __('alumkit::dashboard.roles') }}</th>
-                        <th class="text-right py-3 px-4">{{ __('alumkit::dashboard.actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $u)
-                        <tr class="border-b">
-                            <td class="py-3 px-4 font-medium">{{ $u->name }}</td>
-                            <td class="py-3 px-4">{{ $u->email }}</td>
-                            <td class="py-3 px-4">
-                                @include('alumkit::users.partials.state-badge', ['state' => $u->state])
-                            </td>
-                            <td class="py-3 px-4 text-gray-600">
-                                {{ $u->roles->pluck('name')->implode(', ') }}
-                            </td>
-                            <td class="py-3 px-4 text-right space-x-2">
-                                @php
-                                    $currentState = \Alumkit\Alumkit\Enums\UserState::from($u->state);
-                                    $transitions = $currentState->transitions();
-                                @endphp
-                                @foreach ($transitions as $transition)
-                                    <form method="POST" action="{{ route('alumkit.users.state.update', $u) }}" class="inline">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="state" value="{{ $transition->value }}">
-                                        <button type="submit" class="text-xs px-2 py-1 rounded
-                                            @if($transition->value === 'active') bg-green-100 text-green-800 hover:bg-green-200
-                                            @elseif($transition->value === 'suspended') bg-red-100 text-red-800 hover:bg-red-200
-                                            @elseif($transition->value === 'rejected') bg-gray-100 text-gray-800 hover:bg-gray-200
-                                            @endif
-                                        ">
-                                            {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                        </button>
-                                    </form>
-                                @endforeach
-                                <a href="{{ route('alumkit.users.roles.edit', $u) }}" class="text-navy hover:text-gold">
-                                    {{ __('alumkit::dashboard.assign_roles') }}
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    </x-card>
+        @endforelse
+    </div>
 @endsection

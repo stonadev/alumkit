@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -12,14 +13,40 @@ use Spatie\Permission\Models\Role;
 
 class UserRoleController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
 
+        $filter = $request->query('filter', 'pending');
+        $filter = in_array($filter, ['pending', 'all'], true) ? $filter : 'pending';
+
+        $query = $userModel::query()->with(['roles', 'profile.educations', 'profile.careers']);
+
+        if ($filter === 'pending') {
+            $query->where('state', UserState::Pending->value)->orderBy('created_at');
+        } else {
+            $query->orderBy('name');
+        }
+
         /** @var View $view */
         $view = view('alumkit::users.index', [
-            'users' => $userModel::all(),
+            'users' => $query->get(),
+            'filter' => $filter,
         ]);
+
+        return $view;
+    }
+
+    public function show(string $user): View
+    {
+        $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
+
+        $user = $userModel::query()
+            ->with(['roles', 'profile.educations', 'profile.careers'])
+            ->findOrFail($user);
+
+        /** @var View $view */
+        $view = view('alumkit::users.show', compact('user'));
 
         return $view;
     }
