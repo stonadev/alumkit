@@ -1,3 +1,4 @@
 /storage
+/database/database.sqlite
 .env
 .env.dusk
