@@ -22,6 +22,15 @@ it('renders the login page', function () {
         ->assertSee(__('alumkit::auth.sign_in'));
 });
 
+it('renders the password field masked with a reveal toggle', function () {
+    $this->get(route('login'))
+        ->assertOk()
+        ->assertSee('name="password"', false)
+        ->assertSee('type="password"', false)
+        ->assertSee('alumkit_form_password_reveal', false)
+        ->assertSee("show ? 'text' : 'password'", false);
+});
+
 it('renders the registration page', function () {
     $this->get(route('register'))
         ->assertOk()

@@ -337,20 +337,20 @@
                             @csrf
                             @method('PUT')
 
-                            <x-password
+                            <x-alumkit::password
                                 name="current_password"
                                 :label="__('alumkit::auth.current_password')"
                                 required
                                 autocomplete="current-password"
                             />
 
-                            <x-password
+                            <x-alumkit::password
                                 name="password"
                                 :label="__('alumkit::auth.new_password')"
                                 required
                             />
 
-                            <x-password
+                            <x-alumkit::password
                                 name="password_confirmation"
                                 :label="__('alumkit::auth.confirm_password')"
                                 required

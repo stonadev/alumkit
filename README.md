@@ -315,6 +315,21 @@ value, default `1`), `uncheckedValue` (optional, default `0`), `checked`
 checkbox, so the field always submits. Extra attributes (for example
 `x-model`) are forwarded to the checkbox input.
 
+#### Password
+
+```blade
+<x-alumkit::password name="password" :label="__('auth.password')" required
+    autocomplete="current-password" />
+```
+
+Contract: `name` (required), `label` (optional), `required` (optional),
+`autocomplete` (optional, default `off`). Renders a password input with an
+eye toggle that reveals the value; the input stays masked by default and the
+toggle uses Alpine's `x-data`/`:type` bindings, so it works in any host app
+without relying on framework attribute normalization. Extra attributes
+(for example `autofocus`) are forwarded to the input, and a validation
+error for `name` renders below the field.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
