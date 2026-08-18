@@ -63,6 +63,7 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 - render `<x-alumkit::select name="level" :label="__('education.level')" :options="['honors' => 'Honors']" value="phd" required />` for a select; `options` is an associative value → label array, `value` preselects, `required` adds the HTML attribute; label and validation error for `name` render automatically
 - render `<x-alumkit::textarea name="description" label="Description" value="Old text" rows="6" />` for a textarea; `rows` defaults to 4
 - render `<x-alumkit::checkbox name="published" label="Publish" :checked="$post->isPublished()" />` for a checkbox; it renders a hidden `value="0"` input alongside so the field always submits; `value`/`uncheckedValue` default to `1`/`0`; extra attributes like `x-model` land on the checkbox input
+- render `<x-alumkit::password name="password" label="Password" required autocomplete="current-password" />` for a password field; the input is masked by default with an eye toggle (Alpine `x-data`/`:type`), `autocomplete` defaults to `off`, and extra attributes like `autofocus` land on the input; label and validation error for `name` render automatically
 
 ## Rules, References, and Templates
 

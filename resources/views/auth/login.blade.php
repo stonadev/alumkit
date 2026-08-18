@@ -15,7 +15,7 @@
             />
 
             <div>
-                <x-password
+                <x-alumkit::password
                     name="password"
                     :label="__('alumkit::auth.password')"
                     required

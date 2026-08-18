@@ -1,5 +1,10 @@
 parameters:
     level: 7
+    # Larastan boots the Testbench app once per parallel worker; concurrent
+    # workers race writing bootstrap/cache/services.php, and Windows rename()
+    # cannot overwrite an open file -> "Access is denied". Single process.
+    parallel:
+        maximumNumberOfProcesses: 1
     paths:
         - src
         - config
