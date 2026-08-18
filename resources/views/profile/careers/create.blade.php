@@ -11,7 +11,7 @@
         <form method="POST" action="{{ route('alumkit.profile.careers.store') }}">
             @csrf
 
-            <div class="space-y-4">
+            <div class="space-y-4" x-data="{ is_current: {{ old('is_current', false) ? 'true' : 'false' }} }">
                 <x-alumkit::select name="employment_type" :label="__('alumkit::career.employment_type')" :options="$employmentTypes" :value="old('employment_type')" required />
 
                 <x-input name="job_title" :label="__('alumkit::career.job_title')" :value="old('job_title')" required />
@@ -19,7 +19,7 @@
                 <x-input name="industry" :label="__('alumkit::career.industry')" :value="old('industry')" />
                 <x-input name="location" :label="__('alumkit::career.location')" :value="old('location')" />
 
-                <div class="grid grid-cols-2 gap-4" x-data="{ is_current: {{ old('is_current', false) ? 'true' : 'false' }} }">
+                <div class="grid grid-cols-2 gap-4">
                     <x-input type="number" name="start_year" :label="__('alumkit::career.start_year')" :value="old('start_year')" min="1900" max="2099" required />
                     <x-input type="number" name="start_month" :label="__('alumkit::career.start_month')" :value="old('start_month')" min="1" max="12" />
                 </div>

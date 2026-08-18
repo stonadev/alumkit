@@ -72,7 +72,7 @@ Route::middleware(['web'])->group(function () {
 
             Route::put('profile/details', [ProfileDetailsController::class, 'update'])->name('profile.details.update');
 
-            Route::prefix('profile')->name('profile.')->group(function () {
+            Route::prefix('profile')->name('profile.')->whereNumber(['education', 'career'])->group(function () {
                 Route::get('educations/create', [ProfileEducationController::class, 'create'])->name('educations.create');
                 Route::post('educations', [ProfileEducationController::class, 'store'])->name('educations.store');
                 Route::get('educations/{education}/edit', [ProfileEducationController::class, 'edit'])->name('educations.edit');

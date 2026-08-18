@@ -16,29 +16,37 @@
         </x-card>
 
         <div
-            x-data="{ tab: 'profile' }"
-            x-init="tab = (location.hash || '#profile').slice(1)"
-            @hashchange.window="tab = (location.hash || '#profile').slice(1)"
+            x-data="{
+                tab: 'profile',
+                tabs: ['profile', 'education', 'career', 'security'],
+                syncTab() { this.tab = this.tabs.includes((location.hash || '#profile').slice(1)) ? (location.hash || '#profile').slice(1) : 'profile'; },
+                moveTab(direction) {
+                    const index = this.tabs.indexOf(this.tab);
+                    document.getElementById('tab-' + this.tabs[(index + direction + this.tabs.length) % this.tabs.length])?.focus();
+                },
+            }"
+            x-init="syncTab()"
+            @hashchange.window="syncTab()"
         >
-            <nav role="tablist" aria-label="{{ __('alumkit::profile.details') }}" class="mb-6 flex gap-1 border-b border-outline-variant/60">
-                <a href="#profile" role="tab" :aria-selected="tab === 'profile'"
+            <nav role="tablist" aria-label="{{ __('alumkit::profile.details') }}" @keydown.arrow-right.prevent="moveTab(1)" @keydown.arrow-left.prevent="moveTab(-1)" class="mb-6 flex gap-1 border-b border-outline-variant/60">
+                <a href="#profile" id="tab-profile" role="tab" aria-controls="profile" :aria-selected="tab === 'profile'" :tabindex="tab === 'profile' ? 0 : -1"
                    :class="tab === 'profile' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent'"
                    class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors">{{ __('alumkit::auth.profile') }}</a>
 
-                <a href="#education" role="tab" :aria-selected="tab === 'education'"
+                <a href="#education" id="tab-education" role="tab" aria-controls="education" :aria-selected="tab === 'education'" :tabindex="tab === 'education' ? 0 : -1"
                    :class="tab === 'education' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent'"
                    class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors">{{ __('alumkit::education.education') }}</a>
 
-                <a href="#career" role="tab" :aria-selected="tab === 'career'"
+                <a href="#career" id="tab-career" role="tab" aria-controls="career" :aria-selected="tab === 'career'" :tabindex="tab === 'career' ? 0 : -1"
                    :class="tab === 'career' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent'"
                    class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors">{{ __('alumkit::career.career') }}</a>
 
-                <a href="#security" role="tab" :aria-selected="tab === 'security'"
+                <a href="#security" id="tab-security" role="tab" aria-controls="security" :aria-selected="tab === 'security'" :tabindex="tab === 'security' ? 0 : -1"
                    :class="tab === 'security' ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent'"
                    class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors">{{ __('alumkit::profile.security') }}</a>
             </nav>
 
-            <section id="profile" role="tabpanel" x-show="tab === 'profile'" x-cloak>
+            <section id="profile" role="tabpanel" aria-labelledby="tab-profile" x-show="tab === 'profile'" x-cloak>
                 @if (Features::enabled(Features::updateProfileInformation()))
                     <x-card>
                         <h2 class="text-lg font-semibold text-navy">
@@ -205,7 +213,7 @@
                 </x-card>
             </section>
 
-            <section id="education" role="tabpanel" x-show="tab === 'education'" x-cloak>
+            <section id="education" role="tabpanel" aria-labelledby="tab-education" x-show="tab === 'education'" x-cloak>
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-navy">
                         {{ __('alumkit::education.educations') }}
@@ -218,38 +226,44 @@
                 @php $educations = Auth::user()->educations()->orderByDesc('start_year')->get(); @endphp
 
                 @forelse ($educations as $education)
-                    <x-card class="mt-4">
-                        <div class="flex items-start justify-between gap-4">
-                            <div>
-                                <p class="label-caps text-gold">
-                                    {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::career.present') }}
-                                </p>
-                                <h3 class="mt-1 font-serif text-lg font-semibold text-navy">{{ $education->institution }}</h3>
-                                <p class="mt-0.5 text-sm text-on-surface-variant">
-                                    {{ $education->level }}{{ $education->subject ? ' · '.$education->subject : '' }}
-                                </p>
+                    <div class="mt-4">
+                        <x-card>
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    @if ($education->start_year)
+                                        <p class="label-caps text-gold">
+                                            {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::career.present') }}
+                                        </p>
+                                    @endif
+                                    <h3 class="mt-1 font-serif text-lg font-semibold text-navy">{{ $education->institution }}</h3>
+                                    <p class="mt-0.5 text-sm text-on-surface-variant">
+                                        {{ $education->level }}{{ $education->subject ? ' · '.$education->subject : '' }}
+                                    </p>
+                                </div>
+                                <div class="flex shrink-0 items-center gap-3 text-sm">
+                                    <a href="{{ route('alumkit.profile.educations.edit', $education) }}" class="text-navy hover:text-gold">{{ __('alumkit::dashboard.edit') }}</a>
+                                    <form method="POST" action="{{ route('alumkit.profile.educations.destroy', $education) }}" class="inline" data-confirm="{{ __('alumkit::dashboard.confirm_delete') }}" onsubmit="return confirm(this.dataset.confirm)">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900">{{ __('alumkit::dashboard.delete') }}</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="flex shrink-0 items-center gap-3 text-sm">
-                                <a href="{{ route('alumkit.profile.educations.edit', $education) }}" class="text-navy hover:text-gold">{{ __('alumkit::dashboard.edit') }}</a>
-                                <form method="POST" action="{{ route('alumkit.profile.educations.destroy', $education) }}" class="inline" onsubmit="return confirm('{{ __('alumkit::dashboard.confirm_delete') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">{{ __('alumkit::dashboard.delete') }}</button>
-                                </form>
-                            </div>
-                        </div>
-                    </x-card>
+                        </x-card>
+                    </div>
                 @empty
-                    <x-card class="mt-4">
-                        <p class="text-sm text-on-surface-variant">{{ __('alumkit::education.no_educations') }}</p>
-                        <a href="{{ route('alumkit.profile.educations.create') }}" class="mt-3 inline-block">
-                            <x-button :text="__('alumkit::education.add_education')" outline />
-                        </a>
-                    </x-card>
+                    <div class="mt-4">
+                        <x-card>
+                            <p class="text-sm text-on-surface-variant">{{ __('alumkit::education.no_educations') }}</p>
+                            <a href="{{ route('alumkit.profile.educations.create') }}" class="mt-3 inline-block">
+                                <x-button :text="__('alumkit::education.add_education')" outline />
+                            </a>
+                        </x-card>
+                    </div>
                 @endforelse
             </section>
 
-            <section id="career" role="tabpanel" x-show="tab === 'career'" x-cloak>
+            <section id="career" role="tabpanel" aria-labelledby="tab-career" x-show="tab === 'career'" x-cloak>
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-navy">
                         {{ __('alumkit::career.careers') }}
@@ -262,45 +276,49 @@
                 @php $careers = Auth::user()->careers()->orderByDesc('start_year')->get(); @endphp
 
                 @forelse ($careers as $career)
-                    <x-card class="mt-4">
-                        <div class="flex items-start justify-between gap-4">
-                            <div>
-                                <p class="label-caps text-gold">
-                                    {{ $career->start_year }} — {{ $career->is_current ? __('alumkit::career.present') : ($career->end_year ?? '—') }}
-                                </p>
-                                <div class="mt-1 flex items-center gap-2">
-                                    <h3 class="font-serif text-lg font-semibold text-navy">{{ $career->job_title }}</h3>
-                                    <span class="rounded bg-surface-container px-2 py-0.5 text-xs font-medium text-navy">{{ config("alumkit.career.employment_types.{$career->employment_type->value}", $career->employment_type->value) }}</span>
+                    <div class="mt-4">
+                        <x-card>
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <p class="label-caps text-gold">
+                                        {{ $career->start_year }} — {{ $career->is_current ? __('alumkit::career.present') : ($career->end_year ?? '—') }}
+                                    </p>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <h3 class="font-serif text-lg font-semibold text-navy">{{ $career->job_title }}</h3>
+                                        <span class="rounded bg-surface-container px-2 py-0.5 text-xs font-medium text-navy">{{ config("alumkit.career.employment_types.{$career->employment_type->value}", $career->employment_type->value) }}</span>
+                                    </div>
+                                    <p class="mt-0.5 text-sm text-on-surface-variant">{{ $career->company }}</p>
+                                    @if ($career->industry || $career->location)
+                                        <p class="mt-0.5 text-sm text-on-surface-variant">{{ $career->industry }} · {{ $career->location }}</p>
+                                    @endif
+                                    @if ($career->description)
+                                        <p class="mt-2 text-sm text-on-surface-variant">{{ $career->description }}</p>
+                                    @endif
                                 </div>
-                                <p class="mt-0.5 text-sm text-on-surface-variant">{{ $career->company }}</p>
-                                @if ($career->industry || $career->location)
-                                    <p class="mt-0.5 text-sm text-on-surface-variant">{{ $career->industry }} · {{ $career->location }}</p>
-                                @endif
-                                @if ($career->description)
-                                    <p class="mt-2 text-sm text-on-surface-variant">{{ $career->description }}</p>
-                                @endif
+                                <div class="flex shrink-0 items-center gap-3 text-sm">
+                                    <a href="{{ route('alumkit.profile.careers.edit', $career) }}" class="text-navy hover:text-gold">{{ __('alumkit::dashboard.edit') }}</a>
+                                    <form method="POST" action="{{ route('alumkit.profile.careers.destroy', $career) }}" class="inline" data-confirm="{{ __('alumkit::dashboard.confirm_delete') }}" onsubmit="return confirm(this.dataset.confirm)">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900">{{ __('alumkit::dashboard.delete') }}</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="flex shrink-0 items-center gap-3 text-sm">
-                                <a href="{{ route('alumkit.profile.careers.edit', $career) }}" class="text-navy hover:text-gold">{{ __('alumkit::dashboard.edit') }}</a>
-                                <form method="POST" action="{{ route('alumkit.profile.careers.destroy', $career) }}" class="inline" onsubmit="return confirm('{{ __('alumkit::dashboard.confirm_delete') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">{{ __('alumkit::dashboard.delete') }}</button>
-                                </form>
-                            </div>
-                        </div>
-                    </x-card>
+                        </x-card>
+                    </div>
                 @empty
-                    <x-card class="mt-4">
-                        <p class="text-sm text-on-surface-variant">{{ __('alumkit::career.no_careers') }}</p>
-                        <a href="{{ route('alumkit.profile.careers.create') }}" class="mt-3 inline-block">
-                            <x-button :text="__('alumkit::career.add_career')" outline />
-                        </a>
-                    </x-card>
+                    <div class="mt-4">
+                        <x-card>
+                            <p class="text-sm text-on-surface-variant">{{ __('alumkit::career.no_careers') }}</p>
+                            <a href="{{ route('alumkit.profile.careers.create') }}" class="mt-3 inline-block">
+                                <x-button :text="__('alumkit::career.add_career')" outline />
+                            </a>
+                        </x-card>
+                    </div>
                 @endforelse
             </section>
 
-            <section id="security" role="tabpanel" x-show="tab === 'security'" x-cloak>
+            <section id="security" role="tabpanel" aria-labelledby="tab-security" x-show="tab === 'security'" x-cloak>
                 @if (Features::enabled(Features::updatePasswords()))
                     <x-card>
                         <h2 class="text-lg font-semibold text-navy">

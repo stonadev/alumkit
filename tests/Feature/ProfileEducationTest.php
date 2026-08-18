@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
 
@@ -120,4 +121,38 @@ it('deletes an education record on the authenticated users profile', function ()
         ->assertSessionHas('status');
 
     $this->assertDatabaseMissing('educations', ['id' => $education->id]);
+});
+
+it('cannot open the edit form for another users education record', function () {
+    $other = User::factory()->create();
+    $other->profile()->create();
+    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford']);
+
+    $this->get(route('alumkit.profile.educations.edit', $otherEducation))
+        ->assertNotFound();
+});
+
+it('validates education fields on update', function () {
+    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+
+    $this->put(route('alumkit.profile.educations.update', $education), [
+        'level' => '',
+        'institution' => '',
+    ])->assertSessionHasErrors(['level', 'institution']);
+});
+
+it('rejects an end_year before start_year', function () {
+    $this->post(route('alumkit.profile.educations.store'), [
+        'level' => 'masters',
+        'institution' => 'MIT',
+        'start_year' => 2019,
+        'end_year' => 2015,
+    ])->assertSessionHasErrors(['end_year']);
+});
+
+it('redirects guests away from the education routes', function () {
+    Auth::logout();
+
+    $this->get(route('alumkit.profile.educations.create'))
+        ->assertRedirect(route('login'));
 });

@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-2xl font-bold text-navy mb-6">
-        {{ __('alumkit::education.education') }}
+        {{ __('alumkit::education.update_education') }}
     </h1>
 
     <x-card>

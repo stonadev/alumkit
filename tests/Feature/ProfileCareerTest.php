@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
 
@@ -128,4 +129,48 @@ it('deletes a career record on the authenticated users profile', function () {
         ->assertSessionHas('status');
 
     $this->assertDatabaseMissing('careers', ['id' => $career->id]);
+});
+
+it('cannot open the edit form for another users career record', function () {
+    $other = User::factory()->create();
+    $other->profile()->create();
+    $otherCareer = $other->careers()->create(['job_title' => 'Designer', 'company' => 'Globex', 'employment_type' => 'contract', 'start_year' => 2018]);
+
+    $this->get(route('alumkit.profile.careers.edit', $otherCareer))
+        ->assertNotFound();
+});
+
+it('validates career fields on update', function () {
+    $career = $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
+
+    $this->put(route('alumkit.profile.careers.update', $career), [
+        'job_title' => '',
+        'company' => '',
+        'employment_type' => '',
+    ])->assertSessionHasErrors(['job_title', 'company', 'employment_type']);
+});
+
+it('requires start_year on store', function () {
+    $this->post(route('alumkit.profile.careers.store'), [
+        'job_title' => 'Developer',
+        'company' => 'Acme',
+        'employment_type' => 'full_time',
+    ])->assertSessionHasErrors(['start_year']);
+});
+
+it('rejects an end_year before start_year', function () {
+    $this->post(route('alumkit.profile.careers.store'), [
+        'job_title' => 'Developer',
+        'company' => 'Acme',
+        'employment_type' => 'full_time',
+        'start_year' => 2020,
+        'end_year' => 2015,
+    ])->assertSessionHasErrors(['end_year']);
+});
+
+it('redirects guests away from the career routes', function () {
+    Auth::logout();
+
+    $this->get(route('alumkit.profile.careers.create'))
+        ->assertRedirect(route('login'));
 });

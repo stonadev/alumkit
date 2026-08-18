@@ -26,10 +26,10 @@ class StoreProfileCareerRequest extends FormRequest
             'employment_type' => ['required', Rule::in(array_column(EmploymentType::cases(), 'value'))],
             'industry' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
-            'start_year' => ['required', 'integer', 'digits:4'],
+            'start_year' => ['required', 'integer', 'digits:4', 'min:1900', 'max:2099'],
             'start_month' => ['nullable', 'integer', 'between:1,12'],
             'is_current' => ['boolean'],
-            'end_year' => ['nullable', 'integer', 'digits:4'],
+            'end_year' => ['nullable', 'integer', 'digits:4', 'gte:start_year', 'min:1900', 'max:2099'],
             'end_month' => ['nullable', 'integer', 'between:1,12'],
             'description' => ['nullable', 'string', 'max:5000'],
         ];
