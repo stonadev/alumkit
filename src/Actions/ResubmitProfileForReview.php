@@ -14,7 +14,9 @@ final class ResubmitProfileForReview
      */
     public function handle(mixed $user): void
     {
-        if ($user->state !== UserState::Rejected->value) {
+        $current = UserState::tryFrom((string) $user->state);
+
+        if (! $current?->canTransitionTo(UserState::Pending)) {
             return;
         }
 

@@ -14,7 +14,8 @@ class CheckUserSuspended
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->user() && $request->user()->state === UserState::Suspended->value) {
-            return redirect()->route('alumkit.dashboard');
+            return redirect()->route('alumkit.dashboard')
+                ->with('error', __('alumkit::dashboard.account_suspended'));
         }
 
         return $next($request);

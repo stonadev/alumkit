@@ -185,6 +185,7 @@
                     @include('alumkit::users.partials.state-badge', ['state' => $user->state])
                 </div>
 
+                @if ($user->getKey() !== auth()->id())
                 <div class="mt-5 space-y-3">
                     @forelse ($transitions as $transition)
                         <div class="flex flex-col gap-3 rounded-lg bg-surface-container/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -212,6 +213,7 @@
                         <p class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.no_further_actions') }}</p>
                     @endforelse
                 </div>
+                @endif
 
                 <div class="mt-6 border-t border-outline-variant/60 pt-5">
                     <a href="{{ route('alumkit.users.roles.edit', $user) }}" class="btn-secondary w-full">

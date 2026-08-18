@@ -20,6 +20,12 @@ class UserStateController extends Controller
             'state' => ['required', 'string', 'in:'.implode(',', array_column(UserState::cases(), 'value'))],
         ]);
 
+        // Prevent self-lockout: an admin cannot change their own membership state.
+        if ($request->user()->getKey() === $targetUser->getKey()) {
+            return redirect()->route('alumkit.users.show', $targetUser)
+                ->with('error', __('alumkit::dashboard.cannot_change_own_state'));
+        }
+
         $newState = UserState::from($request->input('state'));
         $currentState = UserState::from($targetUser->state);
 

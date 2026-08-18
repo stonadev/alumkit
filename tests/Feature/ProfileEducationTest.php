@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Workbench\App\Models\User;
@@ -73,7 +74,7 @@ it('resubmits a rejected user for review when education changes', function () {
     ])
         ->assertRedirect(route('alumkit.profile').'#education');
 
-    expect($this->user->fresh()->state)->toBe('pending');
+    expect($this->user->fresh()->state)->toBe(UserState::Pending->value);
 });
 
 it('validates required education fields on store', function () {

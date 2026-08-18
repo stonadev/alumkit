@@ -98,3 +98,81 @@ it('denies user details without manage members permission', function () {
         ->get(route('alumkit.users.show', $this->pendingUser))
         ->assertForbidden();
 });
+
+it('renders review actions for a pending member', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->pendingUser))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.transition_to_active'))
+        ->assertSee(__('alumkit::dashboard.transition_to_rejected'));
+});
+
+it('renders the suspend action for an active member', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->activeUser))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.transition_to_suspended'));
+});
+
+it('renders the resubmit action for a rejected member', function () {
+    $rejected = User::factory()->create(['name' => 'Rejected Member', 'state' => 'rejected']);
+    $rejected->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $rejected))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.transition_to_pending'));
+});
+
+it('approves a pending member', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'active'])
+        ->assertRedirect(route('alumkit.users.index'))
+        ->assertSessionHas('status');
+
+    expect($this->pendingUser->fresh()->state)->toBe('active');
+});
+
+it('rejects a pending member', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected'])
+        ->assertRedirect(route('alumkit.users.index'));
+
+    expect($this->pendingUser->fresh()->state)->toBe('rejected');
+});
+
+it('moves a rejected member back to the review queue', function () {
+    $rejected = User::factory()->create(['name' => 'Rejected Member', 'state' => 'rejected']);
+    $rejected->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $rejected), ['state' => 'pending'])
+        ->assertRedirect(route('alumkit.users.index'));
+
+    expect($rejected->fresh()->state)->toBe('pending');
+});
+
+it('suspends an active member', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->activeUser), ['state' => 'suspended'])
+        ->assertRedirect(route('alumkit.users.index'));
+
+    expect($this->activeUser->fresh()->state)->toBe('suspended');
+});
+
+it('blocks an admin from changing their own state', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->admin), ['state' => 'active'])
+        ->assertRedirect(route('alumkit.users.show', $this->admin))
+        ->assertSessionHas('error');
+
+    expect($this->admin->fresh()->state)->toBe('pending');
+});
+
+it('hides the review panel on an admins own profile', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->admin))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
+        ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
+});
