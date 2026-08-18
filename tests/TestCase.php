@@ -50,6 +50,21 @@ abstract class TestCase extends Orchestra
         ];
     }
 
+    protected function resolveApplicationConfiguration($app): void
+    {
+        // `alumkit:publish` copies config to config_path(), which by default is
+        // testbench's shared skeleton config dir — the same dir every parallel
+        // Pest worker scans in LoadConfiguration during app bootstrap. Writing
+        // and deleting alumkit.php there races with other workers' bootstraps
+        // ("ValueError: Path cannot be empty" / "Failed opening required").
+        // Point config_path() at a per-process scratch dir so publish tests
+        // never touch the shared skeleton. Runs before providers boot, so the
+        // publish target registered by AlumkitServiceProvider follows along.
+        $app->useConfigPath(sys_get_temp_dir().'/alumkit-test-config-'.getmypid());
+
+        parent::resolveApplicationConfiguration($app);
+    }
+
     protected function defineEnvironment($app): void
     {
         $app['config']->set('app.key', 'base64:'.base64_encode('12345678901234567890123456789012'));
