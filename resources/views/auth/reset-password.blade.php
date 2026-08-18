@@ -25,7 +25,7 @@
             />
 
             <div>
-                <x-password
+                <x-alumkit::password
                     name="password"
                     :label="__('alumkit::auth.password')"
                     required
@@ -33,7 +33,7 @@
             </div>
 
             <div>
-                <x-password
+                <x-alumkit::password
                     name="password_confirmation"
                     :label="__('alumkit::auth.confirm_password')"
                     required

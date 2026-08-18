@@ -16,7 +16,7 @@
         <form method="POST" action="{{ route('password.confirm') }}" class="mt-6 space-y-4">
             @csrf
 
-            <x-password
+            <x-alumkit::password
                 name="password"
                 :label="__('alumkit::auth.password')"
                 required
