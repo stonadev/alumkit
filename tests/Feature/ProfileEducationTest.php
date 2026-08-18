@@ -64,6 +64,18 @@ it('stores an education record on the authenticated users profile', function () 
     ]);
 });
 
+it('resubmits a rejected user for review when education changes', function () {
+    $this->user->update(['state' => 'rejected']);
+
+    $this->post(route('alumkit.profile.educations.store'), [
+        'level' => 'masters',
+        'institution' => 'MIT',
+    ])
+        ->assertRedirect(route('alumkit.profile').'#education');
+
+    expect($this->user->fresh()->state)->toBe('pending');
+});
+
 it('validates required education fields on store', function () {
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => '',

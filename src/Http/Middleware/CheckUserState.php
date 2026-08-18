@@ -15,7 +15,7 @@ class CheckUserState
     {
         $user = $request->user();
 
-        if ($user && ! in_array($user->state, [UserState::Active->value, UserState::Pending->value], true)) {
+        if ($user && ! in_array($user->state, [UserState::Active->value, UserState::Pending->value, UserState::Rejected->value], true)) {
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 

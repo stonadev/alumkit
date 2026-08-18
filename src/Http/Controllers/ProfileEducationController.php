@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
+use Alumkit\Alumkit\Actions\ResubmitProfileForReview;
 use Alumkit\Alumkit\Http\Requests\StoreProfileEducationRequest;
 use Alumkit\Alumkit\Http\Requests\UpdateProfileEducationRequest;
 use Illuminate\Http\RedirectResponse;
@@ -24,6 +25,7 @@ class ProfileEducationController extends Controller
     public function store(StoreProfileEducationRequest $request): RedirectResponse
     {
         $request->user()->educations()->create($request->validated());
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#education')
             ->with('status', __('alumkit::education.education_created'));
@@ -43,6 +45,7 @@ class ProfileEducationController extends Controller
     {
         $education = $request->user()->educations()->findOrFail($education);
         $education->update($request->validated());
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#education')
             ->with('status', __('alumkit::education.education_updated'));
@@ -51,6 +54,7 @@ class ProfileEducationController extends Controller
     public function destroy(Request $request, int $education): RedirectResponse
     {
         $request->user()->educations()->findOrFail($education)->delete();
+        (new ResubmitProfileForReview)->handle($request->user());
 
         return redirect(route('alumkit.profile').'#education')
             ->with('status', __('alumkit::education.education_deleted'));
