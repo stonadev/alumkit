@@ -103,13 +103,23 @@
                         @csrf
                         @method('PUT')
 
-                        @if (Auth::user()->profile->photoUrl())
-                            <img src="{{ Auth::user()->profile->photoUrl() }}" class="h-24 w-24 rounded-lg object-cover" alt="{{ __('alumkit::profile.photo') }}">
-                        @endif
+                        <label x-data="{ photoPreview: null }" class="relative inline-block cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-outline-variant bg-surface-container transition-colors hover:border-navy focus-within:ring-2 focus-within:ring-gold/50">
+                            @if (Auth::user()->profile->photoUrl())
+                                <img src="{{ Auth::user()->profile->photoUrl() }}" alt="" x-show="!photoPreview" class="block h-32 w-28 object-cover">
+                            @else
+                                <span x-show="!photoPreview" class="flex h-32 w-28 items-center justify-center font-serif text-2xl font-semibold text-navy">
+                                    {{ \Illuminate\Support\Str::initials(Auth::user()->name) }}
+                                </span>
+                            @endif
 
-                        <x-input type="file" name="photo" :label="__('alumkit::profile.photo')" />
+                            <template x-if="photoPreview">
+                                <img :src="photoPreview" alt="" class="block h-32 w-28 object-cover">
+                            </template>
 
-                        <div class="grid grid-cols-2 gap-4">
+                            <input type="file" name="photo" accept="image/*" class="sr-only" aria-label="{{ __('alumkit::profile.photo') }}" @change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
+                        </label>
+
+                        <div class="grid grid-cols-3 gap-4">
                             <x-input
                                 type="date"
                                 name="date_of_birth"
@@ -117,15 +127,6 @@
                                 :label="__('alumkit::profile.date_of_birth')"
                             />
 
-                            <x-input
-                                type="url"
-                                name="website"
-                                :value="old('website', Auth::user()->profile->website)"
-                                :label="__('alumkit::profile.website')"
-                            />
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
                             <x-alumkit::select
                                 name="gender"
                                 :options="\Alumkit\Alumkit\Enums\Gender::options()"
@@ -174,6 +175,13 @@
                                 name="social_links[linkedin]"
                                 :value="old('social_links.linkedin', Auth::user()->profile->social_links['linkedin'] ?? '')"
                                 :label="__('alumkit::profile.linkedin')"
+                            />
+
+                            <x-input
+                                type="url"
+                                name="website"
+                                :value="old('website', Auth::user()->profile->website)"
+                                :label="__('alumkit::profile.website')"
                             />
                         </div>
 
