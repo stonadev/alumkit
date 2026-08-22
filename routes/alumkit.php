@@ -7,6 +7,9 @@ use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
+use Alumkit\Alumkit\Http\Controllers\GlobalContentController;
+use Alumkit\Alumkit\Http\Controllers\PageContentController;
+use Alumkit\Alumkit\Http\Controllers\PageController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\ProfileCareerController;
 use Alumkit\Alumkit\Http\Controllers\ProfileDetailsController;
@@ -96,6 +99,17 @@ Route::middleware(['web'])->group(function () {
 
             Route::middleware('permission:manage careers')->group(function () {
                 Route::resource('careers', CareerController::class)->except(['show']);
+            });
+            Route::middleware('permission:manage pages')->group(function () {
+                Route::resource('pages', PageController::class)->except(['show']);
+                Route::get('pages/{page}/content', [PageContentController::class, 'edit'])->name('pages.content.edit');
+                Route::put('pages/{page}/content', [PageContentController::class, 'update'])->name('pages.content.update');
+            });
+
+            Route::middleware('permission:manage globals')->group(function () {
+                Route::get('globals', [GlobalContentController::class, 'index'])->name('globals.index');
+                Route::get('globals/{key}', [GlobalContentController::class, 'edit'])->name('globals.edit');
+                Route::put('globals/{key}', [GlobalContentController::class, 'update'])->name('globals.update');
             });
 
             Route::middleware('user.approved')->group(function () {
