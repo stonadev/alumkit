@@ -22,7 +22,7 @@
         "laravel/fortify": "^1.37.2",
         "livewire/livewire": "^3.5.0|^4.3.0",
         "spatie/laravel-permission": "^8.3",
-        "tallstackui/tallstackui": "^3.0"
+        "tallstackui/tallstackui": "^4.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.9",
