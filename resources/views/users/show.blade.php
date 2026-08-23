@@ -144,6 +144,11 @@
                             <p class="mt-0.5 text-on-surface-variant">
                                 {{ $education->level }}{{ $education->subject ? ' · '.$education->subject : '' }}
                             </p>
+                            @if ($education->student_id)
+                                <p class="mt-0.5 text-sm text-on-surface-variant">
+                                    {{ __('alumkit::education.student_id') }}: {{ $education->student_id }}
+                                </p>
+                            @endif
                         </div>
                     @empty
                         <p class="text-sm text-on-surface-variant">{{ __('alumkit::education.no_educations') }}</p>
