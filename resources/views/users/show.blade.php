@@ -138,7 +138,7 @@
                     @forelse ($educations as $education)
                         <div class="border-t border-outline-variant/60 pt-5 first:border-t-0 first:pt-0">
                             <p class="label-caps text-gold">
-                                {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::career.present') }}
+                                {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::education.present') }}
                             </p>
                             <h3 class="mt-1 font-serif text-lg font-semibold text-navy">{{ $education->institution }}</h3>
                             <p class="mt-0.5 text-on-surface-variant">

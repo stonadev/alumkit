@@ -21,4 +21,6 @@ return [
     'education_deleted' => 'Education record deleted successfully.',
     'manage_educations' => 'Manage Educations',
     'no_educations' => 'No education records found.',
+    'present' => 'Present',
+    'currently_studying' => 'Currently studying',
 ];

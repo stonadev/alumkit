@@ -23,9 +23,10 @@ class UpdateEducationRequest extends FormRequest
             'institution' => ['required', 'string', 'max:255'],
             'student_id' => ['nullable', 'string', 'max:255'],
             'subject' => ['nullable', 'string', 'max:255'],
-            'start_year' => ['nullable', 'integer', 'digits:4'],
+            'start_year' => ['required', 'integer', 'digits:4', 'min:1900', 'max:2099'],
             'start_month' => ['nullable', 'integer', 'between:1,12'],
-            'end_year' => ['nullable', 'integer', 'digits:4', 'gte:start_year'],
+            'is_current' => ['sometimes', 'boolean'],
+            'end_year' => ['nullable', 'integer', 'digits:4', 'gte:start_year', 'min:1900', 'max:2099'],
             'end_month' => ['nullable', 'integer', 'between:1,12'],
         ];
     }

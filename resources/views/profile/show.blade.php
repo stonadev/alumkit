@@ -240,7 +240,7 @@
                                 <div>
                                     @if ($education->start_year)
                                         <p class="label-caps text-gold">
-                                            {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::career.present') }}
+                                            {{ $education->start_year }} — {{ $education->end_year ?? __('alumkit::education.present') }}
                                         </p>
                                     @endif
                                     <h3 class="mt-1 font-serif text-lg font-semibold text-navy">{{ $education->institution }}</h3>

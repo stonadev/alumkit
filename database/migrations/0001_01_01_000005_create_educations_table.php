@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('institution');
             $table->string('student_id')->nullable();
             $table->string('subject')->nullable();
-            $table->year('start_year')->nullable();
+            $table->boolean('is_current')->default(false);
+            $table->year('start_year');
             $table->unsignedTinyInteger('start_month')->nullable();
             $table->year('end_year')->nullable();
             $table->unsignedTinyInteger('end_month')->nullable();
