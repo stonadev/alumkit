@@ -10,6 +10,7 @@ use Alumkit\Alumkit\Models\Content;
 use Alumkit\Alumkit\Models\Page;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -64,8 +65,10 @@ class PageController extends Controller
 
     public function destroy(Page $page): RedirectResponse
     {
-        Content::where('owner', "page:{$page->slug}")->delete();
-        $page->delete();
+        DB::transaction(function () use ($page): void {
+            Content::where('owner', "page:{$page->slug}")->delete();
+            $page->delete();
+        });
 
         return redirect()->route('alumkit.pages.index')
             ->with('status', 'Page deleted successfully.');

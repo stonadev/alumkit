@@ -23,4 +23,15 @@ class PageSchema
     {
         return $this->sections;
     }
+
+    /** @return array<string, array<string, mixed>> */
+    public function toArray(): array
+    {
+        return array_map(
+            fn (SectionSchema $section) => [
+                'fields' => array_map(fn (FieldSchema $f) => $f->toArray(), $section->fields()),
+            ],
+            $this->sections,
+        );
+    }
 }

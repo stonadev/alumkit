@@ -6,7 +6,6 @@ namespace Alumkit\Alumkit\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -21,6 +20,12 @@ use Illuminate\Support\Carbon;
  */
 class Page extends Model
 {
+    /** @var bool */
+    public $incrementing = false;
+
+    /** @var string */
+    protected $keyType = 'string';
+
     /** @var string */
     protected $table = 'pages';
 
@@ -48,15 +53,5 @@ class Page extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true);
-    }
-
-    /**
-     * @phpstan-ignore missingType.generics
-     */
-    public function contents(): HasMany
-    {
-        /** @phpstan-ignore argument.templateType */
-        return $this->hasMany(Content::class, 'owner', 'slug')
-            ->where('owner', 'like', 'page:%');
     }
 }

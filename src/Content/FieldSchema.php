@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Content;
 
+use InvalidArgumentException;
+
 class FieldSchema
 {
-    public string $name;
+    public readonly string $name;
 
-    public string $type;
+    public readonly string $type;
 
     public ?string $label = null;
 
@@ -22,8 +24,22 @@ class FieldSchema
 
     public ?string $help = null;
 
+    private const VALID_TYPES = [
+        'text',
+        'textarea',
+        'select',
+        'image',
+        'checkbox',
+        'editor',
+        'repeater',
+    ];
+
     public function __construct(string $name, string $type)
     {
+        if (! in_array($type, self::VALID_TYPES, true)) {
+            throw new InvalidArgumentException("Invalid field type '{$type}'. Must be one of: ".implode(', ', self::VALID_TYPES));
+        }
+
         $this->name = $name;
         $this->type = $type;
     }

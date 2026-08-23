@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('contents', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('owner')->index();  // "page:{slug}" for page-bound content, "global:{key}" for global singletons
-            $table->string('type'); // Content type alias (e.g. 'text', 'textarea', 'select', 'repeater')
+            $table->string('type')->index(); // Content type alias (e.g. 'text', 'textarea', 'select', 'repeater')
             $table->json('fields'); // Field values as a JSON blob
             $table->timestamps();
         });

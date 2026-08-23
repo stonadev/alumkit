@@ -11,6 +11,7 @@ use Alumkit\Alumkit\Models\Page;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PageContentController extends Controller
@@ -41,16 +42,18 @@ class PageContentController extends Controller
 
         $owner = "page:{$page->slug}";
 
-        foreach ($schema->sections() as $type => $section) {
-            $fields = $this->extractFields($section, $request);
-            $imageFields = $this->extractImages($section, $request);
-            $fields = array_merge($fields, $imageFields);
+        DB::transaction(function () use ($schema, $owner, $request): void {
+            foreach ($schema->sections() as $type => $section) {
+                $fields = $this->extractFields($section, $request);
+                $imageFields = $this->extractImages($section, $request);
+                $fields = array_merge($fields, $imageFields);
 
-            Content::updateOrCreate(
-                ['owner' => $owner, 'type' => $type],
-                ['fields' => $fields],
-            );
-        }
+                Content::updateOrCreate(
+                    ['owner' => $owner, 'type' => $type],
+                    ['fields' => $fields],
+                );
+            }
+        });
 
         return redirect()->route('alumkit.pages.content.edit', $page)
             ->with('status', 'Page content updated successfully.');
