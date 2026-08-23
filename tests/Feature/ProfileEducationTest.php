@@ -28,11 +28,11 @@ it('renders all four profile tab labels', function () {
 });
 
 it('lists only the authenticated users education records', function () {
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $other = User::factory()->create();
     $other->profile()->create();
-    $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'start_year' => 2016]);
+    $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'subject' => 'Computer Science', 'start_year' => 2016]);
 
     $this->get(route('alumkit.profile'))
         ->assertOk()
@@ -72,6 +72,7 @@ it('resubmits a rejected user for review when education changes', function () {
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
         'start_year' => 2015,
     ])
         ->assertRedirect(route('alumkit.profile').'#education');
@@ -84,15 +85,16 @@ it('validates required education fields on store', function () {
         'level' => '',
         'institution' => '',
     ])
-        ->assertSessionHasErrors(['level', 'institution', 'start_year']);
+        ->assertSessionHasErrors(['level', 'institution', 'subject', 'start_year']);
 });
 
 it('updates an education record on the authenticated users profile', function () {
-    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->put(route('alumkit.profile.educations.update', $education), [
         'level' => 'phd',
         'institution' => 'Stanford',
+        'subject' => 'Computer Science',
         'student_id' => 'STU-2020-002',
         'start_year' => 2015,
     ])
@@ -104,6 +106,7 @@ it('updates an education record on the authenticated users profile', function ()
         'profile_id' => $this->user->profile->id,
         'level' => 'phd',
         'institution' => 'Stanford',
+        'subject' => 'Computer Science',
         'student_id' => 'STU-2020-002',
     ]);
 });
@@ -111,11 +114,12 @@ it('updates an education record on the authenticated users profile', function ()
 it('cannot update another users education record', function () {
     $other = User::factory()->create();
     $other->profile()->create();
-    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'start_year' => 2016]);
+    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'subject' => 'Computer Science', 'start_year' => 2016]);
 
     $this->put(route('alumkit.profile.educations.update', $otherEducation), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
         'start_year' => 2016,
     ])
         ->assertNotFound();
@@ -124,7 +128,7 @@ it('cannot update another users education record', function () {
 it('cannot delete another users education record', function () {
     $other = User::factory()->create();
     $other->profile()->create();
-    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'start_year' => 2016]);
+    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'subject' => 'Computer Science', 'start_year' => 2016]);
 
     $this->delete(route('alumkit.profile.educations.destroy', $otherEducation))
         ->assertNotFound();
@@ -133,7 +137,7 @@ it('cannot delete another users education record', function () {
 });
 
 it('deletes an education record on the authenticated users profile', function () {
-    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->delete(route('alumkit.profile.educations.destroy', $education))
         ->assertRedirect(route('alumkit.profile').'#education')
@@ -145,25 +149,26 @@ it('deletes an education record on the authenticated users profile', function ()
 it('cannot open the edit form for another users education record', function () {
     $other = User::factory()->create();
     $other->profile()->create();
-    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'start_year' => 2016]);
+    $otherEducation = $other->educations()->create(['level' => 'phd', 'institution' => 'Oxford', 'subject' => 'Computer Science', 'start_year' => 2016]);
 
     $this->get(route('alumkit.profile.educations.edit', $otherEducation))
         ->assertNotFound();
 });
 
 it('validates education fields on update', function () {
-    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $education = $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->put(route('alumkit.profile.educations.update', $education), [
         'level' => '',
         'institution' => '',
-    ])->assertSessionHasErrors(['level', 'institution']);
+    ])->assertSessionHasErrors(['level', 'institution', 'subject']);
 });
 
 it('rejects an end_year before start_year', function () {
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
         'start_year' => 2019,
         'end_year' => 2015,
     ])->assertSessionHasErrors(['end_year']);
@@ -180,6 +185,7 @@ it('stores with is_current and null end_year', function () {
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
         'start_year' => 2020,
         'is_current' => true,
     ])
@@ -197,5 +203,6 @@ it('validates start_year required on store', function () {
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
     ])->assertSessionHasErrors(['start_year']);
 });

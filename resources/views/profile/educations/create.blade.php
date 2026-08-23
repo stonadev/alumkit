@@ -15,7 +15,7 @@
                 <x-alumkit::suggest name="level" :label="__('alumkit::education.level')" :value="old('level')" :suggestions="config('alumkit.education.levels', [])" required />
 
                 <x-alumkit::suggest name="institution" :label="__('alumkit::education.institution')" :value="old('institution')" :suggestions="config('alumkit.education.institutions', [])" required />
-                <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="old('subject')" :suggestions="config('alumkit.education.subjects', [])" />
+                <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="old('subject')" :suggestions="config('alumkit.education.subjects', [])" required />
                 <x-input type="text" name="student_id" :label="__('alumkit::education.student_id')" :value="old('student_id')" />
 
                 <div class="grid grid-cols-2 gap-4">

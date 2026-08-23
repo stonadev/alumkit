@@ -47,7 +47,7 @@ class CompleteProfileController extends Controller
             'educations.*.level' => ['required', 'string', 'max:255'],
             'educations.*.institution' => ['required', 'string', 'max:255'],
             'educations.*.student_id' => ['nullable', 'string', 'max:255'],
-            'educations.*.subject' => ['nullable', 'string', 'max:255'],
+            'educations.*.subject' => ['required', 'string', 'max:255'],
             'educations.*.start_year' => ['required', 'integer', 'digits:4'],
             'educations.*.start_month' => ['nullable', 'integer', 'between:1,12'],
             'educations.*.is_current' => ['sometimes', 'boolean'],

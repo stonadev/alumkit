@@ -134,7 +134,7 @@ it('stores profile details during profile completion', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020, 'is_current' => 1],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
             ],
             'gender' => 'female',
             'website' => 'https://example.org',
@@ -155,6 +155,7 @@ it('stores profile details during profile completion', function () {
         'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
     ]);
 });
 

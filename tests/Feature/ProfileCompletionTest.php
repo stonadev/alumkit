@@ -18,7 +18,7 @@ it('accepts a profile with education but no careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'student_id' => 'STU-2020-001', 'start_year' => 2020, 'is_current' => 1],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'student_id' => 'STU-2020-001', 'start_year' => 2020, 'is_current' => 1],
             ],
         ])
         ->assertRedirect(route('alumkit.dashboard'))
@@ -28,6 +28,7 @@ it('accepts a profile with education but no careers', function () {
         'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
+        'subject' => 'Computer Science',
         'student_id' => 'STU-2020-001',
     ]);
 
@@ -38,7 +39,7 @@ it('accepts a profile with education and careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020, 'is_current' => 1],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
             ],
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
@@ -74,7 +75,7 @@ it('requires end_year or is_current on education', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020],
             ],
         ])
         ->assertSessionHasErrors(['educations.0.end_year']);
@@ -84,7 +85,7 @@ it('requires end_year when is_current is 0', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020, 'is_current' => 0],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 0],
             ],
         ])
         ->assertSessionHasErrors(['educations.0.end_year']);
@@ -92,7 +93,7 @@ it('requires end_year when is_current is 0', function () {
 
 it('does not require careers to access protected routes', function () {
     $this->user->profile()->create();
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.dashboard'))
@@ -119,7 +120,7 @@ it('does not show the approval banner to the admin after submission', function (
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020, 'is_current' => 1],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
             ],
         ])
         ->assertRedirect(route('alumkit.dashboard'))
@@ -151,7 +152,7 @@ it('shows "Submit" on the form for admins', function () {
 
 it('redirects away from the completion form once the profile exists', function () {
     $this->user->profile()->create();
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.profile.complete'))
@@ -160,12 +161,12 @@ it('redirects away from the completion form once the profile exists', function (
 
 it('does not write again when the profile already exists', function () {
     $this->user->profile()->create();
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'phd', 'institution' => 'Oxford', 'start_year' => 2020, 'is_current' => 1],
+                ['level' => 'phd', 'institution' => 'Oxford', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
             ],
         ])
         ->assertRedirect(route('alumkit.dashboard'));
@@ -182,7 +183,7 @@ it('restores submitted values when validation fails', function () {
         ->from(route('alumkit.profile.complete'))
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2020, 'start_month' => 13, 'is_current' => 1],
+                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'start_month' => 13, 'is_current' => 1],
             ],
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],

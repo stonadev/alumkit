@@ -126,6 +126,7 @@
                             x-model="edu.subject"
                             :label="__('alumkit::education.subject')"
                             :suggestions="config('alumkit.education.subjects', [])"
+                            required
                         />
                         <x-input
                             type="text"

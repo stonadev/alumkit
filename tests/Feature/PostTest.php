@@ -18,7 +18,7 @@ beforeEach(function () {
 
     $this->user = User::factory()->approved()->create();
     $this->user->profile()->create();
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 });
 
 it('renders the posts index for approved users', function () {
@@ -176,7 +176,7 @@ it('deletes a post', function () {
 it('forbids editing another users post', function () {
     $other = User::factory()->approved()->create();
     $other->profile()->create();
-    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'start_year' => 2015]);
+    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
     $this->actingAs($this->user)
@@ -187,7 +187,7 @@ it('forbids editing another users post', function () {
 it('forbids updating another users post', function () {
     $other = User::factory()->approved()->create();
     $other->profile()->create();
-    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'start_year' => 2015]);
+    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
     $this->actingAs($this->user)
@@ -201,7 +201,7 @@ it('forbids updating another users post', function () {
 it('forbids deleting another users post', function () {
     $other = User::factory()->approved()->create();
     $other->profile()->create();
-    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'start_year' => 2015]);
+    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'Body']);
 
     $this->actingAs($this->user)
@@ -212,7 +212,7 @@ it('forbids deleting another users post', function () {
 it('lists only the authors own posts on the index', function () {
     $other = User::factory()->approved()->create();
     $other->profile()->create();
-    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'start_year' => 2015]);
+    $other->educations()->create(['level' => 'masters', 'institution' => 'Stanford', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     Post::create(['user_id' => $this->user->id, 'title' => 'My Post', 'body' => 'Body']);
     Post::create(['user_id' => $other->id, 'title' => 'Their Post', 'body' => 'Body']);
@@ -227,7 +227,7 @@ it('lists only the authors own posts on the index', function () {
 it('forbids pending users from the posts index', function () {
     $pendingUser = User::factory()->create();
     $pendingUser->profile()->create();
-    $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($pendingUser)
         ->get(route('alumkit.posts.index'))
@@ -237,7 +237,7 @@ it('forbids pending users from the posts index', function () {
 it('forbids pending users from the create post form', function () {
     $pendingUser = User::factory()->create();
     $pendingUser->profile()->create();
-    $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'start_year' => 2015]);
+    $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($pendingUser)
         ->get(route('alumkit.posts.create'))
