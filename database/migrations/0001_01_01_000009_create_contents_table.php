@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contents', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('owner')->index();  // "page:{slug}" for page-bound content, "global:{key}" for global singletons
             $table->string('type')->index(); // Content type alias (e.g. 'text', 'textarea', 'select', 'repeater')
             $table->json('fields'); // Field values as a JSON blob
