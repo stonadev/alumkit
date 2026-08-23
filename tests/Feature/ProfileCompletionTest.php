@@ -18,7 +18,7 @@ it('accepts a profile with education but no careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT'],
+                ['level' => 'masters', 'institution' => 'MIT', 'student_id' => 'STU-2020-001'],
             ],
         ])
         ->assertRedirect(route('alumkit.dashboard'))
@@ -28,6 +28,7 @@ it('accepts a profile with education but no careers', function () {
         'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
+        'student_id' => 'STU-2020-001',
     ]);
 
     $this->assertDatabaseMissing('careers', ['profile_id' => $this->user->profile->id]);

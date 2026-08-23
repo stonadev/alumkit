@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('profile_id')->constrained()->cascadeOnDelete();
             $table->string('level');
             $table->string('institution');
+            $table->string('student_id')->nullable();
             $table->string('subject')->nullable();
             $table->year('start_year')->nullable();
             $table->unsignedTinyInteger('start_month')->nullable();

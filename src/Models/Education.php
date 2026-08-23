@@ -17,6 +17,7 @@ class Education extends Model
         'profile_id',
         'level',
         'institution',
+        'student_id',
         'subject',
         'start_year',
         'start_month',

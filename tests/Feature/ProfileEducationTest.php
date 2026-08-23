@@ -49,6 +49,7 @@ it('stores an education record on the authenticated users profile', function () 
     $this->post(route('alumkit.profile.educations.store'), [
         'level' => 'masters',
         'institution' => 'MIT',
+        'student_id' => 'STU-2020-001',
         'subject' => 'Computer Science',
         'start_year' => 2015,
         'start_month' => 9,
@@ -91,6 +92,7 @@ it('updates an education record on the authenticated users profile', function ()
     $this->put(route('alumkit.profile.educations.update', $education), [
         'level' => 'phd',
         'institution' => 'Stanford',
+        'student_id' => 'STU-2020-002',
     ])
         ->assertRedirect(route('alumkit.profile').'#education')
         ->assertSessionHas('status');
@@ -100,6 +102,7 @@ it('updates an education record on the authenticated users profile', function ()
         'profile_id' => $this->user->profile->id,
         'level' => 'phd',
         'institution' => 'Stanford',
+        'student_id' => 'STU-2020-002',
     ]);
 });
 

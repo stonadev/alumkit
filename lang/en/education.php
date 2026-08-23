@@ -10,6 +10,7 @@ return [
     'remove' => 'Remove',
     'level' => 'Level',
     'institution' => 'Institution',
+    'student_id' => 'Student ID',
     'subject' => 'Subject',
     'start_year' => 'Start Year',
     'start_month' => 'Start Month',

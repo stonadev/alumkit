@@ -12,7 +12,7 @@
             @php
                 // Restore typed values on validation failure; the education step
                 // always starts with at least one empty row.
-                $defaultEducation = ['level' => '', 'institution' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'end_year' => '', 'end_month' => ''];
+                $defaultEducation = ['level' => '', 'institution' => '', 'student_id' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'end_year' => '', 'end_month' => ''];
                 $oldEducations = array_map(
                     fn (array $e): array => array_merge($defaultEducation, $e),
                     old('educations', []) ?: [$defaultEducation],
@@ -66,7 +66,7 @@
                 x-data="{
                     educations: {{ Js::from($oldEducations) }},
                     add() {
-                        this.educations.push({ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
+                        this.educations.push({ level: '', institution: '', student_id: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
                     },
                     remove(index) {
                         this.educations.splice(index, 1);
@@ -112,6 +112,12 @@
                             x-model="edu.subject"
                             :label="__('alumkit::education.subject')"
                             :suggestions="config('alumkit.education.subjects', [])"
+                        />
+                        <x-input
+                            type="text"
+                            x-bind:name="'educations[' + index + '][student_id]'"
+                            x-model="edu.student_id"
+                            :label="__('alumkit::education.student_id')"
                         />
 
                         <div class="grid grid-cols-2 gap-4">

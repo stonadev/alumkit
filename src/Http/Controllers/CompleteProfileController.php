@@ -44,6 +44,7 @@ class CompleteProfileController extends Controller
             'educations' => ['required', 'array', 'min:1'],
             'educations.*.level' => ['required', 'string', 'max:255'],
             'educations.*.institution' => ['required', 'string', 'max:255'],
+            'educations.*.student_id' => ['nullable', 'string', 'max:255'],
             'educations.*.subject' => ['nullable', 'string', 'max:255'],
             'educations.*.start_year' => ['nullable', 'integer', 'digits:4'],
             'educations.*.start_month' => ['nullable', 'integer', 'between:1,12'],

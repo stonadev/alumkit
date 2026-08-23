@@ -72,6 +72,7 @@ it('creates an education record', function () {
             'profile_id' => $this->user->profile->id,
             'level' => 'masters',
             'institution' => 'MIT',
+            'student_id' => 'STU-2020-001',
             'subject' => 'Computer Science',
             'start_year' => 2020,
             'start_month' => 9,
@@ -84,6 +85,7 @@ it('creates an education record', function () {
         'profile_id' => $this->user->profile->id,
         'level' => 'masters',
         'institution' => 'MIT',
+        'student_id' => 'STU-2020-001',
         'subject' => 'Computer Science',
         'start_year' => 2020,
         'start_month' => 9,
@@ -153,6 +155,7 @@ it('updates an education record', function () {
         ->put(route('alumkit.educations.update', $education), [
             'level' => 'phd',
             'institution' => 'Stanford',
+            'student_id' => 'STU-2020-002',
             'subject' => 'AI',
         ])
         ->assertRedirect(route('alumkit.educations.index'));
@@ -161,6 +164,7 @@ it('updates an education record', function () {
         'id' => $education->id,
         'level' => 'phd',
         'institution' => 'Stanford',
+        'student_id' => 'STU-2020-002',
         'subject' => 'AI',
     ]);
 });

@@ -15,6 +15,7 @@
 
                 <x-alumkit::suggest name="institution" :label="__('alumkit::education.institution')" :value="$education->institution" :suggestions="config('alumkit.education.institutions', [])" required />
                 <x-alumkit::suggest name="subject" :label="__('alumkit::education.subject')" :value="$education->subject" :suggestions="config('alumkit.education.subjects', [])" />
+                <x-input type="text" name="student_id" :label="__('alumkit::education.student_id')" :value="old('student_id', $education->student_id)" />
 
                 <div class="grid grid-cols-2 gap-4">
                     <x-input type="number" name="start_year" :label="__('alumkit::education.start_year')" :value="$education->start_year" min="1900" max="2099" />

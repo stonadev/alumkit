@@ -22,6 +22,7 @@ class StoreEducationRequest extends FormRequest
             'profile_id' => ['required', 'exists:profiles,id'],
             'level' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
+            'student_id' => ['nullable', 'string', 'max:255'],
             'subject' => ['nullable', 'string', 'max:255'],
             'start_year' => ['nullable', 'integer', 'digits:4'],
             'start_month' => ['nullable', 'integer', 'between:1,12'],
