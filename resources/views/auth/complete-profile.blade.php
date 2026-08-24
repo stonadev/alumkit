@@ -86,7 +86,7 @@
             <p class="mb-4 text-center text-xs text-gray-500 sm:hidden">{{ __('alumkit::auth.step') }} <span x-text="step" class="font-semibold text-navy"></span> {{ __('alumkit::auth.of') }} 3</p>
 
             {{-- Education Section --}}
-            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && validateStep(1) && step++)">
+            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), validateStep(1) && step++)">
             <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::education.education') }}
@@ -200,7 +200,7 @@
             </div>
 
             {{-- Career Section --}}
-            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && validateStep(2) && step++)">
+            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), validateStep(2) && step++)">
             <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::career.career') }}
@@ -393,6 +393,8 @@
                         :value="old('gender')"
                         :options="\Alumkit\Alumkit\Enums\Gender::options()"
                         :label="__('alumkit::profile.gender')"
+                        placeholder="—"
+                        required
                     />
 
                     <x-alumkit::select
@@ -400,6 +402,8 @@
                         :value="old('blood_group')"
                         :options="\Alumkit\Alumkit\Enums\BloodGroup::options()"
                         :label="__('alumkit::profile.blood_group')"
+                        placeholder="—"
+                        required
                     />
                 </div>
 
@@ -493,7 +497,7 @@
                         type="button"
                         x-show="step < 3"
                         x-cloak
-                        x-on:click="$refs.form.reportValidity() && validateStep(step) && step++"
+                        x-on:click="validateStep(step) && step++"
                         :text="__('alumkit::auth.next')"
                     />
                     <x-button
