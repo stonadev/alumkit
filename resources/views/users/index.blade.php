@@ -7,21 +7,21 @@
 
     <form method="GET" action="{{ route('alumkit.users.index') }}" class="mb-6 max-w-sm" x-data="{
         search: {{ Js::from($search) }},
-        debounce: null,
+        controller: null,
         searchUsers() {
-            clearTimeout(this.debounce);
-            this.debounce = setTimeout(() => {
-                fetch('{{ route('alumkit.users.index') }}?filter={{ $filter }}&search=' + encodeURIComponent(this.search), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                    .then(r => r.text())
-                    .then(html => { document.getElementById('user-grid').innerHTML = html; })
-                    .catch(() => {});
-            }, 300);
+            if (this.controller) this.controller.abort();
+            this.controller = new AbortController();
+            fetch('{{ route('alumkit.users.index') }}?filter={{ Js::from($filter) }}&search=' + encodeURIComponent(this.search), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: this.controller.signal
+            })
+                .then(r => r.text())
+                .then(html => { document.getElementById('user-grid').innerHTML = html; })
+                .catch(e => { if (e.name !== 'AbortError') throw e; });
         }
     }" @submit.prevent>
         <input type="hidden" name="filter" value="{{ $filter }}">
-        <x-input type="search" name="search" x-model="search" x-on:input.debounce.300ms="searchUsers()" :value="$search" placeholder="{{ __('alumkit::dashboard.search_users') }}" />
+        <x-input type="search" name="search" x-model="search" x-on:input.debounce.300ms="searchUsers()" :label="__('alumkit::dashboard.search_users')" placeholder="{{ __('alumkit::dashboard.search_users') }}" />
     </form>
 
     <nav class="mb-6 flex gap-1 border-b border-outline-variant/60">
@@ -32,7 +32,7 @@
             'rejected' => __('alumkit::dashboard.filter_rejected'),
             'suspended' => __('alumkit::dashboard.filter_suspended'),
         ] as $value => $label)
-            <a href="{{ route('alumkit.users.index', array_filter(['filter' => $value, 'search' => $search])) }}"
+            <a href="{{ route('alumkit.users.index', array_filter(['filter' => $value, 'search' => $search], fn ($v) => $v !== '')) }}"
                class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors {{ $filter === $value ? 'text-navy border-gold' : 'text-on-surface-variant hover:text-navy border-transparent' }}">
                 {{ $label }}
             </a>

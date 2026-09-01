@@ -40,8 +40,9 @@ class UserRoleController extends Controller
         }
 
         if ($search !== '') {
-            $query->where(fn (Builder $q) => $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%"));
+            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+            $query->where(fn (Builder $q) => $q->whereRaw('name LIKE ? ESCAPE \'\\\'', [$like])
+                ->orWhereRaw('email LIKE ? ESCAPE \'\\\'', [$like]));
         }
 
         $users = $query->get();
