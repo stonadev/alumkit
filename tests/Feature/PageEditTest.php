@@ -17,7 +17,7 @@ beforeEach(function () {
 
     $this->user = User::factory()->approved()->create();
     $this->user->profile()->create();
-    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2018]);
 
     Permission::findOrCreate('manage pages');
     $this->user->givePermissionTo('manage pages');
