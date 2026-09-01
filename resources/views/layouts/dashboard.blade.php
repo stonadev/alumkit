@@ -46,7 +46,7 @@
                     $items = [
                         ['label' => __('alumkit::dashboard.dashboard'), 'route' => 'alumkit.dashboard', 'show' => true],
                         ['label' => __('alumkit::dashboard.roles'), 'route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles')],
-                        ['label' => __('alumkit::dashboard.manage_user_roles'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->can('manage members')],
+                        ['label' => __('alumkit::dashboard.manage_user_roles'), 'route' => auth()->user()->can('manage members') ? 'alumkit.users.index' : 'alumkit.members.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
                         ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
                     ];
