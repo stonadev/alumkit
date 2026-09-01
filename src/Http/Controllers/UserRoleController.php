@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Enums\UserState;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -17,7 +18,7 @@ class UserRoleController extends Controller
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
 
-        $allowed = ['pending', 'rejected', 'suspended', 'all'];
+        $allowed = ['pending', 'rejected', 'suspended', 'active', 'all'];
         $filter = $request->query('filter');
 
         if (! in_array($filter, $allowed, true)) {
@@ -25,6 +26,8 @@ class UserRoleController extends Controller
                 ? 'pending'
                 : 'all';
         }
+
+        $search = trim((string) $request->query('search'));
 
         $query = $userModel::query()->with(['roles', 'profile.educations', 'profile.careers']);
 
@@ -36,10 +39,23 @@ class UserRoleController extends Controller
             $query->where('state', $filter)->orderBy('name');
         }
 
+        if ($search !== '') {
+            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+            $query->where(fn (Builder $q) => $q->whereRaw('name LIKE ? ESCAPE \'\\\'', [$like])
+                ->orWhereRaw('email LIKE ? ESCAPE \'\\\'', [$like]));
+        }
+
+        $users = $query->get();
+
+        if ($request->ajax()) {
+            return view('alumkit::users.partials.grid', compact('users', 'filter'));
+        }
+
         /** @var View $view */
         $view = view('alumkit::users.index', [
-            'users' => $query->get(),
+            'users' => $users,
             'filter' => $filter,
+            'search' => $search,
         ]);
 
         return $view;
