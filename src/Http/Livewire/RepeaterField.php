@@ -27,7 +27,7 @@ class RepeaterField extends Component
         $this->name = $name;
         $this->fields = array_map(
             fn (FieldSchema|array $field) => $field instanceof FieldSchema ? $field->toArray() : $field,
-            $fields
+            $fields,
         );
         $this->rows = $rows ?: [];
     }

@@ -15,8 +15,10 @@ return new class extends Migration
             $table->foreignId('profile_id')->constrained()->cascadeOnDelete();
             $table->string('level');
             $table->string('institution');
-            $table->string('subject')->nullable();
-            $table->year('start_year')->nullable();
+            $table->string('student_id')->nullable();
+            $table->string('subject');
+            $table->boolean('is_current')->default(false);
+            $table->year('start_year');
             $table->unsignedTinyInteger('start_month')->nullable();
             $table->year('end_year')->nullable();
             $table->unsignedTinyInteger('end_month')->nullable();

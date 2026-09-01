@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Validator;
 use Illuminate\View\View;
 
 class CompleteProfileController extends Controller
@@ -40,13 +42,15 @@ class CompleteProfileController extends Controller
         }
 
         $validated = $request->validated(); // detail fields (FormRequest)
-        $validated = array_merge($validated, $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'educations' => ['required', 'array', 'min:1'],
             'educations.*.level' => ['required', 'string', 'max:255'],
             'educations.*.institution' => ['required', 'string', 'max:255'],
-            'educations.*.subject' => ['nullable', 'string', 'max:255'],
-            'educations.*.start_year' => ['nullable', 'integer', 'digits:4'],
+            'educations.*.student_id' => ['nullable', 'string', 'max:255'],
+            'educations.*.subject' => ['required', 'string', 'max:255'],
+            'educations.*.start_year' => ['required', 'integer', 'digits:4'],
             'educations.*.start_month' => ['nullable', 'integer', 'between:1,12'],
+            'educations.*.is_current' => ['sometimes', 'boolean'],
             'educations.*.end_year' => ['nullable', 'integer', 'digits:4', 'gte:educations.*.start_year'],
             'educations.*.end_month' => ['nullable', 'integer', 'between:1,12'],
             'careers' => ['nullable', 'array'],
@@ -61,7 +65,19 @@ class CompleteProfileController extends Controller
             'careers.*.end_year' => ['nullable', 'integer', 'digits:4'],
             'careers.*.end_month' => ['nullable', 'integer', 'between:1,12'],
             'careers.*.description' => ['nullable', 'string'],
-        ]));
+        ])->after(function (Validator $validator) use ($request): void {
+            foreach ($request->input('educations', []) as $i => $education) {
+                if (empty($education['end_year']) && empty($education['is_current'])) {
+                    $validator->errors()->add("educations.{$i}.end_year", __('validation.required', ['attribute' => 'end year']));
+                }
+            }
+        });
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $validated = array_merge($validated, $validator->validated());
 
         $user = $request->user();
 

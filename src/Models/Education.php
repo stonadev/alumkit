@@ -17,7 +17,9 @@ class Education extends Model
         'profile_id',
         'level',
         'institution',
+        'student_id',
         'subject',
+        'is_current',
         'start_year',
         'start_month',
         'end_year',
@@ -28,6 +30,7 @@ class Education extends Model
     protected function casts(): array
     {
         return [
+            'is_current' => 'boolean',
             'start_year' => 'integer',
             'start_month' => 'integer',
             'end_year' => 'integer',

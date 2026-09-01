@@ -108,6 +108,16 @@
                         {{ __('alumkit::auth.profile') }}
                     </a>
                 @endif
+
+                <div class="mt-4 border-t border-outline-variant/60 pt-4">
+                    <a href="{{ url('/') }}" target="_blank" rel="noopener"
+                       class="flex items-center gap-2 px-6 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:text-navy">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H8M17 7v9"/>
+                        </svg>
+                        {{ __('alumkit::dashboard.visit_site') }}
+                    </a>
+                </div>
             </nav>
 
             <div class="p-4 border-t border-outline-variant/60">

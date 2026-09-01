@@ -6,26 +6,51 @@
             {{ __('alumkit::auth.complete_profile_text') }}
         </p>
 
-        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ step: 1 }" x-ref="form">
+        @php
+            // Restore typed values on validation failure; the education step
+            // always starts with at least one empty row.
+            $defaultEducation = ['level' => '', 'institution' => '', 'student_id' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => ''];
+            $oldEducations = array_map(
+                fn (array $e): array => array_merge($defaultEducation, $e),
+                old('educations', []) ?: [$defaultEducation],
+            );
+            $oldCareers = array_map(function (array $c): array {
+                $c['is_current'] = ($c['is_current'] ?? false) == '1';
+
+                return array_merge([
+                    'job_title' => '', 'company' => '', 'employment_type' => '', 'industry' => '', 'location' => '',
+                    'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => '', 'description' => '',
+                ], $c);
+            }, old('careers', []));
+        @endphp
+
+        <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{
+            step: 1,
+            educations: {{ Js::from($oldEducations) }},
+            careers: {{ Js::from($oldCareers) }},
+            stepError: '',
+            canAdvance(s) {
+                if (s === 1) return this.educations.every(e => e.is_current || e.end_year);
+                if (s === 2) return this.careers.every(c => c.is_current || c.end_year);
+                return true;
+            },
+            validateStep(s) {
+                if (this.canAdvance(s)) { this.stepError = ''; return true; }
+                this.stepError = s === 1
+                    ? '{{ __('validation.required', ['attribute' => __('alumkit::education.end_year')]) }}'
+                    : '{{ __('validation.required', ['attribute' => __('alumkit::career.end_year')]) }}';
+                return false;
+            },
+            addEducation() {
+                this.educations.push({ level: '', institution: '', student_id: '', subject: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '' });
+            },
+            removeEducation(i) { this.educations.splice(i, 1); },
+            addCareer() {
+                this.careers.push({ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' });
+            },
+            removeCareer(i) { this.careers.splice(i, 1); }
+        }" x-ref="form">
             @csrf
-
-            @php
-                // Restore typed values on validation failure; the education step
-                // always starts with at least one empty row.
-                $defaultEducation = ['level' => '', 'institution' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'end_year' => '', 'end_month' => ''];
-                $oldEducations = array_map(
-                    fn (array $e): array => array_merge($defaultEducation, $e),
-                    old('educations', []) ?: [$defaultEducation],
-                );
-                $oldCareers = array_map(function (array $c): array {
-                    $c['is_current'] = ($c['is_current'] ?? false) == '1';
-
-                    return array_merge([
-                        'job_title' => '', 'company' => '', 'employment_type' => '', 'industry' => '', 'location' => '',
-                        'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => '', 'description' => '',
-                    ], $c);
-                }, old('careers', []));
-            @endphp
 
             <ol aria-label="{{ __('alumkit::auth.complete_profile') }}" class="mx-auto mb-6 flex w-full max-w-xs items-center text-xs">
                 {{-- Node 1: Education --}}
@@ -61,19 +86,8 @@
             <p class="mb-4 text-center text-xs text-gray-500 sm:hidden">{{ __('alumkit::auth.step') }} <span x-text="step" class="font-semibold text-navy"></span> {{ __('alumkit::auth.of') }} 3</p>
 
             {{-- Education Section --}}
-            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
-            <div
-                x-data="{
-                    educations: {{ Js::from($oldEducations) }},
-                    add() {
-                        this.educations.push({ level: '', institution: '', subject: '', start_year: '', start_month: '', end_year: '', end_month: '' });
-                    },
-                    remove(index) {
-                        this.educations.splice(index, 1);
-                    }
-                }"
-                class="space-y-3"
-            >
+            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), validateStep(1) && step++)">
+            <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::education.education') }}
                 </label>
@@ -83,7 +97,7 @@
                         <div class="flex justify-end" x-show="educations.length > 1">
                             <x-button
                                 type="button"
-                                x-on:click="remove(index)"
+                                x-on:click="removeEducation(index)"
                                 :text="__('alumkit::education.remove')"
                                 xs
                                 outline
@@ -112,12 +126,19 @@
                             x-model="edu.subject"
                             :label="__('alumkit::education.subject')"
                             :suggestions="config('alumkit.education.subjects', [])"
+                            required
+                        />
+                        <x-input
+                            type="text"
+                            x-bind:name="'educations[' + index + '][student_id]'"
+                            x-model="edu.student_id"
+                            :label="__('alumkit::education.student_id')"
                         />
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.start_year') }}</label>
-                                <select x-bind:name="'educations[' + index + '][start_year]'" x-model="edu.start_year" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+                                <select x-bind:name="'educations[' + index + '][start_year]'" x-model="edu.start_year" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
                                     <option value="">—</option>
                                     @foreach (range(date('Y') + 5, 1970) as $y)
                                         <option value="{{ $y }}">{{ $y }}</option>
@@ -135,7 +156,14 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center gap-2">
+                            <input type="hidden" x-bind:name="'educations[' + index + '][is_current]'" value="0">
+                            <input type="checkbox" x-bind:name="'educations[' + index + '][is_current]'" value="1"
+                                   x-model="edu.is_current" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ __('alumkit::education.currently_studying') }}</span>
+                        </label>
+
+                        <div class="grid grid-cols-2 gap-4" x-show="!edu.is_current">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.end_year') }}</label>
                                 <select x-bind:name="'educations[' + index + '][end_year]'" x-model="edu.end_year" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
@@ -158,9 +186,11 @@
                     </div>
                 </template>
 
+                <p x-show="stepError" x-cloak class="text-sm text-red-600 dark:text-red-400" x-text="stepError"></p>
+
                 <x-button
                     type="button"
-                    x-on:click="add()"
+                    x-on:click="addEducation()"
                     :text="__('alumkit::education.add_education')"
                     xs
                     outline
@@ -170,19 +200,8 @@
             </div>
 
             {{-- Career Section --}}
-            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), $refs.form.reportValidity() && step++)">
-            <div
-                x-data="{
-                    careers: {{ Js::from($oldCareers) }},
-                    add() {
-                        this.careers.push({ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' });
-                    },
-                    remove(index) {
-                        this.careers.splice(index, 1);
-                    }
-                }"
-                class="space-y-3"
-            >
+            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), validateStep(2) && step++)">
+            <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::career.career') }}
                 </label>
@@ -192,7 +211,7 @@
                         <div class="flex justify-end" x-show="careers.length > 0">
                             <x-button
                                 type="button"
-                                x-on:click="remove(index)"
+                                x-on:click="removeCareer(index)"
                                 :text="__('alumkit::education.remove')"
                                 xs
                                 outline
@@ -314,9 +333,11 @@
                     </div>
                 </template>
 
+                <p x-show="stepError" x-cloak class="text-sm text-red-600 dark:text-red-400" x-text="stepError"></p>
+
                 <x-button
                     type="button"
-                    x-on:click="add()"
+                    x-on:click="addCareer()"
                     :text="__('alumkit::career.add_career')"
                     xs
                     outline
@@ -372,6 +393,8 @@
                         :value="old('gender')"
                         :options="\Alumkit\Alumkit\Enums\Gender::options()"
                         :label="__('alumkit::profile.gender')"
+                        placeholder="—"
+                        required
                     />
 
                     <x-alumkit::select
@@ -379,6 +402,8 @@
                         :value="old('blood_group')"
                         :options="\Alumkit\Alumkit\Enums\BloodGroup::options()"
                         :label="__('alumkit::profile.blood_group')"
+                        placeholder="—"
+                        required
                     />
                 </div>
 
@@ -472,7 +497,7 @@
                         type="button"
                         x-show="step < 3"
                         x-cloak
-                        x-on:click="$refs.form.reportValidity() && step++"
+                        x-on:click="validateStep(step) && step++"
                         :text="__('alumkit::auth.next')"
                     />
                     <x-button

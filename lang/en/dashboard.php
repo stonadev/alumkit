@@ -29,6 +29,7 @@ return [
     'manage_user_roles' => 'Members',
     'user_roles_updated' => 'User roles updated successfully.',
     'back_to_dashboard' => 'Back to Dashboard',
+    'visit_site' => 'Visit Site',
     'actions' => 'Actions',
     'edit' => 'Edit',
     'delete' => 'Delete',

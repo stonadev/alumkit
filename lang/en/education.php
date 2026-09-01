@@ -10,6 +10,7 @@ return [
     'remove' => 'Remove',
     'level' => 'Level',
     'institution' => 'Institution',
+    'student_id' => 'Student ID',
     'subject' => 'Subject',
     'start_year' => 'Start Year',
     'start_month' => 'Start Month',
@@ -20,4 +21,6 @@ return [
     'education_deleted' => 'Education record deleted successfully.',
     'manage_educations' => 'Manage Educations',
     'no_educations' => 'No education records found.',
+    'present' => 'Present',
+    'currently_studying' => 'Currently studying',
 ];

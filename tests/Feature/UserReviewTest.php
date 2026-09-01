@@ -19,7 +19,7 @@ beforeEach(function () {
 
     $this->pendingUser = User::factory()->create(['name' => 'Pending Member']);
     $this->pendingUser->profile()->create();
-    $this->pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT']);
+    $this->pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $this->pendingUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->activeUser = User::factory()->approved()->create(['name' => 'Active Member']);
