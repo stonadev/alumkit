@@ -42,9 +42,6 @@
                                 <a href="{{ route('alumkit.pages.edit', $page) }}" class="text-navy hover:text-gold mr-3">
                                     Edit
                                 </a>
-                                <a href="{{ route('alumkit.pages.content.edit', $page) }}" class="text-navy hover:text-gold mr-3">
-                                    Content
-                                </a>
                                 <form method="POST" action="{{ route('alumkit.pages.destroy', $page) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                                     @csrf
                                     @method('DELETE')

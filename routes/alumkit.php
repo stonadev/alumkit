@@ -8,7 +8,6 @@ use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\GlobalContentController;
-use Alumkit\Alumkit\Http\Controllers\PageContentController;
 use Alumkit\Alumkit\Http\Controllers\PageController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\ProfileCareerController;
@@ -102,8 +101,6 @@ Route::middleware(['web'])->group(function () {
             });
             Route::middleware('permission:manage pages')->group(function () {
                 Route::resource('pages', PageController::class)->except(['show']);
-                Route::get('pages/{page}/content', [PageContentController::class, 'edit'])->name('pages.content.edit');
-                Route::put('pages/{page}/content', [PageContentController::class, 'update'])->name('pages.content.update');
             });
 
             Route::middleware('permission:manage globals')->group(function () {

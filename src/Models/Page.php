@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -20,11 +21,7 @@ use Illuminate\Support\Carbon;
  */
 class Page extends Model
 {
-    /** @var bool */
-    public $incrementing = false;
-
-    /** @var string */
-    protected $keyType = 'string';
+    use HasUuids;
 
     /** @var string */
     protected $table = 'pages';

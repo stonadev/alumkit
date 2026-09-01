@@ -12,20 +12,23 @@ class RepeaterField extends Component
 {
     public string $name;
 
-    /** @var array<FieldSchema> */
+    /** @var array<int, array<string, mixed>> */
     public array $fields = [];
 
     /** @var array<int, array<string, mixed>> */
     public array $rows = [];
 
     /**
-     * @param  array<FieldSchema>  $fields
+     * @param  array<int, FieldSchema|array<string, mixed>>  $fields
      * @param  array<int, array<string, mixed>>  $rows
      */
     public function mount(string $name, array $fields = [], array $rows = []): void
     {
         $this->name = $name;
-        $this->fields = $fields;
+        $this->fields = array_map(
+            fn (FieldSchema|array $field) => $field instanceof FieldSchema ? $field->toArray() : $field,
+            $fields
+        );
         $this->rows = $rows ?: [];
     }
 

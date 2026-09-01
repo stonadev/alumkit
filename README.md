@@ -199,8 +199,8 @@ editor forms from them, and stores the values.
 
 **Pages.** Create pages (`alumkit.pages.*`, guarded by
 `permission:manage pages`) with a title, slug, meta description, and publish
-state. Each page then has a content editor
-(`alumkit.pages.content.edit`) whose fields come from the schema registered
+state. Each page has a single edit screen
+(`alumkit.pages.edit`) whose Content tab fields come from the schema registered
 for that page's slug. Deleting a page deletes its content.
 
 **Globals.** Site-wide singletons (`alumkit.globals.*`, guarded by

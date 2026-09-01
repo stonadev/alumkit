@@ -11,33 +11,33 @@
             <div class="space-y-3">
                 @foreach ($fields as $field)
                     @php
-                        $fieldName = "{$name}[{$index}][{$field->name}]";
-                        $fieldValue = $row[$field->name] ?? '';
+                        $fieldName = "{$name}[{$index}][{$field['name']}]";
+                        $fieldValue = $row[$field['name']] ?? '';
                     @endphp
 
-                    @if ($field->type === 'text')
-                        <x-input :name="$fieldName" :label="$field->label ?? ucfirst($field->name)" :value="$fieldValue" />
-                    @elseif ($field->type === 'textarea')
+                    @if ($field['type'] === 'text')
+                        <x-input :name="$fieldName" :label="$field['label'] ?? ucfirst($field['name'])" :value="$fieldValue" />
+                    @elseif ($field['type'] === 'textarea')
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ $field->label ?? ucfirst($field->name) }}
+                                {{ $field['label'] ?? ucfirst($field['name']) }}
                             </label>
                             <textarea name="{{ $fieldName }}" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold focus:ring-gold">{{ $fieldValue }}</textarea>
                         </div>
-                    @elseif ($field->type === 'select')
+                    @elseif ($field['type'] === 'select')
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ $field->label ?? ucfirst($field->name) }}
+                                {{ $field['label'] ?? ucfirst($field['name']) }}
                             </label>
                             <select name="{{ $fieldName }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold focus:ring-gold">
                                 <option value="">Select...</option>
-                                @foreach (($field->options ?? []) as $value => $label)
+                                @foreach (($field['options'] ?? []) as $value => $label)
                                     <option value="{{ $value }}" @selected($fieldValue === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    @elseif ($field->type === 'checkbox')
-                        <x-alumkit::checkbox :name="$fieldName" :label="$field->label ?? ucfirst($field->name)" :checked="$fieldValue" />
+                    @elseif ($field['type'] === 'checkbox')
+                        <x-alumkit::checkbox :name="$fieldName" :label="$field['label'] ?? ucfirst($field['name'])" :checked="$fieldValue" />
                     @endif
                 @endforeach
             </div>
