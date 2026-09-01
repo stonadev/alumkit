@@ -55,7 +55,7 @@
                             </label>
                             @if ($fieldValue)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $fieldValue) }}" alt="" class="h-20 w-20 object-cover rounded">
+                                                                        <img src="{{ route('alumkit.content.image.show', basename($fieldValue)) }}" alt="" class="h-20 w-20 object-cover rounded">
                                 </div>
                             @endif
                             <div x-show="preview" class="mb-2">

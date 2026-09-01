@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Alumkit\Alumkit\Models\Content;
 use Alumkit\Alumkit\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
@@ -95,13 +94,68 @@ it('renders the edit page for pages without a registered schema', function () {
         ->assertDontSee('data-alumkit-editor');
 });
 
-it('removes the standalone content routes', function () {
-    expect(Route::has('alumkit.pages.content.edit'))->toBeFalse();
-    expect(Route::has('alumkit.pages.content.update'))->toBeFalse();
+it('keeps stored image and select values when saving without touching them', function () {
+    $page = Page::where('slug', 'about')->first();
 
+    Content::updateOrCreate(['owner' => 'page:about', 'type' => 'hero'], [
+        'fields' => [
+            'heading' => 'Original',
+            'body' => '',
+            'layout' => 'wide',
+            'banner' => 'content-images/banner.jpg',
+        ],
+    ]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.pages.update', $page), [
+            'title' => 'About Us',
+            'slug' => 'about',
+            'is_published' => 1,
+            'fields' => [
+                'heading' => 'Changed',
+                'body' => '',
+                'members' => [],
+            ],
+        ])
+        ->assertRedirect(route('alumkit.pages.edit', $page));
+
+    $hero = Content::where('owner', 'page:about')->where('type', 'hero')->first();
+
+    expect($hero->fields['heading'])->toBe('Changed');
+    expect($hero->fields['banner'])->toBe('content-images/banner.jpg');
+    expect($hero->fields['layout'])->toBe('wide');
+});
+
+it('whitelists select values against the schema', function () {
     $page = Page::where('slug', 'about')->first();
 
     $this->actingAs($this->user)
-        ->get('/dashboard/pages/'.$page->id.'/content')
-        ->assertNotFound();
+        ->put(route('alumkit.pages.update', $page), [
+            'title' => 'About Us',
+            'slug' => 'about',
+            'is_published' => 1,
+            'fields' => [
+                'heading' => 'About',
+                'body' => '',
+                'layout' => 'not-an-option',
+                'members' => [],
+            ],
+        ])
+        ->assertRedirect(route('alumkit.pages.edit', $page));
+
+    $hero = Content::where('owner', 'page:about')->where('type', 'hero')->first();
+
+    expect($hero->fields['layout'])->toBe('');
+});
+
+it('deletes page content when the page is deleted', function () {
+    $page = Page::where('slug', 'about')->first();
+
+    Content::where('owner', 'page:about')->update(['page_id' => $page->id]);
+
+    expect(Content::forPage('about')->count())->toBeGreaterThan(0);
+
+    $page->delete();
+
+    expect(Content::forPage('about')->count())->toBe(0);
 });

@@ -77,7 +77,6 @@ The following permissions are always seeded and cannot be removed:
 - `manage members`
 - `manage educations`
 - `manage pages`
-- `manage globals`
 - `view dashboard`
 
 #### Extending with Custom Permissions
@@ -204,7 +203,7 @@ state. Each page has a single edit screen
 for that page's slug. Deleting a page deletes its content.
 
 **Globals.** Site-wide singletons (`alumkit.globals.*`, guarded by
-`permission:manage globals`) — e.g. contact details, footer text. Each
+`permission:manage pages`) — e.g. contact details, footer text. Each
 global is one record keyed by a string.
 
 #### Registering Schemas
@@ -252,7 +251,7 @@ row per global key).
 | `text` | single-line input |
 | `textarea` | multi-line input |
 | `select` | dropdown; pass `->options(['value' => 'Label'])` |
-| `image` | file upload; stored under `storage/app/public/content-images` |
+| `image` | file upload; stored on the public disk and served through the package (no `storage:link`) |
 | `checkbox` | boolean toggle |
 | `editor` | rich-text editor with image uploads |
 | `repeater` | repeating rows of nested fields; pass `->fields([...])` |

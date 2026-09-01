@@ -27,7 +27,6 @@ class Alumkit
         'manage members',
         'manage educations',
         'manage pages',
-        'manage globals',
         'view dashboard',
     ];
 

@@ -7,6 +7,7 @@ namespace Alumkit\Alumkit\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -50,5 +51,11 @@ class Page extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true);
+    }
+
+    /** @return HasMany<Content, $this> */
+    public function contents(): HasMany
+    {
+        return $this->hasMany(Content::class);
     }
 }

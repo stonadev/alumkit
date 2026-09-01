@@ -24,6 +24,7 @@ class FieldSchema
 
     public ?string $help = null;
 
+    /** @var list<string> */
     private const VALID_TYPES = [
         'text',
         'textarea',

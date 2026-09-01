@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('type')->index(); // Content type alias (e.g. 'text', 'textarea', 'select', 'repeater')
             $table->json('fields'); // Field values as a JSON blob
             $table->timestamps();
+
+            $table->unique(['owner', 'type']);
         });
     }
 

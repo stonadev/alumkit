@@ -68,7 +68,7 @@
                         @foreach ($schema->sections() as $type => $section)
                             <x-card>
                                 <p class="label-caps text-on-surface-variant mb-1">{{ $type }}</p>
-                                <h2 class="text-lg font-semibold text-navy mb-5">{{ $section->label ?? ucfirst($type) }}</h2>
+                                <h2 class="text-lg font-semibold text-navy mb-5">{{ ucfirst($type) }}</h2>
 
                                 <div class="space-y-5">
                                     @php
@@ -120,7 +120,7 @@
                                                 </label>
                                                 @if ($fieldValue)
                                                     <div class="mb-2">
-                                                        <img src="{{ asset('storage/' . $fieldValue) }}" alt="" class="h-20 w-20 rounded-lg object-cover ring-1 ring-outline-variant/40">
+                                                                                                                <img src="{{ route('alumkit.content.image.show', basename($fieldValue)) }}" alt="" class="h-20 w-20 rounded-lg object-cover ring-1 ring-outline-variant/40">
                                                     </div>
                                                 @endif
                                                 <div x-show="preview" class="mb-2">

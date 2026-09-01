@@ -28,3 +28,4 @@ parameters:
         -
             identifier: typeCoverage.constantTypeCoverage
             path: src/Content/FieldSchema.php
+            # VALID_TYPES is a plain string list; a literal array shape adds nothing

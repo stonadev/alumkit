@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Content\ContentRegistry;
-use Alumkit\Alumkit\Content\GlobalSchema;
+use Alumkit\Alumkit\Content\FieldExtractor;
 use Alumkit\Alumkit\Models\Content;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,9 +49,7 @@ class GlobalContentController extends Controller
         abort_unless($schema !== null, 404, "No schema registered for global '{$key}'.");
 
         $owner = "global:{$key}";
-        $fields = $this->extractFields($schema, $request);
-        $imageFields = $this->extractImages($schema, $request);
-        $fields = array_merge($fields, $imageFields);
+        $fields = (new FieldExtractor($request))->extract($schema->fields(), $owner, 'global');
 
         Content::updateOrCreate(
             ['owner' => $owner, 'type' => 'global'],
@@ -60,52 +58,5 @@ class GlobalContentController extends Controller
 
         return redirect()->route('alumkit.globals.edit', $key)
             ->with('status', 'Global content updated successfully.');
-    }
-
-    /** @return array<string, mixed> */
-    protected function extractFields(GlobalSchema $schema, Request $request): array
-    {
-        $fields = [];
-
-        foreach ($schema->fields() as $field) {
-            if ($field->type === 'image') {
-                continue;
-            }
-
-            if ($field->type === 'checkbox') {
-                $fields[$field->name] = $request->boolean("fields.{$field->name}");
-
-                continue;
-            }
-
-            if ($field->type === 'repeater') {
-                $fields[$field->name] = $request->input("fields.{$field->name}", []);
-
-                continue;
-            }
-
-            $fields[$field->name] = $request->input("fields.{$field->name}", '');
-        }
-
-        return $fields;
-    }
-
-    /** @return array<string, string|null> */
-    protected function extractImages(GlobalSchema $schema, Request $request): array
-    {
-        $images = [];
-
-        foreach ($schema->fields() as $field) {
-            if ($field->type !== 'image') {
-                continue;
-            }
-
-            if ($request->hasFile("fields.{$field->name}")) {
-                $path = $request->file("fields.{$field->name}")->store('content-images', 'public');
-                $images[$field->name] = is_string($path) ? $path : null;
-            }
-        }
-
-        return $images;
     }
 }

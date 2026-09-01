@@ -101,9 +101,7 @@ Route::middleware(['web'])->group(function () {
             });
             Route::middleware('permission:manage pages')->group(function () {
                 Route::resource('pages', PageController::class)->only(['index', 'edit', 'update']);
-            });
 
-            Route::middleware('permission:manage globals')->group(function () {
                 Route::get('globals', [GlobalContentController::class, 'index'])->name('globals.index');
                 Route::get('globals/{key}', [GlobalContentController::class, 'edit'])->name('globals.edit');
                 Route::put('globals/{key}', [GlobalContentController::class, 'update'])->name('globals.update');

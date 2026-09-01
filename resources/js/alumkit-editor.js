@@ -106,7 +106,13 @@ function initEditor(el) {
           )
         );
         // form.submit() bypasses this handler (no re-entrancy, no race) and still
-        // sends the fresh hidden inputs with the normal form encoding.
+        // sends the fresh hidden inputs with the normal form encoding. It also
+        // skips constraint validation, so run it here to keep `required` gates.
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          el.__alumkitSubmitted = false;
+          return;
+        }
         form.submit();
       } catch {
         el.__alumkitSubmitted = false;

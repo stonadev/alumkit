@@ -30,6 +30,8 @@ class ContentSeeder extends Seeder
             $page->section('hero', function (SectionSchema $section): void {
                 $section->text('heading')->label('Heading')->required();
                 $section->editor('body')->label('Body');
+                $section->select('layout')->label('Layout')->options(['default' => 'Default', 'wide' => 'Wide']);
+                $section->image('banner')->label('Banner');
             });
 
             $page->section('team', function (SectionSchema $section): void {

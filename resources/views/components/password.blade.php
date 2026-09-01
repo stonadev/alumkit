@@ -11,6 +11,7 @@
         <input type="password" id="{{ $name }}" name="{{ $name }}" :type="show ? 'text' : 'password'"
                @required($required)
                autocomplete="{{ $attributes->get('autocomplete', 'off') }}"
+               @keydown.enter="$el.form.requestSubmit()"
                {{ $attributes->except(['autocomplete'])->class([
                    'dark:placeholder-dark-400 w-full rounded-md border-0 bg-transparent py-1.5 ring-0',
                    'placeholder:text-gray-400 focus:outline-hidden focus:ring-transparent sm:text-sm sm:leading-6 pl-3 pr-0',

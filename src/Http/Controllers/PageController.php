@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Content\ContentRegistry;
-use Alumkit\Alumkit\Content\SectionSchema;
+use Alumkit\Alumkit\Content\FieldExtractor;
 use Alumkit\Alumkit\Http\Requests\UpdatePageRequest;
 use Alumkit\Alumkit\Models\Content;
 use Alumkit\Alumkit\Models\Page;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -63,16 +62,17 @@ class PageController extends Controller
 
         if ($schema !== null) {
             $owner = "page:{$page->slug}";
+            $pageId = $page->getKey();
 
-            DB::transaction(function () use ($schema, $owner, $request): void {
+            $extractor = new FieldExtractor($request);
+
+            DB::transaction(function () use ($schema, $owner, $pageId, $extractor): void {
                 foreach ($schema->sections() as $type => $section) {
-                    $fields = $this->extractFields($section, $request);
-                    $imageFields = $this->extractImages($section, $request);
-                    $fields = array_merge($fields, $imageFields);
+                    $fields = $extractor->extract($section->fields(), $owner, $type);
 
                     Content::updateOrCreate(
                         ['owner' => $owner, 'type' => $type],
-                        ['fields' => $fields],
+                        ['fields' => $fields, 'page_id' => $pageId],
                     );
                 }
             });
@@ -80,52 +80,5 @@ class PageController extends Controller
 
         return redirect()->route('alumkit.pages.edit', $page)
             ->with('status', 'Page updated successfully.');
-    }
-
-    /** @return array<string, mixed> */
-    protected function extractFields(SectionSchema $section, Request $request): array
-    {
-        $fields = [];
-
-        foreach ($section->fields() as $field) {
-            if ($field->type === 'image') {
-                continue;
-            }
-
-            if ($field->type === 'checkbox') {
-                $fields[$field->name] = $request->boolean("fields.{$field->name}");
-
-                continue;
-            }
-
-            if ($field->type === 'repeater') {
-                $fields[$field->name] = $request->input("fields.{$field->name}", []);
-
-                continue;
-            }
-
-            $fields[$field->name] = $request->input("fields.{$field->name}", '');
-        }
-
-        return $fields;
-    }
-
-    /** @return array<string, string|null> */
-    protected function extractImages(SectionSchema $section, Request $request): array
-    {
-        $images = [];
-
-        foreach ($section->fields() as $field) {
-            if ($field->type !== 'image') {
-                continue;
-            }
-
-            if ($request->hasFile("fields.{$field->name}")) {
-                $path = $request->file("fields.{$field->name}")->store('content-images', 'public');
-                $images[$field->name] = is_string($path) ? $path : null;
-            }
-        }
-
-        return $images;
     }
 }
