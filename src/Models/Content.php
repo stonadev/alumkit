@@ -6,7 +6,6 @@ namespace Alumkit\Alumkit\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,7 +15,6 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed> $fields
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string $owner_type
  */
 class Content extends Model
 {
@@ -25,7 +23,6 @@ class Content extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'page_id',
         'owner',
         'type',
         'fields',
@@ -62,11 +59,5 @@ class Content extends Model
         return str_contains($this->owner, ':')
             ? explode(':', $this->owner, 2)[0]
             : 'unknown';
-    }
-
-    /** @return BelongsTo<Page, $this> */
-    public function page(): BelongsTo
-    {
-        return $this->belongsTo(Page::class);
     }
 }

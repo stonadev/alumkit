@@ -62,17 +62,16 @@ class PageController extends Controller
 
         if ($schema !== null) {
             $owner = "page:{$page->slug}";
-            $pageId = $page->getKey();
 
             $extractor = new FieldExtractor($request);
 
-            DB::transaction(function () use ($schema, $owner, $pageId, $extractor): void {
+            DB::transaction(function () use ($schema, $owner, $extractor): void {
                 foreach ($schema->sections() as $type => $section) {
                     $fields = $extractor->extract($section->fields(), $owner, $type);
 
                     Content::updateOrCreate(
                         ['owner' => $owner, 'type' => $type],
-                        ['fields' => $fields, 'page_id' => $pageId],
+                        ['fields' => $fields],
                     );
                 }
             });

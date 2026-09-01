@@ -16,6 +16,8 @@ use Alumkit\Alumkit\Http\Livewire\RepeaterField;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
+use Alumkit\Alumkit\Models\Page;
+use Alumkit\Alumkit\Observers\PageObserver;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -48,6 +50,8 @@ class AlumkitServiceProvider extends ServiceProvider
 
         Livewire::component('alumkit.link-field', LinkField::class);
         Livewire::component('alumkit.repeater-field', RepeaterField::class);
+
+        Page::observe(PageObserver::class);
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'alumkit');
 

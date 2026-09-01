@@ -151,8 +151,6 @@ it('whitelists select values against the schema', function () {
 it('deletes page content when the page is deleted', function () {
     $page = Page::where('slug', 'about')->first();
 
-    Content::where('owner', 'page:about')->update(['page_id' => $page->id]);
-
     expect(Content::forPage('about')->count())->toBeGreaterThan(0);
 
     $page->delete();
