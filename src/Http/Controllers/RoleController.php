@@ -42,6 +42,12 @@ class RoleController extends Controller
             $role->givePermissionTo($request->validated('permissions'));
         }
 
+        activity('role_management')
+            ->performedOn($role) /** @phpstan-ignore argument.type */
+            ->event('created')
+            ->withProperties(['permissions' => $request->validated('permissions', [])])
+            ->log('role created');
+
         return redirect()->route('alumkit.roles.index')
             ->with('status', __('alumkit::dashboard.role_created'));
     }
@@ -58,9 +64,22 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
     {
+        $currentPermissions = $role->permissions->pluck('name')->toArray();
+
         $role->update(['name' => $request->validated('name')]);
 
         $role->syncPermissions($request->validated('permissions', []));
+
+        $newPermissions = $request->validated('permissions', []);
+
+        activity('role_management')
+            ->performedOn($role)
+            ->event('updated')
+            ->withProperties([
+                'permissions_added' => array_values(array_diff($newPermissions, $currentPermissions)),
+                'permissions_removed' => array_values(array_diff($currentPermissions, $newPermissions)),
+            ])
+            ->log('role updated');
 
         return redirect()->route('alumkit.roles.index')
             ->with('status', __('alumkit::dashboard.role_updated'));
@@ -72,6 +91,11 @@ class RoleController extends Controller
             return redirect()->route('alumkit.roles.index')
                 ->with('error', __('alumkit::dashboard.role_has_users'));
         }
+
+        activity('role_management')
+            ->event('deleted')
+            ->withProperties(['role_name' => $role->name])
+            ->log('role deleted');
 
         $role->delete();
 

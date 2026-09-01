@@ -6,11 +6,22 @@ namespace Alumkit\Alumkit\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Education extends Model
 {
+    use LogsActivity;
+
     /** @var string */
     protected $table = 'educations';
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->logExcept(['created_at', 'updated_at']);
+    }
 
     /** @var list<string> */
     protected $fillable = [

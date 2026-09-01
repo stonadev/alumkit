@@ -98,6 +98,11 @@ class CompleteProfileController extends Controller
 
         (new ResubmitProfileForReview)->handle($user);
 
+        activity('profile')
+            ->performedOn($user)
+            ->event('submitted')
+            ->log('profile submitted');
+
         $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
 
         if (! $user->hasRole($adminRole)) {

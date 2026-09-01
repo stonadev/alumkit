@@ -36,6 +36,12 @@ class UserStateController extends Controller
 
         $targetUser->update(['state' => $newState->value]);
 
+        activity('member_management')
+            ->performedOn($targetUser)
+            ->event('state_changed')
+            ->withProperties(['old_state' => $currentState->value, 'new_state' => $newState->value])
+            ->log('member state changed');
+
         return redirect()->route('alumkit.users.index')
             ->with('status', __('alumkit::dashboard.user_state_updated'));
     }
