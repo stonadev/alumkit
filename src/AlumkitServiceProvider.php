@@ -44,9 +44,11 @@ class AlumkitServiceProvider extends ServiceProvider
 
         $this->registerMiddlewareAliases();
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
+
         $this->loadRoutesFrom(__DIR__.'/../routes/alumkit.php');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/pagination', 'alumkit.pagination');
 
         Livewire::component('alumkit.link-field', LinkField::class);
         Livewire::component('alumkit.repeater-field', RepeaterField::class);
