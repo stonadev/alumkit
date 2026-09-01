@@ -129,6 +129,10 @@ it('denies the users index without manage members permission', function () {
 });
 
 it('defaults to the all filter when no pending users exist', function () {
+    // This test deletes every pending user; the acting admin must not be one,
+    // or the request runs as a deleted user (FK cascade removes the profile).
+    $this->admin->update(['state' => 'active']);
+
     User::query()->where('state', 'pending')->delete();
 
     $this->actingAs($this->admin)

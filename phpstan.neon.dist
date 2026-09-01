@@ -25,3 +25,7 @@ parameters:
             identifier: trait.unused
             path: src/Traits/*.php
             # Trait is consumed by workbench User model and downstream apps, not within src/
+        -
+            identifier: typeCoverage.constantTypeCoverage
+            path: src/Content/FieldSchema.php
+            # VALID_TYPES is a plain string list; a literal array shape adds nothing

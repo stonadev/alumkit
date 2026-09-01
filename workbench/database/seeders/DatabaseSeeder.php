@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AlumkitRolesAndPermissionsSeeder::class,
             AlumkitUserSeeder::class,
+            ContentSeeder::class,
         ]);
 
         // Idempotent: a re-seed must not duplicate users or trip the

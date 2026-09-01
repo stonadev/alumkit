@@ -10,10 +10,14 @@ use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
+use Alumkit\Alumkit\Content\ContentRegistry;
 use Alumkit\Alumkit\Http\Livewire\LinkField;
+use Alumkit\Alumkit\Http\Livewire\RepeaterField;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
+use Alumkit\Alumkit\Models\Page;
+use Alumkit\Alumkit\Observers\PageObserver;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +35,7 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
 
         $this->app->singleton(Alumkit::class);
+        $this->app->singleton(ContentRegistry::class);
     }
 
     public function boot(): void
@@ -46,6 +51,9 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views/pagination', 'alumkit.pagination');
 
         Livewire::component('alumkit.link-field', LinkField::class);
+        Livewire::component('alumkit.repeater-field', RepeaterField::class);
+
+        Page::observe(PageObserver::class);
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'alumkit');
 
