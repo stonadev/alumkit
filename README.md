@@ -220,6 +220,8 @@ use Alumkit\Alumkit\Content\GlobalSchema;
 use Alumkit\Alumkit\Content\FieldSchema;
 
 Alumkit::page('about', function (PageSchema $page): void {
+    $page->view('workbench::about'); // blade that publicly renders the page
+
     $page->section('hero', function (SectionSchema $section): void {
         $section->text('heading')->label('Heading')->required();
         $section->editor('body')->label('Body');
@@ -270,20 +272,24 @@ $heroBody = $contents->get('hero')?->fields['body'] ?? '';
 $email = Alumkit::getGlobalContent('site')->first()?->fields['contact_email'] ?? '';
 ```
 
-#### Enabling the Dashboard Screens
+#### Public Page Routes
 
-The `manage pages` and `manage globals` permissions are seeded by default
-(`php artisan alumkit:seed`). Add the nav entries in the published
-`config/alumkit.php`:
+Register a public route per page in `routes/web.php`; the package resolves the
+page, enforces publish state, and renders the schema's registered view:
 
 ```php
-'dashboard_nav' => [
-    ['label' => 'Pages', 'route' => 'alumkit.pages.index', 'permission' => 'manage pages'],
-    ['label' => 'Globals', 'route' => 'alumkit.globals.index', 'permission' => 'manage globals'],
-],
+Route::get('about', Alumkit::pageRoute('about'));
 ```
 
-The screens are package-owned and not overridable by design.
+The view receives `$page` and `$contents` (the page's `Content` rows keyed by
+section type) and reads fields like the editor stores them:
+
+```blade
+<h1>{{ $contents->get('hero')?->fields['heading'] ?? 'About' }}</h1>
+```
+
+Unpublished pages return 404 to everyone except users holding the
+`manage pages` permission, who see a live preview at the same URL.
 
 ### Public Blog API
 

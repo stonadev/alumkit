@@ -8,9 +8,13 @@ use Alumkit\Alumkit\Content\ContentRegistry;
 use Alumkit\Alumkit\Content\GlobalSchema;
 use Alumkit\Alumkit\Content\PageSchema;
 use Alumkit\Alumkit\Models\Content;
+use Alumkit\Alumkit\Models\Page;
 use Alumkit\Alumkit\Models\Post;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
 class Alumkit
 {
@@ -105,5 +109,33 @@ class Alumkit
     public function getGlobalContent(string $key): Collection
     {
         return Content::forGlobal($key)->get();
+    }
+
+    /**
+     * Closure for a public page route. Renders the page through its registered
+     * schema view; unpublished pages 404 for everyone except users holding the
+     * "manage pages" permission (preview).
+     *
+     * @return Closure(Request): View
+     */
+    public function pageRoute(string $slug): Closure
+    {
+        return function (Request $request) use ($slug) {
+            $page = Page::where('slug', $slug)->first();
+            $viewName = app(ContentRegistry::class)->getPage($slug)?->viewName();
+
+            if (
+                $page === null
+                || $viewName === null
+                || (! $page->is_published && ! $request->user()?->can('manage pages'))
+            ) {
+                abort(404);
+            }
+
+            $contents = Content::forPage($slug)->get()->keyBy('type');
+
+            /** @phpstan-ignore argument.type */
+            return view($viewName, compact('page', 'contents'));
+        };
     }
 }

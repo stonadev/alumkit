@@ -4,6 +4,7 @@
 
 ### Added
 
+- Public page routes: `Alumkit::pageRoute($slug)` registers a route that resolves the page, enforces publish state, and renders the schema's registered view (`PageSchema::view()`). Unpublished pages 404 publicly but render as a preview to users holding the `manage pages` permission.
 - Redesigned the user review page (`/dashboard/users/{user}`) as a member-profile layout: identity rail with photo, headline role, contact and emergency-contact details; narrative cards for profile details, education, and career; and a review-decision panel with state transitions. ([#DESIGN](DESIGN.md))
 
 ### Changed

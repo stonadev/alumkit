@@ -32,6 +32,8 @@ class WorkbenchServiceProvider extends ServiceProvider
         // them at request time. ContentSeeder re-registers the same schemas
         // (idempotently) so standalone seeder runs stay self-contained.
         Alumkit::page('about', function (PageSchema $page): void {
+            $page->view('workbench::about');
+
             $page->section('hero', function (SectionSchema $section): void {
                 $section->text('heading')->label('Heading')->required();
                 $section->editor('body')->label('Body');

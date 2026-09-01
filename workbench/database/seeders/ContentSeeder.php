@@ -25,6 +25,8 @@ class ContentSeeder extends Seeder
         // standalone runs; the WorkbenchServiceProvider registration is the
         // canonical one for the running app. Both are idempotent.
         Alumkit::page('about', function (PageSchema $page): void {
+            $page->view('workbench::about');
+
             $page->section('hero', function (SectionSchema $section): void {
                 $section->text('heading')->label('Heading')->required();
                 $section->editor('body')->label('Body');
