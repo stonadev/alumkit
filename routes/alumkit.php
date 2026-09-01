@@ -100,7 +100,7 @@ Route::middleware(['web'])->group(function () {
                 Route::resource('careers', CareerController::class)->except(['show']);
             });
             Route::middleware('permission:manage pages')->group(function () {
-                Route::resource('pages', PageController::class)->except(['show']);
+                Route::resource('pages', PageController::class)->only(['index', 'edit', 'update']);
             });
 
             Route::middleware('permission:manage globals')->group(function () {

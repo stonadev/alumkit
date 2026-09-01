@@ -3,10 +3,6 @@
 @section('content')
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-navy">Pages</h1>
-
-        <a href="{{ route('alumkit.pages.create') }}">
-            <x-button text="Create Page" />
-        </a>
     </div>
 
     <x-card>
@@ -39,16 +35,9 @@
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-right">
-                                <a href="{{ route('alumkit.pages.edit', $page) }}" class="text-navy hover:text-gold mr-3">
+                                <a href="{{ route('alumkit.pages.edit', $page) }}" class="text-navy hover:text-gold">
                                     Edit
                                 </a>
-                                <form method="POST" action="{{ route('alumkit.pages.destroy', $page) }}" class="inline" onsubmit="return confirm('Are you sure?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                        Delete
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                     @endforeach

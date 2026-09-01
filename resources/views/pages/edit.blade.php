@@ -55,7 +55,10 @@
                     <h2 class="text-lg font-semibold text-navy mb-5">Page Details</h2>
                     <div class="space-y-5">
                         <x-input name="title" label="Title" :value="old('title', $page->title)" required />
-                        <x-input name="slug" label="Slug" :value="old('slug', $page->slug)" required />
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                            <p class="text-sm text-on-surface-variant py-2">{{ $page->slug }}</p>
+                        </div>
                     </div>
                 </x-card>
 

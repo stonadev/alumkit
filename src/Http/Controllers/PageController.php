@@ -6,7 +6,6 @@ namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Content\ContentRegistry;
 use Alumkit\Alumkit\Content\SectionSchema;
-use Alumkit\Alumkit\Http\Requests\StorePageRequest;
 use Alumkit\Alumkit\Http\Requests\UpdatePageRequest;
 use Alumkit\Alumkit\Models\Content;
 use Alumkit\Alumkit\Models\Page;
@@ -18,33 +17,23 @@ use Illuminate\View\View;
 
 class PageController extends Controller
 {
-    public function index(): View
+    public function index(ContentRegistry $registry): View
     {
-        $pages = Page::latest()->get();
+        foreach ($registry->getPages() as $slug => $schema) {
+            Page::firstOrCreate(
+                ['slug' => $slug],
+                ['title' => ucfirst(str_replace('-', ' ', $slug))],
+            );
+        }
+
+        $pages = Page::whereIn('slug', array_keys($registry->getPages()))
+            ->latest()
+            ->get();
 
         /** @var View $view */
         $view = view('alumkit::pages.index', compact('pages'));
 
         return $view;
-    }
-
-    public function create(): View
-    {
-        /** @var View $view */
-        $view = view('alumkit::pages.create');
-
-        return $view;
-    }
-
-    public function store(StorePageRequest $request): RedirectResponse
-    {
-        Page::create([
-            ...$request->validated(),
-            'is_published' => $request->boolean('is_published'),
-        ]);
-
-        return redirect()->route('alumkit.pages.index')
-            ->with('status', 'Page created successfully.');
     }
 
     public function edit(Page $page, ContentRegistry $registry): View
@@ -91,17 +80,6 @@ class PageController extends Controller
 
         return redirect()->route('alumkit.pages.edit', $page)
             ->with('status', 'Page updated successfully.');
-    }
-
-    public function destroy(Page $page): RedirectResponse
-    {
-        DB::transaction(function () use ($page): void {
-            Content::where('owner', "page:{$page->slug}")->delete();
-            $page->delete();
-        });
-
-        return redirect()->route('alumkit.pages.index')
-            ->with('status', 'Page deleted successfully.');
     }
 
     /** @return array<string, mixed> */
