@@ -7,6 +7,8 @@ namespace Alumkit\Alumkit\Models;
 use Alumkit\Alumkit\Enums\EmploymentType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property bool $is_current
@@ -14,8 +16,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Career extends Model
 {
+    use LogsActivity;
+
     /** @var string */
     protected $table = 'careers';
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->logExcept(['created_at', 'updated_at']);
+    }
 
     /** @var list<string> */
     protected $fillable = [

@@ -111,7 +111,18 @@ class UserRoleController extends Controller
             }
         }
 
+        $currentRoles = $targetUser->roles->pluck('name')->toArray();
+
         $targetUser->syncRoles($requestedRoles);
+
+        activity('member_management')
+            ->performedOn($targetUser)
+            ->event('roles_synced')
+            ->withProperties([
+                'roles_added' => array_values(array_diff($requestedRoles, $currentRoles)),
+                'roles_removed' => array_values(array_diff($currentRoles, $requestedRoles)),
+            ])
+            ->log('roles updated');
 
         return redirect()->route('alumkit.users.roles.edit', $targetUser)
             ->with('status', __('alumkit::dashboard.user_roles_updated'));
