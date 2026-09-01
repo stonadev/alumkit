@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alumkit\Alumkit\Http\Controllers\ActivityLogController;
 use Alumkit\Alumkit\Http\Controllers\AssetController;
 use Alumkit\Alumkit\Http\Controllers\CareerController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
@@ -67,6 +68,10 @@ Route::middleware(['web'])->group(function () {
         })->name('alumkit.dashboard');
 
         Route::prefix('dashboard')->name('alumkit.')->middleware('user.suspended')->group(function () {
+            Route::middleware('permission:manage members')->group(function () {
+                Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+            });
+
             Route::get('profile', function () {
                 /** @phpstan-ignore argument.type */
                 return view('alumkit::profile.show');

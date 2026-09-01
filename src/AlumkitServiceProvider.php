@@ -16,6 +16,7 @@ use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 use Livewire\Livewire;
@@ -39,9 +40,14 @@ class AlumkitServiceProvider extends ServiceProvider
 
         $this->registerMiddlewareAliases();
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
+
         $this->loadRoutesFrom(__DIR__.'/../routes/alumkit.php');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
+        // Branded prev/next controls for the activity log (and any consumer
+        // paginator that uses Laravel's default `simple` view).
+        $this->loadViewsFrom(__DIR__.'/../resources/views/pagination', 'pagination');
+        Paginator::defaultSimpleView('pagination::simple');
 
         Livewire::component('alumkit.link-field', LinkField::class);
 
