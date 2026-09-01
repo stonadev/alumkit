@@ -84,6 +84,8 @@ class CompleteProfileController extends Controller
         /** @var Profile $profile */
         $profile = $user->profile()->firstOrCreate();
 
+        $user->setRelation('profile', $profile);
+
         (new UpdateProfileDetails)->handle($profile, $validated, $request->file('photo'));
 
         foreach ($validated['educations'] as $education) {
