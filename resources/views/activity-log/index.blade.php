@@ -1,10 +1,10 @@
 @php
+    $userClass = app('auth')->getProvider()->getModel();
+
     $domains = [
         'member_management' => __('alumkit::activity_log.domain_member_management'),
         'role_management' => __('alumkit::activity_log.domain_role_management'),
         'profile' => __('alumkit::activity_log.domain_profile'),
-        'auth' => __('alumkit::activity_log.domain_auth'),
-        'default' => __('alumkit::activity_log.domain_default'),
     ];
 
     $verbs = [
@@ -30,13 +30,13 @@
     ];
 
     $subjectLinks = [
-        'member_management' => fn ($subject) => $subject instanceof \Workbench\App\Models\User
+                'member_management' => fn ($subject) => $subject instanceof $userClass
             ? route('alumkit.users.show', $subject)
             : null,
         'role_management' => fn ($subject) => $subject instanceof \Spatie\Permission\Models\Role
             ? route('alumkit.roles.edit', $subject)
             : null,
-        'profile' => fn ($subject) => $subject instanceof \Workbench\App\Models\User
+                'profile' => fn ($subject) => $subject instanceof $userClass
             ? route('alumkit.users.show', $subject)
             : null,
     ];
@@ -139,7 +139,7 @@
                     @endforeach
                 </ol>
 
-                {{ $activities->links('pagination::simple') }}
+                {{ $activities->links('alumkit.pagination::simple') }}
             </section>
         @endif
     </div>

@@ -28,6 +28,7 @@ class ResetUserPassword implements ResetsUserPasswords
 
         activity('auth')
             ->causedBy($user)
+            ->performedOn($user)
             ->event('password_changed')
             ->log('password changed');
     }

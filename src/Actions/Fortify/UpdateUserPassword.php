@@ -29,6 +29,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
 
         activity('auth')
             ->causedBy($user)
+            ->performedOn($user)
             ->event('password_changed')
             ->log('password changed');
     }

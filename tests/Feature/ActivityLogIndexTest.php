@@ -31,7 +31,7 @@ it('shows the activity log with state transitions for admins', function () {
         ->log('member state changed');
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertOk()
         ->assertSee('Membership state changed')
         ->assertSee($this->admin->name)
@@ -49,7 +49,7 @@ it('shows role changes with permission diffs', function () {
         ->log('role updated');
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertOk()
         ->assertSee('Role updated')
         ->assertSee('permissions_added')
@@ -64,20 +64,20 @@ it('excludes trait-level CRUD noise from the feed', function () {
         ->log('created');
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertOk()
         ->assertDontSee('Records');
 });
 
 it('requires the manage members permission', function () {
     $this->actingAs($this->targetUser)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertForbidden();
 });
 
 it('renders an empty state when there is no activity', function () {
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertOk()
         ->assertSee('No activity yet');
 });
@@ -111,13 +111,13 @@ it('paginates the activity feed', function () {
     }
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index'))
+        ->get(route('alumkit.activity.index'))
         ->assertOk()
         ->assertSee('Older')
         ->assertDontSee($oldestUser->name);
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.activity-log.index', ['page' => 2]))
+        ->get(route('alumkit.activity.index', ['page' => 2]))
         ->assertOk()
         ->assertSee('Newer')
         ->assertSee($oldestUser->name);

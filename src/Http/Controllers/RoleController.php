@@ -93,6 +93,7 @@ class RoleController extends Controller
         }
 
         activity('role_management')
+            ->performedOn($role)
             ->event('deleted')
             ->withProperties(['role_name' => $role->name])
             ->log('role deleted');
