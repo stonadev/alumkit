@@ -1,6 +1,8 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
+    @livewire('alumkit.committee-ordering')
+
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-navy">
             {{ __('alumkit::committee.committee') }}
