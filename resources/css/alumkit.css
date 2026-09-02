@@ -113,4 +113,14 @@ button[role="button"].rounded-md {
     .btn-secondary {
         @apply inline-flex items-center justify-center rounded border border-navy px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-white focus-visible:ring-2 focus-visible:ring-gold/50;
     }
+
+    /*
+     * TallStackUI's card wrapper hardcodes overflow-hidden. Override it so
+     * absolutely-positioned dropdowns (e.g. user search) can escape the card.
+     * The selector targets divs carrying both overflow-hidden and shadow-md,
+     * which uniquely identifies the TallStackUI card inner wrapper.
+     */
+    [class*="overflow-hidden"][class*="shadow-md"] {
+        overflow: visible !important;
+    }
 }

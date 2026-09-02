@@ -29,6 +29,7 @@
                 ['route' => 'alumkit.users.index', 'show' => auth()->user()->can('manage members'), 'overline' => __('alumkit::dashboard.manage_user_roles'), 'title' => __('alumkit::dashboard.manage_user_roles'), 'description' => __('alumkit::dashboard.manage_members_description')],
                 ['route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers'), 'overline' => __('alumkit::career.careers'), 'title' => __('alumkit::career.careers'), 'description' => __('alumkit::dashboard.careers_description')],
                 ['route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::post.posts'), 'title' => __('alumkit::post.posts'), 'description' => __('alumkit::dashboard.posts_description')],
+                ['route' => 'alumkit.committee.index', 'show' => auth()->user()->can('manage committee'), 'overline' => __('alumkit::committee.positions'), 'title' => __('alumkit::committee.positions'), 'description' => __('alumkit::dashboard.committee_description')],
             ];
             $links = array_values(array_filter($links, fn ($link) => $link['show']));
         @endphp

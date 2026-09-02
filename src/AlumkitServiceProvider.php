@@ -10,7 +10,9 @@ use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
+use Alumkit\Alumkit\Http\Livewire\CommitteeOrdering;
 use Alumkit\Alumkit\Http\Livewire\LinkField;
+use Alumkit\Alumkit\Http\Livewire\UserSearch;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
@@ -44,6 +46,8 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
 
         Livewire::component('alumkit.link-field', LinkField::class);
+        Livewire::component('alumkit.committee-ordering', CommitteeOrdering::class);
+        Livewire::component('alumkit.user-search', UserSearch::class);
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'alumkit');
 

@@ -72,4 +72,5 @@ return [
     'back_to_users' => 'Back to Users',
     'member_since_label' => 'Member since',
     'no_further_actions' => 'No further actions available.',
+    'committee_description' => 'Manage the executive committee, positions, and members.',
 ];

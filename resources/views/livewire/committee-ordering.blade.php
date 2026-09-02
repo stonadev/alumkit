@@ -1,0 +1,1 @@
+<div wire:ignore></div>
