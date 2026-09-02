@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
@@ -58,7 +59,7 @@ class UserSearch extends Component
 
         $this->results = $userModel::query()
             ->where('state', 'active')
-            ->where(function (\Illuminate\Database\Query\Builder $q): void {
+            ->where(function (Builder $q): void {
                 $q->where('name', 'like', '%'.$this->query.'%')
                     ->orWhere('email', 'like', '%'.$this->query.'%');
             })
