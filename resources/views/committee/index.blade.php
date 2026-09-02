@@ -1,8 +1,6 @@
 @extends('alumkit::layouts.dashboard')
 
 @section('content')
-    @livewire('alumkit.committee-ordering')
-
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-navy">
             {{ __('alumkit::committee.committee') }}
@@ -26,7 +24,7 @@
         @else
             <p class="text-sm text-gray-500 mb-4">{{ __('alumkit::committee.drag_to_reorder') }}</p>
 
-            <div wire:ignore>
+            <div>
                 <table class="w-full" id="committee-table">
                     <thead>
                         <tr class="border-b">
@@ -44,7 +42,15 @@
                                 handle: '.drag-handle',
                                 onEnd: function(evt) {
                                     var ids = Array.from($el.querySelectorAll('tr')).map(function(row) { return row.dataset.id; });
-                                    $wire.reorder(ids);
+                                    fetch('{{ route('alumkit.committee.reorder') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'),
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({ ids: ids })
+                                    });
                                 }
                             });
                         });

@@ -320,6 +320,21 @@ it('reorders committee members via Livewire', function () {
     expect($c->fresh()->sort_order)->toBe(0);
 });
 
+it('reorders committee members via controller', function () {
+    $position = Position::create(['name' => 'President']);
+    $a = CommitteeMember::create(['position_id' => $position->id, 'name' => 'A', 'sort_order' => 1]);
+    $b = CommitteeMember::create(['position_id' => $position->id, 'name' => 'B', 'sort_order' => 2]);
+    $c = CommitteeMember::create(['position_id' => $position->id, 'name' => 'C', 'sort_order' => 3]);
+
+    $this->actingAs($this->user)
+        ->postJson(route('alumkit.committee.reorder'), ['ids' => [$c->id, $a->id, $b->id]])
+        ->assertOk();
+
+    expect($a->fresh()->sort_order)->toBe(1);
+    expect($b->fresh()->sort_order)->toBe(2);
+    expect($c->fresh()->sort_order)->toBe(0);
+});
+
 // ─── Dashboard Integration ─────────────────────────────────────────
 
 it('shows committee card on dashboard for users with permission', function () {

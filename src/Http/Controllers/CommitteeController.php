@@ -8,7 +8,9 @@ use Alumkit\Alumkit\Http\Requests\StoreCommitteeMemberRequest;
 use Alumkit\Alumkit\Http\Requests\UpdateCommitteeMemberRequest;
 use Alumkit\Alumkit\Models\CommitteeMember;
 use Alumkit\Alumkit\Models\Position;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -99,5 +101,16 @@ class CommitteeController extends Controller
 
         return redirect()->route('alumkit.committee.index')
             ->with('status', __('alumkit::committee.member_deleted'));
+    }
+
+    public function reorder(Request $request): JsonResponse
+    {
+        $ids = $request->validate(['ids' => 'required|array']);
+
+        foreach ($ids['ids'] as $position => $id) {
+            CommitteeMember::where('id', $id)->update(['sort_order' => $position]);
+        }
+
+        return response()->json(['ok' => true]);
     }
 }

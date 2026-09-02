@@ -124,6 +124,7 @@ Route::middleware(['web'])->group(function () {
             Route::middleware('permission:manage committee')->group(function () {
                 Route::resource('positions', PositionController::class)->except(['show']);
                 Route::resource('committee', CommitteeController::class)->except(['show']);
+                Route::post('committee/reorder', [CommitteeController::class, 'reorder'])->name('committee.reorder');
             });
         });
     });
