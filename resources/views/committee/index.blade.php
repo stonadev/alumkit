@@ -36,13 +36,15 @@
                         </tr>
                     </thead>
                     <tbody id="committee-tbody" x-data x-init="
-                        new Sortable($el, {
-                            animation: 150,
-                            handle: '.drag-handle',
-                            onEnd: function(evt) {
-                                const ids = [...$el.querySelectorAll('tr')].map(row => row.dataset.id);
-                                $wire.reorder(ids);
-                            }
+                        import('{{ url('alumkit/style/alumkit-sortable.esm.js') }}').then(function(m) {
+                            new m.default($el, {
+                                animation: 150,
+                                handle: '.drag-handle',
+                                onEnd: function(evt) {
+                                    var ids = Array.from($el.querySelectorAll('tr')).map(function(row) { return row.dataset.id; });
+                                    $wire.reorder(ids);
+                                }
+                            });
                         });
                     ">
                         @foreach ($members as $member)
@@ -87,8 +89,4 @@
             </div>
         @endif
     </x-card>
-
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    @endpush
 @endsection

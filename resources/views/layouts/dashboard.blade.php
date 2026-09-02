@@ -10,6 +10,7 @@
     @tallStackUiStyle
     <link rel="stylesheet" href="{{ url('alumkit/style/alumkit.css') }}">
     <style>[x-cloak] { display: none !important; }</style>
+    @stack('head')
 </head>
 <body>
     <div class="min-h-screen flex" x-data="{ sidebarOpen: false }">
@@ -154,5 +155,6 @@
     </div>
     @tallStackUiScript
     @livewireScripts
+    @stack('scripts')
 </body>
 </html>
