@@ -76,6 +76,7 @@ The following permissions are always seeded and cannot be removed:
 - `manage permissions`
 - `manage members`
 - `manage educations`
+- `manage pages`
 - `view dashboard`
 
 #### Extending with Custom Permissions
@@ -187,6 +188,107 @@ auth chrome:
     {{-- event CRUD --}}
 @endsection
 ```
+
+### Content Management
+
+The package ships schema-driven content management: **pages** (per-page
+content) and **globals** (site-wide singletons). Content editors are defined
+by *schemas* you register in a service provider — the package renders the
+editor forms from them, and stores the values.
+
+**Pages.** Create pages (`alumkit.pages.*`, guarded by
+`permission:manage pages`) with a title, slug, meta description, and publish
+state. Each page has a single edit screen
+(`alumkit.pages.edit`) whose Content tab fields come from the schema registered
+for that page's slug. Deleting a page deletes its content.
+
+**Globals.** Site-wide singletons (`alumkit.globals.*`, guarded by
+`permission:manage pages`) — e.g. contact details, footer text. Each
+global is one record keyed by a string.
+
+#### Registering Schemas
+
+Register a schema for each page slug and each global key in a service
+provider's `boot()`:
+
+```php
+use Alumkit\Alumkit\Facades\Alumkit;
+use Alumkit\Alumkit\Content\PageSchema;
+use Alumkit\Alumkit\Content\SectionSchema;
+use Alumkit\Alumkit\Content\GlobalSchema;
+use Alumkit\Alumkit\Content\FieldSchema;
+
+Alumkit::page('about', function (PageSchema $page): void {
+    $page->view('workbench::about'); // blade that publicly renders the page
+
+    $page->section('hero', function (SectionSchema $section): void {
+        $section->text('heading')->label('Heading')->required();
+        $section->editor('body')->label('Body');
+    });
+
+    $page->section('team', function (SectionSchema $section): void {
+        $section->repeater('members')->fields([
+            (new FieldSchema('name', 'text'))->label('Name'),
+            (new FieldSchema('role', 'text'))->label('Role'),
+        ]);
+    });
+});
+
+Alumkit::global('site', function (GlobalSchema $global): void {
+    $global->text('contact_email')->label('Contact email');
+    $global->textarea('footer_text')->label('Footer text');
+});
+```
+
+Page schemas are grouped into **sections** (each section is saved as one
+`Content` row keyed by its `type`); global schemas are flat (one `Content`
+row per global key).
+
+#### Field Types
+
+| Type | Renders |
+|---|---|
+| `text` | single-line input |
+| `textarea` | multi-line input |
+| `select` | dropdown; pass `->options(['value' => 'Label'])` |
+| `image` | file upload; stored on the public disk and served through the package (no `storage:link`) |
+| `checkbox` | boolean toggle |
+| `editor` | rich-text editor with image uploads |
+| `repeater` | repeating rows of nested fields; pass `->fields([...])` |
+
+All fields accept `->label()`, `->required()`, and `->help()`.
+
+#### Reading Content Back
+
+In your own views or controllers:
+
+```php
+// Collection of Content models; key by section type to read fields
+$contents = Alumkit::getPageContent('about')->keyBy('type');
+$heroBody = $contents->get('hero')?->fields['body'] ?? '';
+
+// Globals: one Content model per key
+$email = Alumkit::getGlobalContent('site')->first()?->fields['contact_email'] ?? '';
+```
+
+#### Public Page Routes
+
+Register a public route per page in `routes/web.php`; the package resolves the
+page, enforces publish state, and renders the schema's registered view:
+
+```php
+Route::get('about', Alumkit::pageRoute('about'));
+```
+
+The view receives `$page` and `$contents` (the page's `Content` rows keyed by
+section type) and reads fields like the editor stores them:
+
+```blade
+<h1>{{ $contents->get('hero')?->fields['heading'] ?? 'About' }}</h1>
+```
+
+Unpublished pages return 404 to everyone except users holding the
+`manage pages` permission, who see a live preview at the same URL.
 
 ### Public Blog API
 

@@ -10,7 +10,6 @@
     @tallStackUiStyle
     <link rel="stylesheet" href="{{ url('alumkit/style/alumkit.css') }}">
     <style>[x-cloak] { display: none !important; }</style>
-    @stack('head')
 </head>
 <body>
     <div class="min-h-screen flex" x-data="{ sidebarOpen: false }">
@@ -48,9 +47,10 @@
                         ['label' => __('alumkit::dashboard.dashboard'), 'route' => 'alumkit.dashboard', 'show' => true],
                         ['label' => __('alumkit::dashboard.roles'), 'route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles')],
                         ['label' => __('alumkit::dashboard.manage_user_roles'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->can('manage members')],
+                        ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('manage members')],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
                         ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
-                        ['label' => __('alumkit::committee.positions'), 'route' => 'alumkit.committee.index', 'show' => auth()->user()->can('manage committee')],
+                        ['label' => __('alumkit::committee.committee'), 'route' => 'alumkit.committee.index', 'show' => auth()->user()->can('manage committee')],
                     ];
                 @endphp
 
@@ -155,6 +155,5 @@
     </div>
     @tallStackUiScript
     @livewireScripts
-    @stack('scripts')
 </body>
 </html>

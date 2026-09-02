@@ -39,6 +39,11 @@ return [
         //                     ]]
         // group permission is optional and guards the whole group; child permission guards one child.
         // One level of nesting; groups cannot contain groups.
+
+        ['label' => 'Content', 'permission' => 'manage pages', 'children' => [
+            ['label' => 'Pages', 'route' => 'alumkit.pages.index'],
+            ['label' => 'Globals', 'route' => 'alumkit.globals.index'],
+        ]],
     ],
 
     'education' => [

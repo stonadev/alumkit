@@ -28,7 +28,6 @@ class AssetController extends Controller
         'alumkit.css' => 'text/css',
         'alumkit-editor.css' => 'text/css',
         'alumkit-editor.js' => 'application/javascript',
-        'alumkit-sortable.esm.js' => 'application/javascript',
     ];
 
     /**
@@ -45,7 +44,7 @@ class AssetController extends Controller
         }
 
         // `no-cache, public`: browsers and shared caches must revalidate
-        // before reuse — a `composer update` immediately ships new CSS.
+        // before reuse, so a `composer update` immediately ships new CSS.
         $response = response()->file($path, [
             'Content-Type' => $type,
             'Cache-Control' => 'no-cache',

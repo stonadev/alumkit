@@ -65,7 +65,74 @@ it('filters users by suspended state', function () {
         ->assertDontSee('Active Member');
 });
 
+it('filters users by active state', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'active']))
+        ->assertOk()
+        ->assertSee('Active Member')
+        ->assertDontSee('Pending Member');
+});
+
+it('searches users by name', function () {
+    User::factory()->create(['name' => 'Alice Smith'])->profile()->create();
+    User::factory()->create(['name' => 'Bob Jones'])->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['search' => 'Alice']))
+        ->assertOk()
+        ->assertSee('Alice Smith')
+        ->assertDontSee('Bob Jones');
+});
+
+it('searches users by email', function () {
+    User::factory()->create(['name' => 'Alice Smith', 'email' => 'alice@example.com'])->profile()->create();
+    User::factory()->create(['name' => 'Bob Jones', 'email' => 'bob@example.com'])->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['search' => 'bob@example']))
+        ->assertOk()
+        ->assertSee('Bob Jones')
+        ->assertDontSee('Alice Smith');
+});
+
+it('returns a partial grid for ajax requests', function () {
+    User::factory()->create(['name' => 'Alice Smith'])->profile()->create();
+    User::factory()->create(['name' => 'Bob Jones'])->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['search' => 'alice']), ['X-Requested-With' => 'XMLHttpRequest'])
+        ->assertOk()
+        ->assertSee('Alice Smith')
+        ->assertDontSee('Bob Jones')
+        ->assertDontSee('user-grid');
+});
+
+it('combines search with the active filter', function () {
+    User::factory()->create(['name' => 'Active Alice', 'state' => 'active'])->profile()->create();
+    User::factory()->create(['name' => 'Active Bob', 'state' => 'active'])->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'active', 'search' => 'alice']))
+        ->assertOk()
+        ->assertSee('Active Alice')
+        ->assertDontSee('Active Bob')
+        ->assertDontSee('Active Member');
+});
+
+it('denies the users index without manage members permission', function () {
+    $deniedUser = User::factory()->create();
+    $deniedUser->profile()->create();
+
+    $this->actingAs($deniedUser)
+        ->get(route('alumkit.users.index'))
+        ->assertForbidden();
+});
+
 it('defaults to the all filter when no pending users exist', function () {
+    // This test deletes every pending user; the acting admin must not be one,
+    // or the request runs as a deleted user (FK cascade removes the profile).
+    $this->admin->update(['state' => 'active']);
+
     User::query()->where('state', 'pending')->delete();
 
     $this->actingAs($this->admin)

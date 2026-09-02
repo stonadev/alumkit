@@ -13,6 +13,7 @@ use Illuminate\Routing\Route;
 use Laravel\Fortify\FortifyServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 use TallStackUi\Facades\TallStackUi;
 use TallStackUi\TallStackUiServiceProvider;
@@ -46,6 +47,7 @@ abstract class TestCase extends Orchestra
             TallStackUiServiceProvider::class,
             FortifyServiceProvider::class,
             PermissionServiceProvider::class,
+            ActivitylogServiceProvider::class,
             AlumkitServiceProvider::class,
         ];
     }
@@ -75,6 +77,7 @@ abstract class TestCase extends Orchestra
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
+            'foreign_key_constraints' => true,
         ]);
 
         $app['config']->set('cache.store', 'array');

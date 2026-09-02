@@ -71,21 +71,51 @@ function initEditor(el) {
 
   const form = el.closest('form');
   if (form) {
-    form.addEventListener('submit', async (e) => {
-      if (form.__alumkitEditorSubmitting) return; // re-entered via requestSubmit: let it through
-      e.preventDefault();
-      form.__alumkitEditorSubmitting = true;
+    // Keep the hidden input in sync before any submit. Editor.js needs a beat to
+    // persist the block the user just left; awaiting save() inside the submit
+    // handler made the first click after editing drop the submit (the save raced
+    // the blur triggered by the click itself), so the page only saved on the
+    // second click. Sync on focusout instead: clicking Save/Cancel blurs the
+    // editor first, and the submit handler then just flushes any pending save.
+    let saving = false;
+    async function sync() {
+      if (saving) return;
+      saving = true;
       try {
         const data = await editor.save();
         input.value = data.blocks.length ? JSON.stringify(data) : '';
-        // submit only after every editor in the form has saved (N-editor safe)
-        form.__alumkitEditorSaved = (form.__alumkitEditorSaved ?? 0) + 1;
-        if (form.__alumkitEditorSaved === form.querySelectorAll('[data-alumkit-editor]').length) {
-          form.requestSubmit();
+      } finally {
+        saving = false;
+      }
+    }
+    el.__alumkitSync = sync;
+    form.addEventListener('focusout', (e) => {
+      // Save when focus leaves this editor (clicking Save/Cancel blurs it first).
+      if (el.contains(e.target) && !el.contains(e.relatedTarget)) sync();
+    }, true);
+    form.addEventListener('submit', async (e) => {
+      // Re-entered after we flushed the editors: submit for real.
+      if (el.__alumkitSubmitted) return;
+      e.preventDefault();
+      el.__alumkitSubmitted = true;
+      try {
+        // Every editor on the form syncs (N-editor safe), then submit once.
+        await Promise.all(
+          [...form.querySelectorAll('[data-alumkit-editor]')].map((editorEl) =>
+            editorEl.__alumkitSync?.()
+          )
+        );
+        // form.submit() bypasses this handler (no re-entrancy, no race) and still
+        // sends the fresh hidden inputs with the normal form encoding. It also
+        // skips constraint validation, so run it here to keep `required` gates.
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          el.__alumkitSubmitted = false;
+          return;
         }
+        form.submit();
       } catch {
-        form.__alumkitEditorSubmitting = false;
-        form.__alumkitEditorSaved = 0;
+        el.__alumkitSubmitted = false;
         alert('Could not save the editor content. Please check the highlighted blocks.');
       }
     }, true);

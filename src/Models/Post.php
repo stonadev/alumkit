@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property int $user_id
@@ -16,8 +18,17 @@ use Illuminate\Support\Carbon;
  */
 class Post extends Model
 {
+    use LogsActivity;
+
     /** @var string */
     protected $table = 'posts';
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->logExcept(['created_at', 'updated_at']);
+    }
 
     /** @var list<string> */
     protected $fillable = [

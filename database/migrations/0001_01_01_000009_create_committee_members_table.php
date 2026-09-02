@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('committee_members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('position_id')->constrained()->nullOnDelete();
+            $table->foreignId('position_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name')->nullable();
             $table->string('photo_path')->nullable();

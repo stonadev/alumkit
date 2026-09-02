@@ -21,5 +21,10 @@ final class ResubmitProfileForReview
         }
 
         $user->update(['state' => UserState::Pending->value]);
+
+        activity('profile')
+            ->performedOn($user)
+            ->event('resubmitted')
+            ->log('profile resubmitted for review');
     }
 }
