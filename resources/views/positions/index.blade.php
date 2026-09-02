@@ -6,9 +6,14 @@
             {{ __('alumkit::committee.manage_positions') }}
         </h1>
 
-        <a href="{{ route('alumkit.positions.create') }}">
-            <x-button :text="__('alumkit::committee.new_position')" />
-        </a>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('alumkit.committee.index') }}" class="text-navy hover:text-gold">
+                ← Back to Committee
+            </a>
+            <a href="{{ route('alumkit.positions.create') }}">
+                <x-button :text="__('alumkit::committee.new_position')" />
+            </a>
+        </div>
     </div>
 
     <x-card>
