@@ -58,7 +58,7 @@ class UserSearch extends Component
 
         $this->results = $userModel::query()
             ->where('state', 'active')
-            ->where(function ($q): void {
+            ->where(function (\Illuminate\Database\Query\Builder $q): void {
                 $q->where('name', 'like', '%'.$this->query.'%')
                     ->orWhere('email', 'like', '%'.$this->query.'%');
             })
