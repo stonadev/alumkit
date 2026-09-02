@@ -18,9 +18,10 @@ it('creates the expected permissions', function () {
     expect($permissions)->toContain('manage permissions');
     expect($permissions)->toContain('manage members');
     expect($permissions)->toContain('manage educations');
+    expect($permissions)->toContain('manage committee');
     expect($permissions)->toContain('manage pages');
     expect($permissions)->toContain('view dashboard');
-    expect($permissions)->toHaveCount(6);
+    expect($permissions)->toHaveCount(7);
 });
 
 it('always seeds base permissions regardless of config', function () {
@@ -30,11 +31,12 @@ it('always seeds base permissions regardless of config', function () {
 
     $permissions = Permission::pluck('name')->toArray();
 
-    expect($permissions)->toHaveCount(6);
+    expect($permissions)->toHaveCount(7);
     expect($permissions)->toContain('manage roles');
     expect($permissions)->toContain('manage permissions');
     expect($permissions)->toContain('manage members');
     expect($permissions)->toContain('manage educations');
+    expect($permissions)->toContain('manage committee');
     expect($permissions)->toContain('manage pages');
     expect($permissions)->toContain('view dashboard');
 });
@@ -49,7 +51,7 @@ it('seeds custom permissions from config alongside base permissions', function (
 
     $permissions = Permission::pluck('name')->toArray();
 
-    expect($permissions)->toHaveCount(8);
+    expect($permissions)->toHaveCount(9);
     expect($permissions)->toContain('manage events');
     expect($permissions)->toContain('manage announcements');
     // Base permissions still present.
@@ -66,7 +68,7 @@ it('assigns all permissions including custom to the admin role', function () {
 
     $adminRole = Role::findByName('admin');
 
-    expect($adminRole->permissions->count())->toBe(7);
+    expect($adminRole->permissions->count())->toBe(8);
     expect($adminRole->permissions->pluck('name')->toArray())->toContain('manage events');
 });
 
@@ -86,12 +88,13 @@ it('assigns all permissions to the admin role', function () {
 
     $adminRole = Role::findByName('admin');
 
-    expect($adminRole->permissions->count())->toBe(6);
+    expect($adminRole->permissions->count())->toBe(7);
     expect($adminRole->permissions->pluck('name')->toArray())->toBe([
         'manage roles',
         'manage permissions',
         'manage members',
         'manage educations',
+        'manage committee',
         'manage pages',
         'view dashboard',
     ]);

@@ -141,4 +141,30 @@ button[role="button"].rounded-md {
         @apply ring-2 ring-offset-2;
         --tw-ring-color: rgba(119, 90, 25, 0.5);
     }
+
+    /*
+     * Publish toggle — inspired by uiverse.io/vinodjangid07/moody-rabbit-65.
+     * Pill track with a white circle thumb; Academy Gold when checked.
+     */
+    .ak-toggle {
+        @apply relative inline-flex h-[30px] w-[50px] cursor-pointer items-center justify-center rounded-[20px] transition-colors duration-200;
+        background-color: var(--color-outline-variant);
+    }
+    .ak-toggle::after {
+        content: "";
+        @apply absolute left-[5px] h-[20px] w-[20px] rounded-full border-[5px] border-white transition-all duration-200;
+        background-color: transparent;
+        box-shadow: 5px 2px 7px rgba(8, 8, 8, 0.26);
+    }
+    .peer:checked + .ak-toggle {
+        background-color: var(--color-inverse-primary);
+    }
+    .peer:checked + .ak-toggle::after {
+        transform: translateX(20px);
+        background-color: white;
+    }
+    .peer:focus-visible + .ak-toggle {
+        @apply ring-2 ring-offset-2;
+        --tw-ring-color: rgba(119, 90, 25, 0.5);
+    }
 }

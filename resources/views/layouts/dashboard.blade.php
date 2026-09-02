@@ -50,6 +50,7 @@
                         ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('manage members')],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
                         ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
+                        ['label' => __('alumkit::committee.committee'), 'route' => 'alumkit.committee.index', 'show' => auth()->user()->can('manage committee')],
                     ];
                 @endphp
 

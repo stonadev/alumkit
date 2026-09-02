@@ -8,3 +8,9 @@ Route::get('/', function () {
 });
 
 Route::get('/about', Alumkit::pageRoute('about'));
+
+Route::get('/committee', function () {
+    $members = Alumkit::committeeMembers()->get();
+
+    return view('workbench::committee', compact('members'));
+})->name('committee');

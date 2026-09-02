@@ -5,12 +5,14 @@ declare(strict_types=1);
 use Alumkit\Alumkit\Http\Controllers\ActivityLogController;
 use Alumkit\Alumkit\Http\Controllers\AssetController;
 use Alumkit\Alumkit\Http\Controllers\CareerController;
+use Alumkit\Alumkit\Http\Controllers\CommitteeController;
 use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\GlobalContentController;
 use Alumkit\Alumkit\Http\Controllers\MemberController;
 use Alumkit\Alumkit\Http\Controllers\PageController;
+use Alumkit\Alumkit\Http\Controllers\PositionController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\ProfileCareerController;
 use Alumkit\Alumkit\Http\Controllers\ProfileDetailsController;
@@ -52,6 +54,15 @@ Route::get('alumkit/style/profile-photos/{file}', function (string $file) {
 
     return Storage::disk('public')->response($path);
 })->name('alumkit.profile.photo.show')->where('file', '[\w.\-]+');
+
+// Committee photos: streamed through the package (no storage:link requirement).
+Route::get('alumkit/style/committee-photos/{file}', function (string $file) {
+    $path = 'committee-photos/'.basename($file);
+
+    abort_unless(Storage::disk('public')->exists($path), 404);
+
+    return Storage::disk('public')->response($path);
+})->name('alumkit.committee.photo')->where('file', '[\w.\-]+');
 
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
@@ -128,6 +139,12 @@ Route::middleware(['web'])->group(function () {
                 Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
                 Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
                 Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');
+            });
+
+            Route::middleware('permission:manage committee')->group(function () {
+                Route::resource('positions', PositionController::class)->except(['show']);
+                Route::resource('committee', CommitteeController::class)->except(['show']);
+                Route::post('committee/reorder', [CommitteeController::class, 'reorder'])->name('committee.reorder');
             });
         });
     });

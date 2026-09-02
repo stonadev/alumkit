@@ -7,6 +7,7 @@ namespace Alumkit\Alumkit;
 use Alumkit\Alumkit\Content\ContentRegistry;
 use Alumkit\Alumkit\Content\GlobalSchema;
 use Alumkit\Alumkit\Content\PageSchema;
+use Alumkit\Alumkit\Models\CommitteeMember;
 use Alumkit\Alumkit\Models\Content;
 use Alumkit\Alumkit\Models\Page;
 use Alumkit\Alumkit\Models\Post;
@@ -26,6 +27,7 @@ class Alumkit
         'manage permissions',
         'manage members',
         'manage educations',
+        'manage committee',
         'manage pages',
         'view dashboard',
     ];
@@ -48,6 +50,32 @@ class Alumkit
     public function recentPosts(int $limit = 5): Collection
     {
         return $this->publishedPosts()->limit(max(0, $limit))->get();
+    }
+
+    /**
+     * All committee members sorted by dashboard order, with position and user eager-loaded.
+     *
+     * @return Builder<CommitteeMember>
+     */
+    public function committeeMembers(): Builder
+    {
+        return CommitteeMember::with(['position', 'user'])->orderBy('sort_order');
+    }
+
+    /**
+     * The N most recent committee members (sorted by dashboard order). Limit 0 returns all.
+     *
+     * @return Collection<int, CommitteeMember>
+     */
+    public function recentCommitteeMembers(int $limit = 0): Collection
+    {
+        $query = $this->committeeMembers();
+
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
 
     /**
