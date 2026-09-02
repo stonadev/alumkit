@@ -55,8 +55,15 @@ class CommitteeMember extends Model
 
     public function photoUrl(): ?string
     {
-        return $this->photo_path
-            ? route('alumkit.committee.photo', basename($this->photo_path))
+        if ($this->photo_path) {
+            return route('alumkit.committee.photo', basename($this->photo_path));
+        }
+
+        /** @phpstan-ignore property.notFound */
+        $profilePhoto = $this->user?->profile?->photo_path;
+
+        return $profilePhoto
+            ? route('alumkit.profile.photo.show', basename($profilePhoto))
             : null;
     }
 
