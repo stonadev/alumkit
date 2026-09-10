@@ -45,10 +45,28 @@ class ProfileDetailsRequest extends FormRequest
 
             foreach ($localNames as $code => $langConfig) {
                 $required = ($langConfig['required'] ?? false) ? 'required' : 'nullable';
-                $rules["local_names.{$code}"] = [$required, 'string', 'max:255', 'regex:/^[\p{Bengali}\s]+$/u'];
+                $fieldRules = [$required, 'string', 'max:255'];
+                $pattern = self::scriptPattern($code);
+                if ($pattern) {
+                    $fieldRules[] = 'regex:' . $pattern;
+                }
+                $rules["local_names.{$code}"] = $fieldRules;
             }
         }
 
         return $rules;
+    }
+
+    /**
+     * Map language codes to Unicode script validation patterns.
+     * Only codes listed here get script-level validation; unknown codes
+     * fall through to generic string validation.
+     */
+    private static function scriptPattern(string $code): ?string
+    {
+        return match ($code) {
+            'bn' => '/^[\p{Bengali}\p{Cf}\s]+$/u',
+            default => null,
+        };
     }
 }

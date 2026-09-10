@@ -12,6 +12,8 @@ use Workbench\Database\Seeders\DatabaseSeeder;
 
 uses(RefreshDatabase::class);
 
+afterEach(fn () => Config::set('alumkit.local_names', []));
+
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 

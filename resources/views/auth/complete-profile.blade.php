@@ -383,7 +383,7 @@
                         @foreach (config('alumkit.local_names') as $code => $langConfig)
                             <x-input
                                 type="text"
-                                x-bind:name="'local_names[{{ $code }}]'"
+                                name="local_names[{{ $code }}]"
                                 :value="old('local_names.' . $code)"
                                 :label="$langConfig['label']"
                                 :required="$langConfig['required'] ?? false"

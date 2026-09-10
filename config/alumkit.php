@@ -66,7 +66,7 @@ return [
     ],
 
     'local_names' => [
-        'bn' => ['label' => 'বাংলা নাম', 'required' => true],
+        'bn' => ['label' => 'বাংলা নাম', 'required' => false],
     ],
 
 ];
