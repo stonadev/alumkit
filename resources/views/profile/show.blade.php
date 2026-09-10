@@ -119,6 +119,24 @@
                             <input type="file" name="photo" accept="image/*" class="sr-only" aria-label="{{ __('alumkit::profile.photo') }}" @change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
                         </label>
 
+                        @if (config('alumkit.local_names'))
+                            <div class="space-y-4">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ __('alumkit::profile.local_names') }}
+                                </label>
+
+                                @foreach (config('alumkit.local_names') as $code => $langConfig)
+                                    <x-input
+                                        type="text"
+                                        name="local_names[{{ $code }}]"
+                                        :value="old('local_names.' . $code, Auth::user()->profile->local_names[$code] ?? '')"
+                                        :label="$langConfig['label']"
+                                        :required="$langConfig['required'] ?? false"
+                                    />
+                                @endforeach
+                            </div>
+                        @endif
+
                         <div class="grid grid-cols-3 gap-4">
                             <x-input
                                 type="date"

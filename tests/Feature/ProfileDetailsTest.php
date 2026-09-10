@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
@@ -168,4 +169,85 @@ it('validates profile details during profile completion', function () {
             'gender' => 'x',
         ])
         ->assertSessionHasErrors(['gender']);
+});
+
+it('stores local_names when bn is enabled', function () {
+    Config::set('alumkit.local_names', [
+        'bn' => ['label' => 'বাংলা নাম', 'required' => false],
+    ]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'local_names' => ['bn' => 'রহিম উদ্দিন'],
+        ])
+        ->assertRedirect(route('alumkit.profile'))
+        ->assertSessionHas('status');
+
+    $this->assertDatabaseHas('profiles', [
+        'id' => $this->user->profile->id,
+        'local_names' => json_encode(['bn' => 'রহিম উদ্দিন']),
+    ]);
+});
+
+it('nullifies empty local_names', function () {
+    Config::set('alumkit.local_names', [
+        'bn' => ['label' => 'বাংলা নাম', 'required' => false],
+    ]);
+
+    $this->user->profile->update(['local_names' => ['bn' => 'রহিম']]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'local_names' => ['bn' => ''],
+        ])
+        ->assertRedirect(route('alumkit.profile'));
+
+    $this->assertDatabaseHas('profiles', [
+        'id' => $this->user->profile->id,
+        'local_names' => null,
+    ]);
+});
+
+it('requires local_names when configured as required', function () {
+    Config::set('alumkit.local_names', [
+        'bn' => ['label' => 'বাংলা নাম', 'required' => true],
+    ]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'local_names' => ['bn' => ''],
+        ])
+        ->assertSessionHasErrors(['local_names.bn']);
+});
+
+it('rejects non-Bengali characters in local_names', function () {
+    Config::set('alumkit.local_names', [
+        'bn' => ['label' => 'বাংলা নাম', 'required' => false],
+    ]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'local_names' => ['bn' => 'John Doe'],
+        ])
+        ->assertSessionHasErrors(['local_names.bn']);
+});
+
+it('renders local_names field in dashboard when enabled', function () {
+    Config::set('alumkit.local_names', [
+        'bn' => ['label' => 'বাংলা নাম', 'required' => false],
+    ]);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile'))
+        ->assertOk()
+        ->assertSee('বাংলা নাম');
+});
+
+it('does not render local_names field when disabled', function () {
+    Config::set('alumkit.local_names', []);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.profile'))
+        ->assertOk()
+        ->assertDontSee('বাংলা নাম');
 });

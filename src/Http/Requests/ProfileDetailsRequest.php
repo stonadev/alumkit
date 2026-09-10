@@ -21,7 +21,7 @@ class ProfileDetailsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'photo' => ['nullable', 'image', 'max:2048'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', Rule::in(array_column(Gender::cases(), 'value'))],
@@ -37,5 +37,18 @@ class ProfileDetailsRequest extends FormRequest
             'emergency_contact.phone' => ['nullable', 'string', 'max:255'],
             'emergency_contact.relation' => ['nullable', 'string', 'max:255'],
         ];
+
+        $localNames = config('alumkit.local_names', []);
+
+        if ($localNames) {
+            $rules['local_names'] = ['nullable', 'array'];
+
+            foreach ($localNames as $code => $langConfig) {
+                $required = ($langConfig['required'] ?? false) ? 'required' : 'nullable';
+                $rules["local_names.{$code}"] = [$required, 'string', 'max:255', 'regex:/^[\p{Bengali}\s]+$/u'];
+            }
+        }
+
+        return $rules;
     }
 }

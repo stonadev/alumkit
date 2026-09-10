@@ -65,4 +65,10 @@ return [
         ],
     ],
 
+    'local_names' => [
+        // Enable local name languages. Each key is a language code.
+        // 'bn' => ['label' => 'বাংলা নাম', 'required' => true],
+        // Adding entries enables those fields in profile forms.
+    ],
+
 ];
