@@ -33,6 +33,36 @@ it('defaults the users index to pending users', function () {
         ->assertDontSee('Active Member');
 });
 
+it('pending filter excludes unverified pending users', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified Pending']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'pending']))
+        ->assertOk()
+        ->assertSee('Pending Member')
+        ->assertDontSee('Unverified Pending');
+});
+
+it('unverified filter shows users with null email_verified_at', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->assertOk()
+        ->assertSee('Unverified User')
+        ->assertDontSee('Active Member');
+});
+
+it('unverified filter does not show email-verified users', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->assertOk()
+        ->assertDontSee('Pending Member')
+        ->assertDontSee('Active Member');
+});
+
 it('shows all users with the all filter', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'all']))

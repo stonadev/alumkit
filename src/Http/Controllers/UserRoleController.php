@@ -18,7 +18,7 @@ class UserRoleController extends Controller
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
 
-        $allowed = ['pending', 'rejected', 'suspended', 'active', 'all'];
+        $allowed = ['pending', 'unverified', 'rejected', 'suspended', 'active', 'all'];
         $filter = $request->query('filter');
 
         if (! in_array($filter, $allowed, true)) {
@@ -34,7 +34,11 @@ class UserRoleController extends Controller
         if ($filter === 'all') {
             $query->orderBy('name');
         } elseif ($filter === 'pending') {
-            $query->where('state', UserState::Pending->value)->orderBy('created_at');
+            $query->where('state', UserState::Pending->value)
+                ->whereNotNull('email_verified_at')
+                ->orderBy('created_at');
+        } elseif ($filter === 'unverified') {
+            $query->whereNull('email_verified_at')->orderBy('created_at');
         } else {
             $query->where('state', $filter)->orderBy('name');
         }

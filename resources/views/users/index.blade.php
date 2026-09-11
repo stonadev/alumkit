@@ -28,6 +28,7 @@
         @foreach ([
             'all' => __('alumkit::dashboard.filter_all'),
             'pending' => __('alumkit::dashboard.filter_pending'),
+            'unverified' => __('alumkit::dashboard.filter_unverified'),
             'active' => __('alumkit::dashboard.filter_active'),
             'rejected' => __('alumkit::dashboard.filter_rejected'),
             'suspended' => __('alumkit::dashboard.filter_suspended'),
