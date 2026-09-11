@@ -191,32 +191,107 @@
                 </div>
 
                 @if ($user->getKey() !== auth()->id())
-                <div class="mt-5 space-y-3">
+                <script>
+                    function alumkitSubmitState(url, state, reason) {
+                        var f = document.createElement('form');
+                        f.method = 'POST';
+                        f.action = url;
+                        f.innerHTML = '<input type="hidden" name="_token" value="' + document.querySelector('meta[name="csrf-token"]').content + '"><input type="hidden" name="_method" value="PUT"><input type="hidden" name="state" value="' + state + '">' + (reason ? '<input type="hidden" name="reason" value="' + reason + '">' : '');
+                        document.body.appendChild(f);
+                        f.submit();
+                    }
+                </script>
+                <div class="mt-5 space-y-3" x-data="{
+                    showModal: false,
+                    targetState: '',
+                    actionUrl: '',
+                    buttonLabel: '',
+                    needsReason: false,
+                    reason: '',
+                    open(state, url, label, needsReason) {
+                        if (!needsReason) {
+                            alumkitSubmitState(url, state, null);
+                            return;
+                        }
+                        this.targetState = state;
+                        this.actionUrl = url;
+                        this.buttonLabel = label;
+                        this.needsReason = true;
+                        this.reason = '';
+                        this.showModal = true;
+                        this.$nextTick(() => this.$refs.reasonInput?.focus());
+                    },
+                    confirm() {
+                        if (!this.reason.trim()) return;
+                        alumkitSubmitState(this.actionUrl, this.targetState, this.reason);
+                    },
+                    close() {
+                        this.showModal = false;
+                        this.reason = '';
+                    }
+                }">
                     @forelse ($transitions as $transition)
                         <div class="flex flex-col gap-3 rounded-lg bg-surface-container/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                             <p class="text-sm text-on-surface-variant">{{ __("alumkit::dashboard.transition_description_{$transition->value}") }}</p>
-                            <form method="POST" action="{{ route('alumkit.users.state.update', $user) }}" class="shrink-0">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="state" value="{{ $transition->value }}">
+                            <button
+                                type="button"
+                                @click="open('{{ $transition->value }}', '{{ route('alumkit.users.state.update', $user) }}', '{{ __("alumkit::dashboard.transition_to_{$transition->value}") }}', {{ in_array($transition->value, ['rejected', 'suspended']) ? 'true' : 'false' }})"
                                 @if ($transition->value === 'active')
-                                    <button type="submit" class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50"
                                 @elseif ($transition->value === 'rejected')
-                                    <button type="submit" class="inline-flex items-center justify-center rounded border border-error px-4 py-2 text-sm font-semibold text-error transition-colors hover:bg-error hover:text-white focus-visible:ring-2 focus-visible:ring-error/50">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="inline-flex items-center justify-center rounded border border-error px-4 py-2 text-sm font-semibold text-error transition-colors hover:bg-error hover:text-white focus-visible:ring-2 focus-visible:ring-error/50"
                                 @else
-                                    <button type="submit" class="btn-secondary">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="btn-secondary"
                                 @endif
-                            </form>
+                            >
+                                {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
+                            </button>
                         </div>
                     @empty
                         <p class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.no_further_actions') }}</p>
                     @endforelse
+
+                    {{-- State-change reason modal --}}
+                    <div x-show="showModal" x-cloak
+                         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0">
+                        <div class="absolute inset-0 bg-navy/40 backdrop-blur-sm" @click="close()" aria-hidden="true"></div>
+                        <div class="relative w-full max-w-lg rounded-lg border border-outline-variant/60 bg-white p-6 shadow-xl"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             @keydown.escape.window="close()">
+                            <h3 class="font-serif text-lg font-semibold text-navy" x-text="buttonLabel"></h3>
+                            <p class="mt-2 text-sm text-on-surface-variant">{{ __('alumkit::dashboard.transition_reason_description') }}</p>
+                            <textarea
+                                x-ref="reasonInput"
+                                x-model="reason"
+                                name="reason"
+                                rows="3"
+                                class="mt-4 w-full rounded-lg border border-outline-variant/60 bg-surface px-3 py-2 text-sm text-navy placeholder:text-on-surface-variant/50 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                                placeholder="{{ __('alumkit::dashboard.state_reason_placeholder') }}"
+                                required
+                                @keydown.enter.meta="confirm()"
+                                @keydown.enter.ctrl="confirm()"
+                            ></textarea>
+                            <div class="mt-4 flex items-center justify-end gap-3">
+                                <button type="button" @click="close()" class="btn-secondary">
+                                    {{ __('alumkit::dashboard.state_reason_cancel') }}
+                                </button>
+                                <button type="button" @click="confirm()" class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50">
+                                    {{ __('alumkit::dashboard.state_reason_confirm') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endif
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Enums\UserState;
+use Alumkit\Alumkit\Notifications\UserRejectedNotification;
+use Alumkit\Alumkit\Notifications\UserSuspendedNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -18,6 +20,7 @@ class UserStateController extends Controller
 
         $request->validate([
             'state' => ['required', 'string', 'in:'.implode(',', array_column(UserState::cases(), 'value'))],
+            'reason' => ['required_if:state,rejected,suspended', 'nullable', 'string', 'max:2000'],
         ]);
 
         // Prevent self-lockout: an admin cannot change their own membership state.
@@ -39,8 +42,18 @@ class UserStateController extends Controller
         activity('member_management')
             ->performedOn($targetUser)
             ->event('state_changed')
-            ->withProperties(['old_state' => $currentState->value, 'new_state' => $newState->value])
+            ->withProperties([
+                'old_state' => $currentState->value,
+                'new_state' => $newState->value,
+                'reason' => $request->input('reason'),
+            ])
             ->log('member state changed');
+
+        if ($newState === UserState::Rejected) {
+            $targetUser->notify(new UserRejectedNotification($request->input('reason')));
+        } elseif ($newState === UserState::Suspended) {
+            $targetUser->notify(new UserSuspendedNotification($request->input('reason')));
+        }
 
         return redirect()->route('alumkit.users.index')
             ->with('status', __('alumkit::dashboard.user_state_updated'));

@@ -52,6 +52,7 @@ it('logs a state transition with causer, subject and old/new state', function ()
     expect($activity->properties->toArray())->toBe([
         'old_state' => UserState::Pending->value,
         'new_state' => UserState::Active->value,
+        'reason' => null,
     ]);
 });
 
