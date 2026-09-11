@@ -47,8 +47,9 @@ class ProfileDetailsRequest extends FormRequest
                 $required = ($langConfig['required'] ?? false) ? 'required' : 'nullable';
                 $fieldRules = [$required, 'string', 'max:255'];
                 $pattern = self::scriptPattern($code);
+
                 if ($pattern) {
-                    $fieldRules[] = 'regex:' . $pattern;
+                    $fieldRules[] = 'regex:'.$pattern;
                 }
                 $rules["local_names.{$code}"] = $fieldRules;
             }
