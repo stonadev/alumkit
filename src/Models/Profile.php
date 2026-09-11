@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array{facebook?: string, linkedin?: string}|null $social_links
  * @property string|null $website
  * @property array{name: string|null, phone: string|null, relation: string|null}|null $emergency_contact
+ * @property array<string, string>|null $local_names
  */
 class Profile extends Model
 {
@@ -39,6 +40,7 @@ class Profile extends Model
         'social_links',
         'website',
         'emergency_contact',
+        'local_names',
     ];
 
     public function photoUrl(): ?string
@@ -55,6 +57,7 @@ class Profile extends Model
             'date_of_birth' => 'date',
             'social_links' => 'array',
             'emergency_contact' => 'array',
+            'local_names' => 'array',
             'gender' => Gender::class,
             'blood_group' => BloodGroup::class,
         ];

@@ -20,6 +20,7 @@ return [
     'emergency_contact_name' => 'Name',
     'emergency_contact_phone' => 'Phone',
     'emergency_contact_relation' => 'Relation',
+    'local_names' => 'Local Names',
     'save' => 'Save',
     'updated' => 'Profile details updated.',
 ];
