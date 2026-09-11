@@ -11,7 +11,7 @@
         searchUsers() {
             if (this.controller) this.controller.abort();
             this.controller = new AbortController();
-            fetch('{{ route('alumkit.users.index') }}?filter={{ Js::from($filter) }}&search=' + encodeURIComponent(this.search), {
+            fetch('{{ route('alumkit.users.index') }}?filter=' + encodeURIComponent('{{ $filter }}') + '&search=' + encodeURIComponent(this.search), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 signal: this.controller.signal
             })
