@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Permission;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
@@ -10,6 +11,7 @@ use Workbench\Database\Seeders\DatabaseSeeder;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
     $this->admin = User::factory()->create();

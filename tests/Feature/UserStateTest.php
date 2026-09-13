@@ -15,6 +15,7 @@ use Workbench\Database\Seeders\DatabaseSeeder;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->create(['state' => UserState::Active->value]);
@@ -227,7 +228,7 @@ it('sends rejection email with reason', function () {
         UserRejectedNotification::class,
         function ($notification, $channels) {
             return $notification->reason === 'Incomplete application';
-        }
+        },
     );
 });
 
@@ -249,7 +250,7 @@ it('sends suspension email with reason', function () {
         UserSuspendedNotification::class,
         function ($notification, $channels) {
             return $notification->reason === 'Violation of terms';
-        }
+        },
     );
 });
 
