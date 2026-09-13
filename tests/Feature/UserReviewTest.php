@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Permission;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
@@ -10,6 +11,7 @@ use Workbench\Database\Seeders\DatabaseSeeder;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
     $this->admin = User::factory()->create();
@@ -202,7 +204,7 @@ it('approves a pending member', function () {
 
 it('rejects a pending member', function () {
     $this->actingAs($this->admin)
-        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected'])
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected', 'reason' => 'Incomplete profile'])
         ->assertRedirect(route('alumkit.users.index'));
 
     expect($this->pendingUser->fresh()->state)->toBe('rejected');
@@ -221,7 +223,7 @@ it('moves a rejected member back to the review queue', function () {
 
 it('suspends an active member', function () {
     $this->actingAs($this->admin)
-        ->put(route('alumkit.users.state.update', $this->activeUser), ['state' => 'suspended'])
+        ->put(route('alumkit.users.state.update', $this->activeUser), ['state' => 'suspended', 'reason' => 'Violation of terms'])
         ->assertRedirect(route('alumkit.users.index'));
 
     expect($this->activeUser->fresh()->state)->toBe('suspended');
@@ -242,4 +244,10 @@ it('hides the review panel on an admins own profile', function () {
         ->assertOk()
         ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
         ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
+});
+
+it('rejects without reason', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected'])
+        ->assertSessionHasErrors('reason');
 });
