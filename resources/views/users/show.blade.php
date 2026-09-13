@@ -196,7 +196,20 @@
                         var f = document.createElement('form');
                         f.method = 'POST';
                         f.action = url;
-                        f.innerHTML = '<input type="hidden" name="_token" value="' + document.querySelector('meta[name="csrf-token"]').content + '"><input type="hidden" name="_method" value="PUT"><input type="hidden" name="state" value="' + state + '">' + (reason ? '<input type="hidden" name="reason" value="' + reason + '">' : '');
+
+                        var addInput = function (name, value) {
+                            var el = document.createElement('input');
+                            el.type = 'hidden';
+                            el.name = name;
+                            el.value = value;
+                            f.appendChild(el);
+                        };
+
+                        addInput('_token', document.querySelector('meta[name="csrf-token"]').content);
+                        addInput('_method', 'PUT');
+                        addInput('state', state);
+                        if (reason) addInput('reason', reason);
+
                         document.body.appendChild(f);
                         f.submit();
                     }
@@ -278,6 +291,7 @@
                                 rows="3"
                                 class="mt-4 w-full rounded-lg border border-outline-variant/60 bg-surface px-3 py-2 text-sm text-navy placeholder:text-on-surface-variant/50 focus:border-gold focus:ring-1 focus:ring-gold/30"
                                 placeholder="{{ __('alumkit::dashboard.state_reason_placeholder') }}"
+                                maxlength="2000"
                                 required
                                 @keydown.enter.meta="confirm()"
                                 @keydown.enter.ctrl="confirm()"

@@ -222,7 +222,13 @@ it('sends rejection email with reason', function () {
         ])
         ->assertRedirect(route('alumkit.users.index'));
 
-    Notification::assertSentTo($this->targetUser, UserRejectedNotification::class);
+    Notification::assertSentTo(
+        $this->targetUser,
+        UserRejectedNotification::class,
+        function ($notification, $channels) {
+            return $notification->reason === 'Incomplete application';
+        }
+    );
 });
 
 it('sends suspension email with reason', function () {
@@ -238,7 +244,13 @@ it('sends suspension email with reason', function () {
         ])
         ->assertRedirect(route('alumkit.users.index'));
 
-    Notification::assertSentTo($this->targetUser, UserSuspendedNotification::class);
+    Notification::assertSentTo(
+        $this->targetUser,
+        UserSuspendedNotification::class,
+        function ($notification, $channels) {
+            return $notification->reason === 'Violation of terms';
+        }
+    );
 });
 
 it('stores reason in activity log', function () {
@@ -252,6 +264,36 @@ it('stores reason in activity log', function () {
         ])
         ->assertRedirect(route('alumkit.users.index'));
 
-    $activity = Activity::where('subject_id', $this->targetUser->getKey())->latest()->first();
+    $activity = Activity::where('subject_id', $this->targetUser->getKey())
+        ->where('event', 'state_changed')
+        ->latest()
+        ->first();
     expect($activity->properties->get('reason'))->toBe('Policy violation');
+});
+
+it('rejects reason exceeding max length', function () {
+    Permission::findOrCreate('manage members');
+    $this->user->givePermissionTo('manage members');
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.users.state.update', $this->targetUser), [
+            'state' => UserState::Rejected->value,
+            'reason' => str_repeat('a', 2001),
+        ])
+        ->assertSessionHasErrors('reason');
+});
+
+it('accepts reason at max length boundary', function () {
+    Permission::findOrCreate('manage members');
+    $this->user->givePermissionTo('manage members');
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.users.state.update', $this->targetUser), [
+            'state' => UserState::Rejected->value,
+            'reason' => str_repeat('a', 2000),
+        ])
+        ->assertRedirect(route('alumkit.users.index'))
+        ->assertSessionHas('status');
+
+    expect($this->targetUser->fresh()->state)->toBe(UserState::Rejected->value);
 });
