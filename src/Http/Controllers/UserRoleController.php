@@ -55,11 +55,22 @@ class UserRoleController extends Controller
             return view('alumkit::users.partials.grid', compact('users', 'filter'));
         }
 
+        $unverifiedCount = $userModel::query()->whereNull('email_verified_at')->count();
+        $verifiedStates = $userModel::query()->whereNotNull('email_verified_at')->pluck('state');
+        $counts = [
+            'unverified' => $unverifiedCount,
+            'pending' => $verifiedStates->filter(fn (string $s) => $s === UserState::Pending->value)->count(),
+            'active' => $verifiedStates->filter(fn (string $s) => $s === UserState::Active->value)->count(),
+            'rejected' => $verifiedStates->filter(fn (string $s) => $s === UserState::Rejected->value)->count(),
+            'suspended' => $verifiedStates->filter(fn (string $s) => $s === UserState::Suspended->value)->count(),
+        ];
+
         /** @var View $view */
         $view = view('alumkit::users.index', [
             'users' => $users,
             'filter' => $filter,
             'search' => $search,
+            'counts' => $counts,
         ]);
 
         return $view;

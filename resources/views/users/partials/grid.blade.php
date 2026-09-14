@@ -9,9 +9,9 @@
         <a href="{{ route('alumkit.users.show', $u) }}" class="group flex h-full flex-col">
             <div class="flex items-center gap-4">
                 @if ($profile?->photoUrl())
-                    <img src="{{ $profile->photoUrl() }}" alt="{{ $u->name }}" class="h-16 w-16 rounded-full object-cover">
+                    <img src="{{ $profile->photoUrl() }}" alt="{{ $u->name }}" class="h-16 w-16 rounded-lg object-cover">
                 @else
-                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-lg font-semibold text-navy">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-surface-container text-lg font-semibold text-navy">
                         {{ \Illuminate\Support\Str::initials($u->name) }}
                     </div>
                 @endif
