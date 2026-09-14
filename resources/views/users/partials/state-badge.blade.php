@@ -1,6 +1,6 @@
 @php
     if (!isset($emailVerifiedAt) || $emailVerifiedAt === null) {
-        $label = 'Unverified';
+        $label = __('alumkit::dashboard.filter_unverified');
         $colors = 'bg-gray-100 text-gray-800';
     } else {
         $colors = match ($state) {

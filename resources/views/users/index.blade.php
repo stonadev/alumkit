@@ -48,7 +48,7 @@
 
     @php
         $total = array_sum($counts);
-        if ($search !== '' && $filter === 'all') {
+        if ($search !== '') {
             $summary = __('alumkit::dashboard.summary_filtered', ['count' => $users->count()]);
         } elseif ($filter === 'all') {
             $summary = __('alumkit::dashboard.summary_all', ['count' => $total]);
