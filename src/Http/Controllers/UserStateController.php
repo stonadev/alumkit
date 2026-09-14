@@ -20,6 +20,12 @@ class UserStateController extends Controller
             'state' => ['required', 'string', 'in:'.implode(',', array_column(UserState::cases(), 'value'))],
         ]);
 
+        // Prevent state changes on unverified users: email must be verified before membership actions.
+        if (is_null($targetUser->email_verified_at)) {
+            return redirect()->route('alumkit.users.show', $targetUser)
+                ->with('error', __('alumkit::dashboard.unverified_user_no_transition'));
+        }
+
         // Prevent self-lockout: an admin cannot change their own membership state.
         if ($request->user()->getKey() === $targetUser->getKey()) {
             return redirect()->route('alumkit.users.show', $targetUser)

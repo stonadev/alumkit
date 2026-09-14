@@ -19,7 +19,7 @@
                     {{ __('alumkit::dashboard.welcome_text') }}
                 </p>
             </div>
-            @include('alumkit::users.partials.state-badge', ['state' => Auth::user()->state])
+            @include('alumkit::users.partials.state-badge', ['state' => Auth::user()->state, 'emailVerifiedAt' => Auth::user()->email_verified_at])
         </section>
 
         {{-- Quick links --}}

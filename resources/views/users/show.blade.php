@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="mt-5 flex flex-wrap items-center gap-2">
-                    @include('alumkit::users.partials.state-badge', ['state' => $user->state])
+                    @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])
                     @foreach ($user->roles as $role)
                         <span class="rounded bg-surface-container px-2 py-0.5 text-xs font-medium text-navy">{{ $role->name }}</span>
                     @endforeach
@@ -187,10 +187,10 @@
 
                 <div class="mt-6 flex flex-wrap items-center gap-3">
                     <span class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.current_state') }}</span>
-                    @include('alumkit::users.partials.state-badge', ['state' => $user->state])
+                    @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])
                 </div>
 
-                @if ($user->getKey() !== auth()->id())
+                @if ($user->email_verified_at && $user->getKey() !== auth()->id())
                 <div class="mt-5 space-y-3">
                     @forelse ($transitions as $transition)
                         <div class="flex flex-col gap-3 rounded-lg bg-surface-container/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -220,11 +220,13 @@
                 </div>
                 @endif
 
+                @if ($user->email_verified_at && $user->getKey() !== auth()->id())
                 <div class="mt-6 border-t border-outline-variant/60 pt-5">
                     <a href="{{ route('alumkit.users.roles.edit', $user) }}" class="btn-secondary w-full">
                         {{ __('alumkit::dashboard.assign_roles') }}
                     </a>
                 </div>
+                @endif
             </section>
         </div>
     </div>

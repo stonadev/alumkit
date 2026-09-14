@@ -273,3 +273,55 @@ it('hides the review panel on an admins own profile', function () {
         ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
         ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
 });
+
+it('blocks state change on an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $unverified), ['state' => 'active'])
+        ->assertRedirect(route('alumkit.users.show', $unverified))
+        ->assertSessionHas('error');
+
+    expect($unverified->fresh()->state)->toBe('pending');
+});
+
+it('hides state change buttons for an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $unverified))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
+        ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
+});
+
+it('blocks role assignment on an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.roles.update', $unverified), ['roles' => ['member']])
+        ->assertRedirect(route('alumkit.users.show', $unverified))
+        ->assertSessionHas('error');
+
+    expect($unverified->fresh()->roles->pluck('name')->toArray())->not->toContain('member');
+});
+
+it('hides the assign roles button for an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $unverified))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button on an admins own profile', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->admin))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});

@@ -19,7 +19,7 @@
                     <h2 class="truncate text-lg font-semibold text-navy">{{ $u->name }}</h2>
                     <p class="truncate text-sm text-on-surface-variant">{{ $u->email }}</p>
                 </div>
-                @include('alumkit::users.partials.state-badge', ['state' => $u->state])
+                @include('alumkit::users.partials.state-badge', ['state' => $u->state, 'emailVerifiedAt' => $u->email_verified_at])
             </div>
 
             <div class="flex-1">
