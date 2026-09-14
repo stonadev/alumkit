@@ -64,18 +64,22 @@
                                     <dd class="mt-0.5 text-navy">{{ $profile->blood_group->value }}</dd>
                                 </div>
                             @endif
-                            @if ($profile->present_address)
-                                <div>
-                                    <dt class="text-on-surface-variant">{{ __('alumkit::profile.present_address') }}</dt>
-                                    <dd class="mt-0.5 text-navy">{{ $profile->present_address }}</dd>
-                                </div>
-                            @endif
-                            @if ($profile->permanent_address)
-                                <div>
-                                    <dt class="text-on-surface-variant">{{ __('alumkit::profile.permanent_address') }}</dt>
-                                    <dd class="mt-0.5 text-navy">{{ $profile->permanent_address }}</dd>
-                                </div>
-                            @endif
+                            @can('manage members')
+                                @if ($profile->present_address)
+                                    <div>
+                                        <dt class="text-on-surface-variant">{{ __('alumkit::profile.present_address') }}</dt>
+                                        <dd class="mt-0.5 text-navy">{{ $profile->present_address }}</dd>
+                                    </div>
+                                @endif
+                            @endcan
+                            @can('manage members')
+                                @if ($profile->permanent_address)
+                                    <div>
+                                        <dt class="text-on-surface-variant">{{ __('alumkit::profile.permanent_address') }}</dt>
+                                        <dd class="mt-0.5 text-navy">{{ $profile->permanent_address }}</dd>
+                                    </div>
+                                @endif
+                            @endcan
                             @if ($profile->website)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.website') }}</dt>
@@ -112,18 +116,20 @@
                 @endif
             </div>
 
-            @if ($emergency['name'] ?? null)
-                <div class="card p-6">
-                    <p class="label-caps text-gold">{{ __('alumkit::profile.emergency_contact') }}</p>
-                    <p class="mt-3 text-sm font-semibold text-navy">{{ $emergency['name'] }}</p>
-                    @if ($emergency['relation'] ?? null)
-                        <p class="mt-0.5 text-sm text-on-surface-variant">{{ $emergency['relation'] }}</p>
-                    @endif
-                    @if ($emergency['phone'] ?? null)
-                        <p class="mt-0.5 text-sm text-on-surface-variant">{{ $emergency['phone'] }}</p>
-                    @endif
-                </div>
-            @endif
+            @can('manage members')
+                @if ($emergency['name'] ?? null)
+                    <div class="card p-6">
+                        <p class="label-caps text-gold">{{ __('alumkit::profile.emergency_contact') }}</p>
+                        <p class="mt-3 text-sm font-semibold text-navy">{{ $emergency['name'] }}</p>
+                        @if ($emergency['relation'] ?? null)
+                            <p class="mt-0.5 text-sm text-on-surface-variant">{{ $emergency['relation'] }}</p>
+                        @endif
+                        @if ($emergency['phone'] ?? null)
+                            <p class="mt-0.5 text-sm text-on-surface-variant">{{ $emergency['phone'] }}</p>
+                        @endif
+                    </div>
+                @endif
+            @endcan
         </aside>
 
         {{-- Main narrative --}}
