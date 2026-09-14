@@ -5,9 +5,26 @@
         {{ __('alumkit::dashboard.manage_user_roles') }}
     </h1>
 
-    <form method="GET" action="{{ route('alumkit.users.index') }}" class="mb-6 rounded-lg border border-outline-variant/60 bg-white p-4 shadow-[0_4px_20px_rgba(0,33,71,0.05)]">
+    <form method="GET" action="{{ route('alumkit.users.index') }}" class="mb-6 rounded-lg border border-outline-variant/60 bg-white p-4 shadow-[0_4px_20px_rgba(0,33,71,0.05)]"
+          x-data="{
+              search: {{ Js::from($search) }},
+              controller: null,
+              searchUsers() {
+                  if (this.controller) this.controller.abort();
+                  this.controller = new AbortController();
+                  const filter = document.getElementById('filter').value;
+                  fetch('{{ route('alumkit.users.index') }}?filter=' + encodeURIComponent(filter) + '&search=' + encodeURIComponent(this.search), {
+                      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                      signal: this.controller.signal
+                  })
+                  .then(r => r.text())
+                  .then(html => { document.getElementById('user-grid').innerHTML = html; })
+                  .catch(e => { if (e.name !== 'AbortError') throw e; });
+              }
+          }"
+          @submit.prevent>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_176px]">
-            <x-input type="search" name="search" :value="$search" :label="__('alumkit::dashboard.search_users')" placeholder="{{ __('alumkit::dashboard.search_users') }}" />
+            <x-input type="search" name="search" :value="$search" x-model="search" x-on:input.debounce.300ms="searchUsers()" :label="__('alumkit::dashboard.search_users')" placeholder="{{ __('alumkit::dashboard.search_users') }}" />
 
             <div>
                 <label for="filter" class="mb-1 block text-sm font-medium text-gray-700">{{ __('alumkit::dashboard.filter_status') }}</label>
