@@ -155,6 +155,7 @@ it('logs user role sync with added and removed diff', function () {
     Role::findOrCreate('admin');
     Role::findOrCreate('member');
 
+    $this->targetUser->update(['state' => UserState::Active->value]);
     $this->targetUser->syncRoles(['admin']);
 
     $this->actingAs($this->user)

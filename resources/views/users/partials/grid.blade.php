@@ -9,9 +9,9 @@
         <a href="{{ route('alumkit.users.show', $u) }}" class="group flex h-full flex-col">
             <div class="flex items-center gap-4">
                 @if ($profile?->photoUrl())
-                    <img src="{{ $profile->photoUrl() }}" alt="{{ $u->name }}" class="h-16 w-16 rounded-full object-cover">
+                    <img src="{{ $profile->photoUrl() }}" alt="{{ $u->name }}" class="h-16 w-16 rounded-lg object-cover">
                 @else
-                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-lg font-semibold text-navy">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-surface-container text-lg font-semibold text-navy">
                         {{ \Illuminate\Support\Str::initials($u->name) }}
                     </div>
                 @endif
@@ -19,7 +19,7 @@
                     <h2 class="truncate text-lg font-semibold text-navy">{{ $u->name }}</h2>
                     <p class="truncate text-sm text-on-surface-variant">{{ $u->email }}</p>
                 </div>
-                @include('alumkit::users.partials.state-badge', ['state' => $u->state])
+                @include('alumkit::users.partials.state-badge', ['state' => $u->state, 'emailVerifiedAt' => $u->email_verified_at])
             </div>
 
             <div class="flex-1">
@@ -42,6 +42,6 @@
     </x-card>
 @empty
     <p class="col-span-full text-sm text-on-surface-variant">
-        {{ $filter === 'pending' ? __('alumkit::dashboard.no_pending_users') : __('alumkit::dashboard.no_users') }}
+        {{ $filter === 'pending' ? __('alumkit::dashboard.no_pending_users') : ($filter === 'unverified' ? __('alumkit::dashboard.no_unverified_users') : __('alumkit::dashboard.no_users')) }}
     </p>
 @endforelse

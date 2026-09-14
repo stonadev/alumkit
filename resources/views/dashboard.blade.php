@@ -19,7 +19,7 @@
                     {{ __('alumkit::dashboard.welcome_text') }}
                 </p>
             </div>
-            @include('alumkit::users.partials.state-badge', ['state' => Auth::user()->state])
+            @include('alumkit::users.partials.state-badge', ['state' => Auth::user()->state, 'emailVerifiedAt' => Auth::user()->email_verified_at])
         </section>
 
         {{-- Quick links --}}
@@ -27,7 +27,7 @@
             $canManageMembers = auth()->user()->can('manage members');
             $links = [
                 ['route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles'), 'overline' => __('alumkit::dashboard.roles'), 'title' => __('alumkit::dashboard.roles'), 'description' => __('alumkit::dashboard.manage_roles_description')],
-                ['route' => $canManageMembers ? 'alumkit.users.index' : 'alumkit.members.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::dashboard.manage_user_roles'), 'title' => __('alumkit::dashboard.manage_user_roles'), 'description' => $canManageMembers ? __('alumkit::dashboard.manage_members_description') : __('alumkit::dashboard.member_directory_description')],
+                ['route' => 'alumkit.users.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::dashboard.member_directory'), 'title' => __('alumkit::dashboard.member_directory'), 'description' => $canManageMembers ? __('alumkit::dashboard.manage_members_description') : __('alumkit::dashboard.member_directory_description')],
                 ['route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers'), 'overline' => __('alumkit::career.careers'), 'title' => __('alumkit::career.careers'), 'description' => __('alumkit::dashboard.careers_description')],
                 ['route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::post.posts'), 'title' => __('alumkit::post.posts'), 'description' => __('alumkit::dashboard.posts_description')],
                 ['route' => 'alumkit.committee.index', 'show' => auth()->user()->can('manage committee'), 'overline' => __('alumkit::committee.committee'), 'title' => __('alumkit::committee.committee'), 'description' => __('alumkit::dashboard.committee_description')],
