@@ -22,9 +22,7 @@ class UserRoleController extends Controller
         $filter = $request->query('filter');
 
         if (! in_array($filter, $allowed, true)) {
-            $filter = $userModel::query()->where('state', UserState::Pending->value)->exists()
-                ? 'pending'
-                : 'all';
+            $filter = 'all';
         }
 
         $search = trim((string) $request->query('search'));

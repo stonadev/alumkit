@@ -25,12 +25,12 @@ beforeEach(function () {
     $this->activeUser = User::factory()->approved()->create(['name' => 'Active Member']);
 });
 
-it('defaults the users index to pending users', function () {
+it('defaults the users index to all users', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index'))
         ->assertOk()
         ->assertSee('Pending Member')
-        ->assertDontSee('Active Member');
+        ->assertSee('Active Member');
 });
 
 it('pending filter excludes unverified pending users', function () {
@@ -158,24 +158,18 @@ it('denies the users index without manage members permission', function () {
         ->assertForbidden();
 });
 
-it('defaults to the all filter when no pending users exist', function () {
-    // This test deletes every pending user; the acting admin must not be one,
-    // or the request runs as a deleted user (FK cascade removes the profile).
-    $this->admin->update(['state' => 'active']);
-
-    User::query()->where('state', 'pending')->delete();
-
+it('defaults to the all filter regardless of pending users', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index'))
         ->assertOk()
         ->assertSee('Active Member');
 });
 
-it('falls back to pending for unknown filter values', function () {
+it('falls back to all for unknown filter values', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'bogus']))
         ->assertOk()
-        ->assertDontSee('Active Member');
+        ->assertSee('Active Member');
 });
 
 it('renders user details for users with manage members permission', function () {
