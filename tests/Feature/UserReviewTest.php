@@ -344,11 +344,11 @@ it('hides the assign roles button for a suspended user', function () {
         ->assertDontSee(__('alumkit::dashboard.assign_roles'));
 });
 
-it('blocks role assignment on a non-active user', function () {
+it('allows role assignment on a non-active user with verified email', function () {
     $this->actingAs($this->admin)
         ->put(route('alumkit.users.roles.update', $this->pendingUser), ['roles' => ['member']])
-        ->assertRedirect(route('alumkit.users.show', $this->pendingUser))
-        ->assertSessionHas('error');
+        ->assertRedirect(route('alumkit.users.roles.edit', $this->pendingUser))
+        ->assertSessionHas('status');
 
-    expect($this->pendingUser->fresh()->roles->pluck('name')->toArray())->not->toContain('member');
+    expect($this->pendingUser->fresh()->roles->pluck('name')->toArray())->toContain('member');
 });
