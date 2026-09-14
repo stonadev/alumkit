@@ -1,5 +1,8 @@
 laravel: '@testbench'
 
+env:
+  QUEUE_CONNECTION: 'sync'
+
 providers:
   - Workbench\App\Providers\WorkbenchServiceProvider
   - Alumkit\Alumkit\AlumkitServiceProvider

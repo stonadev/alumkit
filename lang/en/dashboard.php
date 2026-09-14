@@ -84,4 +84,9 @@ return [
     'back_to_users' => 'Back to Users',
     'member_since_label' => 'Member since',
     'no_further_actions' => 'No further actions available.',
+    'state_reason' => 'Reason',
+    'state_reason_placeholder' => 'Explain why this action is being taken…',
+    'transition_reason_description' => 'Please provide a reason for this action.',
+    'state_reason_confirm' => 'Confirm',
+    'state_reason_cancel' => 'Cancel',
 ];
