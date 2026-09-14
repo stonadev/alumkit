@@ -220,7 +220,7 @@
                 </div>
                 @endif
 
-                @if ($user->email_verified_at && $user->getKey() !== auth()->id())
+                @if ($user->state === 'active' && $user->getKey() !== auth()->id())
                 <div class="mt-6 border-t border-outline-variant/60 pt-5">
                     <a href="{{ route('alumkit.users.roles.edit', $user) }}" class="btn-secondary w-full">
                         {{ __('alumkit::dashboard.assign_roles') }}

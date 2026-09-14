@@ -325,3 +325,36 @@ it('hides the assign roles button on an admins own profile', function () {
         ->assertOk()
         ->assertDontSee(__('alumkit::dashboard.assign_roles'));
 });
+
+it('shows the assign roles button for an active user', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->activeUser))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button for a pending user', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->pendingUser))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button for a suspended user', function () {
+    $suspended = User::factory()->create(['name' => 'Suspended Member', 'state' => 'suspended']);
+    $suspended->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $suspended))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('blocks role assignment on a non-active user', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.roles.update', $this->pendingUser), ['roles' => ['member']])
+        ->assertRedirect(route('alumkit.users.show', $this->pendingUser))
+        ->assertSessionHas('error');
+
+    expect($this->pendingUser->fresh()->roles->pluck('name')->toArray())->not->toContain('member');
+});

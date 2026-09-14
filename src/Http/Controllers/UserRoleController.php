@@ -97,7 +97,7 @@ class UserRoleController extends Controller
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
         $targetUser = $userModel::findOrFail($user);
 
-        if (is_null($targetUser->email_verified_at)) {
+        if ($targetUser->state !== 'active') {
             return redirect()->route('alumkit.users.show', $targetUser)
                 ->with('error', __('alumkit::dashboard.unverified_user_no_transition'));
         }
