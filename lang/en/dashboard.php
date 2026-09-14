@@ -43,7 +43,7 @@ return [
     'permissions_count' => ':count permission|:count permissions',
     'manage_roles_description' => 'Manage roles and their permissions',
     'manage_members_description' => 'Review member applications and manage their roles',
-    'member_directory' => 'Member Directory',
+    'member_directory' => 'Members',
     'member_directory_description' => 'Browse profiles of active members.',
     'back_to_members' => 'Back to Members',
     'state' => 'State',

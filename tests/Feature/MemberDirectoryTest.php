@@ -22,9 +22,9 @@ beforeEach(function () {
 
 it('lists active members for active users', function () {
     $this->actingAs($this->member)
-        ->get(route('alumkit.members.index'))
+        ->get(route('alumkit.users.index'))
         ->assertOk()
-        ->assertSee('Member Directory')
+        ->assertSee('Members')
         ->assertSee('Active Member')
         ->assertSee('MIT')
         ->assertDontSee('Pending Member');
@@ -32,28 +32,27 @@ it('lists active members for active users', function () {
 
 it('shows a member profile to an active user', function () {
     $this->actingAs($this->member)
-        ->get(route('alumkit.members.show', $this->member))
+        ->get(route('alumkit.users.show', $this->member))
         ->assertOk()
         ->assertSee('MIT')
-        ->assertSee('Back to Members')
         ->assertSee($this->member->email);
 });
 
 it('denies the directory to pending users', function () {
     $this->actingAs($this->pending)
-        ->get(route('alumkit.members.index'))
+        ->get(route('alumkit.users.index'))
         ->assertForbidden();
 });
 
 it('does not expose non-active profiles', function () {
     $this->actingAs($this->member)
-        ->get(route('alumkit.members.show', $this->pending))
+        ->get(route('alumkit.users.show', $this->pending))
         ->assertNotFound();
 });
 
 it('omits admin actions from the member profile view', function () {
     $this->actingAs($this->member)
-        ->get(route('alumkit.members.show', $this->member))
+        ->get(route('alumkit.users.show', $this->member))
         ->assertOk()
         ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
         ->assertDontSee(__('alumkit::dashboard.assign_roles'));
@@ -63,7 +62,7 @@ it('links the directory in the sidebar for active members', function () {
     $this->actingAs($this->member)
         ->get(route('alumkit.dashboard'))
         ->assertOk()
-        ->assertSee(route('alumkit.members.index'));
+        ->assertSee(route('alumkit.users.index'));
 });
 
 it('keeps the management list in the sidebar for admins', function () {

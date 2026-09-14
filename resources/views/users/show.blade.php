@@ -73,13 +73,13 @@
                                     <dd class="mt-0.5 text-navy">{{ $profile->blood_group->value }}</dd>
                                 </div>
                             @endif
-                            @if ($profile->present_address)
+                            @if ($isAdmin && $profile->present_address)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.present_address') }}</dt>
                                     <dd class="mt-0.5 text-navy">{{ $profile->present_address }}</dd>
                                 </div>
                             @endif
-                            @if ($profile->permanent_address)
+                            @if ($isAdmin && $profile->permanent_address)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.permanent_address') }}</dt>
                                     <dd class="mt-0.5 text-navy">{{ $profile->permanent_address }}</dd>
@@ -110,7 +110,7 @@
                 @endif
             </div>
 
-            @if ($emergency['name'] ?? null)
+            @if ($isAdmin && ($emergency['name'] ?? null))
                 <div class="card p-6">
                     <p class="label-caps text-gold">{{ __('alumkit::profile.emergency_contact') }}</p>
                     <p class="mt-3 text-sm font-semibold text-navy">{{ $emergency['name'] }}</p>
@@ -190,6 +190,7 @@
                     @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])
                 </div>
 
+                @if ($isAdmin)
                 @if ($user->email_verified_at && $user->getKey() !== auth()->id())
                 <script>
                     function alumkitSubmitState(url, state, reason) {
@@ -315,6 +316,7 @@
                         {{ __('alumkit::dashboard.assign_roles') }}
                     </a>
                 </div>
+                @endif
                 @endif
             </section>
         </div>

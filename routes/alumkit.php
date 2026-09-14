@@ -10,7 +10,6 @@ use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\GlobalContentController;
-use Alumkit\Alumkit\Http\Controllers\MemberController;
 use Alumkit\Alumkit\Http\Controllers\PageController;
 use Alumkit\Alumkit\Http\Controllers\PositionController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
@@ -129,13 +128,11 @@ Route::middleware(['web'])->group(function () {
             });
 
             Route::middleware('user.approved')->group(function () {
-                Route::get('members', [MemberController::class, 'index'])->name('members.index');
-                Route::get('members/{user}', [MemberController::class, 'show'])->name('members.show');
+                Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
+                Route::get('users/{user}', [UserRoleController::class, 'show'])->name('users.show');
             });
 
             Route::middleware('permission:manage members')->group(function () {
-                Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
-                Route::get('users/{user}', [UserRoleController::class, 'show'])->name('users.show');
                 Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
                 Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
                 Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');

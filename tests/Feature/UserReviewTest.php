@@ -14,7 +14,7 @@ beforeEach(function () {
     Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
-    $this->admin = User::factory()->create();
+    $this->admin = User::factory()->approved()->create();
     $this->admin->profile()->create();
     Permission::findOrCreate('manage members');
     $this->admin->givePermissionTo('manage members');
@@ -259,7 +259,7 @@ it('blocks an admin from changing their own state', function () {
         ->assertRedirect(route('alumkit.users.show', $this->admin))
         ->assertSessionHas('error');
 
-    expect($this->admin->fresh()->state)->toBe('pending');
+    expect($this->admin->fresh()->state)->toBe('active');
 });
 
 it('hides the review panel on an admins own profile', function () {
