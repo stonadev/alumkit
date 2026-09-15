@@ -26,6 +26,10 @@ final class UpdateProfileDetails
             $data['emergency_contact'] ?? [],
             fn (mixed $v): bool => $v !== null && $v !== '', // all-empty group -> null
         ) ?: null;
+        $data['local_names'] = array_filter(
+            $data['local_names'] ?? [],
+            fn (mixed $v): bool => $v !== null && $v !== '',
+        ) ?: null;
 
         if ($photo !== null) {
             $path = $photo->store('profile-photos', 'public');

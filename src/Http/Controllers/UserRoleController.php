@@ -17,38 +17,62 @@ class UserRoleController extends Controller
     public function index(Request $request): View
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
+        $isAdmin = $request->user()->can('manage members');
 
-        $allowed = ['pending', 'rejected', 'suspended', 'active', 'all'];
-        $filter = $request->query('filter');
+        if ($isAdmin) {
+            $allowed = ['pending', 'unverified', 'rejected', 'suspended', 'active', 'all'];
+            $filter = $request->query('filter');
 
-        if (! in_array($filter, $allowed, true)) {
-            $filter = $userModel::query()->where('state', UserState::Pending->value)->exists()
-                ? 'pending'
-                : 'all';
-        }
+            if (! in_array($filter, $allowed, true)) {
+                $filter = 'all';
+            }
 
-        $search = trim((string) $request->query('search'));
+            $search = trim((string) $request->query('search'));
 
-        $query = $userModel::query()->with(['roles', 'profile.educations', 'profile.careers']);
+            $query = $userModel::query()->with(['roles', 'profile.educations', 'profile.careers']);
 
-        if ($filter === 'all') {
-            $query->orderBy('name');
-        } elseif ($filter === 'pending') {
-            $query->where('state', UserState::Pending->value)->orderBy('created_at');
+            if ($filter === 'all') {
+                $query->orderBy('name');
+            } elseif ($filter === 'pending') {
+                $query->where('state', UserState::Pending->value)
+                    ->whereNotNull('email_verified_at')
+                    ->orderBy('created_at');
+            } elseif ($filter === 'unverified') {
+                $query->whereNull('email_verified_at')->orderBy('created_at');
+            } else {
+                $query->where('state', $filter)->orderBy('name');
+            }
+
+            if ($search !== '') {
+                $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+                $query->where(fn (Builder $q) => $q->whereRaw('name LIKE ? ESCAPE \'\\\'', [$like])
+                    ->orWhereRaw('email LIKE ? ESCAPE \'\\\'', [$like]));
+            }
+
+            $users = $query->get();
+
+            if ($request->ajax()) {
+                return view('alumkit::users.partials.grid', compact('users', 'filter'));
+            }
+
+            $unverifiedCount = $userModel::query()->whereNull('email_verified_at')->count();
+            $verifiedStates = $userModel::query()->whereNotNull('email_verified_at')->pluck('state');
+            $counts = [
+                'unverified' => $unverifiedCount,
+                'pending' => $verifiedStates->filter(fn (string $s) => $s === UserState::Pending->value)->count(),
+                'active' => $verifiedStates->filter(fn (string $s) => $s === UserState::Active->value)->count(),
+                'rejected' => $verifiedStates->filter(fn (string $s) => $s === UserState::Rejected->value)->count(),
+                'suspended' => $verifiedStates->filter(fn (string $s) => $s === UserState::Suspended->value)->count(),
+            ];
         } else {
-            $query->where('state', $filter)->orderBy('name');
-        }
-
-        if ($search !== '') {
-            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
-            $query->where(fn (Builder $q) => $q->whereRaw('name LIKE ? ESCAPE \'\\\'', [$like])
-                ->orWhereRaw('email LIKE ? ESCAPE \'\\\'', [$like]));
-        }
-
-        $users = $query->get();
-
-        if ($request->ajax()) {
-            return view('alumkit::users.partials.grid', compact('users', 'filter'));
+            $filter = 'all';
+            $search = '';
+            $counts = [];
+            $users = $userModel::query()
+                ->with(['roles', 'profile.educations', 'profile.careers'])
+                ->where('state', UserState::Active->value)
+                ->orderBy('name')
+                ->get();
         }
 
         /** @var View $view */
@@ -56,21 +80,29 @@ class UserRoleController extends Controller
             'users' => $users,
             'filter' => $filter,
             'search' => $search,
+            'counts' => $counts,
+            'isAdmin' => $isAdmin,
         ]);
 
         return $view;
     }
 
-    public function show(string $user): View
+    public function show(Request $request, string $user): View
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
+        $isAdmin = $request->user()->can('manage members');
 
-        $user = $userModel::query()
-            ->with(['roles', 'profile.educations', 'profile.careers'])
-            ->findOrFail($user);
+        $query = $userModel::query()
+            ->with(['roles', 'profile.educations', 'profile.careers']);
+
+        if (! $isAdmin) {
+            $query->where('state', UserState::Active->value);
+        }
+
+        $user = $query->findOrFail($user);
 
         /** @var View $view */
-        $view = view('alumkit::users.show', compact('user'));
+        $view = view('alumkit::users.show', compact('user', 'isAdmin'));
 
         return $view;
     }
@@ -92,6 +124,11 @@ class UserRoleController extends Controller
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
         $targetUser = $userModel::findOrFail($user);
+
+        if (is_null($targetUser->email_verified_at)) {
+            return redirect()->route('alumkit.users.show', $targetUser)
+                ->with('error', __('alumkit::dashboard.unverified_user_no_transition'));
+        }
 
         $request->validate([
             'roles' => ['sometimes', 'array'],

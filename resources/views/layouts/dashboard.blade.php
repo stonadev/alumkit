@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', __('alumkit::auth.dashboard')) — {{ config('app.name', 'AlumKit') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +47,7 @@
                     $items = [
                         ['label' => __('alumkit::dashboard.dashboard'), 'route' => 'alumkit.dashboard', 'show' => true],
                         ['label' => __('alumkit::dashboard.roles'), 'route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles')],
-                        ['label' => __('alumkit::dashboard.manage_user_roles'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->can('manage members')],
+                        ['label' => __('alumkit::dashboard.member_directory'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
                         ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('manage members')],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
                         ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],

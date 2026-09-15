@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="mt-5 flex flex-wrap items-center gap-2">
-                    @include('alumkit::users.partials.state-badge', ['state' => $user->state])
+                    @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])
                     @foreach ($user->roles as $role)
                         <span class="rounded bg-surface-container px-2 py-0.5 text-xs font-medium text-navy">{{ $role->name }}</span>
                     @endforeach
@@ -73,13 +73,13 @@
                                     <dd class="mt-0.5 text-navy">{{ $profile->blood_group->value }}</dd>
                                 </div>
                             @endif
-                            @if ($profile->present_address)
+                            @if ($isAdmin && $profile->present_address)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.present_address') }}</dt>
                                     <dd class="mt-0.5 text-navy">{{ $profile->present_address }}</dd>
                                 </div>
                             @endif
-                            @if ($profile->permanent_address)
+                            @if ($isAdmin && $profile->permanent_address)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.permanent_address') }}</dt>
                                     <dd class="mt-0.5 text-navy">{{ $profile->permanent_address }}</dd>
@@ -88,7 +88,9 @@
                             @if ($profile->website)
                                 <div>
                                     <dt class="text-on-surface-variant">{{ __('alumkit::profile.website') }}</dt>
-                                    <dd class="mt-0.5 break-all text-navy">{{ $profile->website }}</dd>
+                                    <dd class="mt-0.5 break-all text-navy">
+                                        <a href="{{ filter_var($profile->website, FILTER_VALIDATE_URL) ? $profile->website : 'https://'.$profile->website }}" target="_blank" rel="noopener noreferrer" class="hover:text-gold">{{ $profile->website }}</a>
+                                    </dd>
                                 </div>
                             @endif
                         </dl>
@@ -98,19 +100,25 @@
                 @if ($socials->isNotEmpty())
                     <div class="mt-6 border-t border-outline-variant/60 pt-5">
                         <p class="label-caps text-gold">{{ __('alumkit::profile.social_links') }}</p>
-                        <dl class="mt-3 space-y-3 text-sm">
+                        <div class="mt-3 flex items-center gap-3">
                             @foreach ($socials as $key => $url)
-                                <div class="flex items-start justify-between gap-4">
-                                    <dt class="shrink-0 text-on-surface-variant">{{ $key === 'linkedin' ? __('alumkit::profile.linkedin') : __('alumkit::profile.facebook') }}</dt>
-                                    <dd class="truncate text-right text-navy">{{ $url }}</dd>
-                                </div>
+                                @php $absoluteUrl = filter_var($url, FILTER_VALIDATE_URL) ? $url : 'https://'.$url; @endphp
+                                <a href="{{ $absoluteUrl }}" target="_blank" rel="noopener noreferrer"
+                                   class="inline-flex items-center gap-2 rounded-lg border border-outline-variant/60 px-3 py-2 text-sm font-medium text-navy transition-colors hover:border-gold hover:text-gold">
+                                    @if ($key === 'linkedin')
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                    @elseif ($key === 'facebook')
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    @endif
+                                    {{ $key === 'linkedin' ? __('alumkit::profile.linkedin') : __('alumkit::profile.facebook') }}
+                                </a>
                             @endforeach
-                        </dl>
+                        </div>
                     </div>
                 @endif
             </div>
 
-            @if ($emergency['name'] ?? null)
+            @if ($isAdmin && ($emergency['name'] ?? null))
                 <div class="card p-6">
                     <p class="label-caps text-gold">{{ __('alumkit::profile.emergency_contact') }}</p>
                     <p class="mt-3 text-sm font-semibold text-navy">{{ $emergency['name'] }}</p>
@@ -187,44 +195,137 @@
 
                 <div class="mt-6 flex flex-wrap items-center gap-3">
                     <span class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.current_state') }}</span>
-                    @include('alumkit::users.partials.state-badge', ['state' => $user->state])
+                    @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])
                 </div>
 
-                @if ($user->getKey() !== auth()->id())
-                <div class="mt-5 space-y-3">
+                @if ($isAdmin)
+                @if ($user->email_verified_at && $user->getKey() !== auth()->id())
+                <script>
+                    function alumkitSubmitState(url, state, reason) {
+                        var f = document.createElement('form');
+                        f.method = 'POST';
+                        f.action = url;
+
+                        var addInput = function (name, value) {
+                            var el = document.createElement('input');
+                            el.type = 'hidden';
+                            el.name = name;
+                            el.value = value;
+                            f.appendChild(el);
+                        };
+
+                        addInput('_token', document.querySelector('meta[name="csrf-token"]').content);
+                        addInput('_method', 'PUT');
+                        addInput('state', state);
+                        if (reason) addInput('reason', reason);
+
+                        document.body.appendChild(f);
+                        f.submit();
+                    }
+                </script>
+                <div class="mt-5 space-y-3" x-data="{
+                    showModal: false,
+                    targetState: '',
+                    actionUrl: '',
+                    buttonLabel: '',
+                    needsReason: false,
+                    reason: '',
+                    open(state, url, label, needsReason) {
+                        if (!needsReason) {
+                            alumkitSubmitState(url, state, null);
+                            return;
+                        }
+                        this.targetState = state;
+                        this.actionUrl = url;
+                        this.buttonLabel = label;
+                        this.needsReason = true;
+                        this.reason = '';
+                        this.showModal = true;
+                        this.$nextTick(() => this.$refs.reasonInput?.focus());
+                    },
+                    confirm() {
+                        if (!this.reason.trim()) return;
+                        alumkitSubmitState(this.actionUrl, this.targetState, this.reason);
+                    },
+                    close() {
+                        this.showModal = false;
+                        this.reason = '';
+                    }
+                }">
                     @forelse ($transitions as $transition)
                         <div class="flex flex-col gap-3 rounded-lg bg-surface-container/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                             <p class="text-sm text-on-surface-variant">{{ __("alumkit::dashboard.transition_description_{$transition->value}") }}</p>
-                            <form method="POST" action="{{ route('alumkit.users.state.update', $user) }}" class="shrink-0">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="state" value="{{ $transition->value }}">
+                            <button
+                                type="button"
+                                @click="open('{{ $transition->value }}', '{{ route('alumkit.users.state.update', $user) }}', '{{ __("alumkit::dashboard.transition_to_{$transition->value}") }}', {{ in_array($transition->value, ['rejected', 'suspended']) ? 'true' : 'false' }})"
                                 @if ($transition->value === 'active')
-                                    <button type="submit" class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50"
                                 @elseif ($transition->value === 'rejected')
-                                    <button type="submit" class="inline-flex items-center justify-center rounded border border-error px-4 py-2 text-sm font-semibold text-error transition-colors hover:bg-error hover:text-white focus-visible:ring-2 focus-visible:ring-error/50">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="inline-flex items-center justify-center rounded border border-error px-4 py-2 text-sm font-semibold text-error transition-colors hover:bg-error hover:text-white focus-visible:ring-2 focus-visible:ring-error/50"
                                 @else
-                                    <button type="submit" class="btn-secondary">
-                                        {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
-                                    </button>
+                                    class="btn-secondary"
                                 @endif
-                            </form>
+                            >
+                                {{ __("alumkit::dashboard.transition_to_{$transition->value}") }}
+                            </button>
                         </div>
                     @empty
                         <p class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.no_further_actions') }}</p>
                     @endforelse
+
+                    {{-- State-change reason modal --}}
+                    <div x-show="showModal" x-cloak
+                         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0">
+                        <div class="absolute inset-0 bg-navy/40 backdrop-blur-sm" @click="close()" aria-hidden="true"></div>
+                        <div class="relative w-full max-w-lg rounded-lg border border-outline-variant/60 bg-white p-6 shadow-xl"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             @keydown.escape.window="close()">
+                            <h3 class="font-serif text-lg font-semibold text-navy" x-text="buttonLabel"></h3>
+                            <p class="mt-2 text-sm text-on-surface-variant">{{ __('alumkit::dashboard.transition_reason_description') }}</p>
+                            <textarea
+                                x-ref="reasonInput"
+                                x-model="reason"
+                                name="reason"
+                                rows="3"
+                                class="mt-4 w-full rounded-lg border border-outline-variant/60 bg-surface px-3 py-2 text-sm text-navy placeholder:text-on-surface-variant/50 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                                placeholder="{{ __('alumkit::dashboard.state_reason_placeholder') }}"
+                                maxlength="2000"
+                                required
+                                @keydown.enter.meta="confirm()"
+                                @keydown.enter.ctrl="confirm()"
+                            ></textarea>
+                            <div class="mt-4 flex items-center justify-end gap-3">
+                                <button type="button" @click="close()" class="btn-secondary">
+                                    {{ __('alumkit::dashboard.state_reason_cancel') }}
+                                </button>
+                                <button type="button" @click="confirm()" class="inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold/90 focus-visible:ring-2 focus-visible:ring-gold/50">
+                                    {{ __('alumkit::dashboard.state_reason_confirm') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endif
 
+                @if ($user->state === 'active' && $user->getKey() !== auth()->id())
                 <div class="mt-6 border-t border-outline-variant/60 pt-5">
                     <a href="{{ route('alumkit.users.roles.edit', $user) }}" class="btn-secondary w-full">
                         {{ __('alumkit::dashboard.assign_roles') }}
                     </a>
                 </div>
+                @endif
+                @endif
             </section>
         </div>
     </div>

@@ -52,6 +52,7 @@ it('logs a state transition with causer, subject and old/new state', function ()
     expect($activity->properties->toArray())->toBe([
         'old_state' => UserState::Pending->value,
         'new_state' => UserState::Active->value,
+        'reason' => null,
     ]);
 });
 
@@ -154,6 +155,7 @@ it('logs user role sync with added and removed diff', function () {
     Role::findOrCreate('admin');
     Role::findOrCreate('member');
 
+    $this->targetUser->update(['state' => UserState::Active->value]);
     $this->targetUser->syncRoles(['admin']);
 
     $this->actingAs($this->user)

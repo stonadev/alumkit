@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Permission;
 use Workbench\App\Models\User;
 use Workbench\Database\Seeders\DatabaseSeeder;
@@ -10,9 +11,10 @@ use Workbench\Database\Seeders\DatabaseSeeder;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
-    $this->admin = User::factory()->create();
+    $this->admin = User::factory()->approved()->create();
     $this->admin->profile()->create();
     Permission::findOrCreate('manage members');
     $this->admin->givePermissionTo('manage members');
@@ -25,11 +27,41 @@ beforeEach(function () {
     $this->activeUser = User::factory()->approved()->create(['name' => 'Active Member']);
 });
 
-it('defaults the users index to pending users', function () {
+it('defaults the users index to all users', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index'))
         ->assertOk()
         ->assertSee('Pending Member')
+        ->assertSee('Active Member');
+});
+
+it('pending filter excludes unverified pending users', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified Pending']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'pending']))
+        ->assertOk()
+        ->assertSee('Pending Member')
+        ->assertDontSee('Unverified Pending');
+});
+
+it('unverified filter shows users with null email_verified_at', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->assertOk()
+        ->assertSee('Unverified User')
+        ->assertDontSee('Active Member');
+});
+
+it('unverified filter does not show email-verified users', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->assertOk()
+        ->assertDontSee('Pending Member')
         ->assertDontSee('Active Member');
 });
 
@@ -128,24 +160,18 @@ it('denies the users index without manage members permission', function () {
         ->assertForbidden();
 });
 
-it('defaults to the all filter when no pending users exist', function () {
-    // This test deletes every pending user; the acting admin must not be one,
-    // or the request runs as a deleted user (FK cascade removes the profile).
-    $this->admin->update(['state' => 'active']);
-
-    User::query()->where('state', 'pending')->delete();
-
+it('defaults to the all filter regardless of pending users', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index'))
         ->assertOk()
         ->assertSee('Active Member');
 });
 
-it('falls back to pending for unknown filter values', function () {
+it('falls back to all for unknown filter values', function () {
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'bogus']))
         ->assertOk()
-        ->assertDontSee('Active Member');
+        ->assertSee('Active Member');
 });
 
 it('renders user details for users with manage members permission', function () {
@@ -202,7 +228,7 @@ it('approves a pending member', function () {
 
 it('rejects a pending member', function () {
     $this->actingAs($this->admin)
-        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected'])
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected', 'reason' => 'Incomplete profile'])
         ->assertRedirect(route('alumkit.users.index'));
 
     expect($this->pendingUser->fresh()->state)->toBe('rejected');
@@ -221,7 +247,7 @@ it('moves a rejected member back to the review queue', function () {
 
 it('suspends an active member', function () {
     $this->actingAs($this->admin)
-        ->put(route('alumkit.users.state.update', $this->activeUser), ['state' => 'suspended'])
+        ->put(route('alumkit.users.state.update', $this->activeUser), ['state' => 'suspended', 'reason' => 'Violation of terms'])
         ->assertRedirect(route('alumkit.users.index'));
 
     expect($this->activeUser->fresh()->state)->toBe('suspended');
@@ -233,7 +259,7 @@ it('blocks an admin from changing their own state', function () {
         ->assertRedirect(route('alumkit.users.show', $this->admin))
         ->assertSessionHas('error');
 
-    expect($this->admin->fresh()->state)->toBe('pending');
+    expect($this->admin->fresh()->state)->toBe('active');
 });
 
 it('hides the review panel on an admins own profile', function () {
@@ -242,4 +268,95 @@ it('hides the review panel on an admins own profile', function () {
         ->assertOk()
         ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
         ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
+});
+
+it('blocks state change on an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $unverified), ['state' => 'active'])
+        ->assertRedirect(route('alumkit.users.show', $unverified))
+        ->assertSessionHas('error');
+
+    expect($unverified->fresh()->state)->toBe('pending');
+});
+
+it('hides state change buttons for an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $unverified))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.transition_to_active'))
+        ->assertDontSee(__('alumkit::dashboard.transition_to_rejected'));
+});
+
+it('blocks role assignment on an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.roles.update', $unverified), ['roles' => ['member']])
+        ->assertRedirect(route('alumkit.users.show', $unverified))
+        ->assertSessionHas('error');
+
+    expect($unverified->fresh()->roles->pluck('name')->toArray())->not->toContain('member');
+});
+
+it('hides the assign roles button for an unverified user', function () {
+    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
+    $unverified->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $unverified))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button on an admins own profile', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->admin))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('shows the assign roles button for an active user', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->activeUser))
+        ->assertOk()
+        ->assertSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button for a pending user', function () {
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $this->pendingUser))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('hides the assign roles button for a suspended user', function () {
+    $suspended = User::factory()->create(['name' => 'Suspended Member', 'state' => 'suspended']);
+    $suspended->profile()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('alumkit.users.show', $suspended))
+        ->assertOk()
+        ->assertDontSee(__('alumkit::dashboard.assign_roles'));
+});
+
+it('allows role assignment on a non-active user with verified email', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.roles.update', $this->pendingUser), ['roles' => ['member']])
+        ->assertRedirect(route('alumkit.users.roles.edit', $this->pendingUser))
+        ->assertSessionHas('status');
+
+    expect($this->pendingUser->fresh()->roles->pluck('name')->toArray())->toContain('member');
+});
+
+it('rejects without reason', function () {
+    $this->actingAs($this->admin)
+        ->put(route('alumkit.users.state.update', $this->pendingUser), ['state' => 'rejected'])
+        ->assertSessionHasErrors('reason');
 });
