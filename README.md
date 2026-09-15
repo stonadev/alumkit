@@ -41,6 +41,20 @@ php artisan alumkit:publish
 
 This copies `config/alumkit.php` to your app's `config/` directory. To overwrite an existing published file, use `php artisan alumkit:publish --force`.
 
+### Feature Toggles
+
+The package includes two built-in features that can be disabled independently. When disabled, a feature's routes return 404 and its links disappear from the dashboard sidebar and quick links. Models, migrations, seeders, and facade helpers remain loaded — re-enabling the flag restores the feature without data loss.
+
+```php
+// config/alumkit.php
+'features' => [
+    'posts' => true,       // set false to hide the posts admin screens
+    'committee' => true,   // set false to hide the committee admin screens
+],
+```
+
+Both are enabled by default. Set a value to `false` in the published config to disable the corresponding feature.
+
 ### Education field suggestions
 
 While typing the level, institution and subject fields on education forms, the package suggests values seeded in the published config; users can pick one or type any value:
