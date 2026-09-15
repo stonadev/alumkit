@@ -37,13 +37,15 @@ Route::get('alumkit/style/editor-images/{file}', function (string $file) {
 })->name('alumkit.editor.image.show')->where('file', '[\w.\-]+');
 
 // Post thumbnails: streamed through the package (no storage:link requirement).
-Route::get('alumkit/style/post-thumbnails/{file}', function (string $file) {
-    $path = 'post-thumbnails/'.basename($file);
+if (config('alumkit.features.posts')) {
+    Route::get('alumkit/style/post-thumbnails/{file}', function (string $file) {
+        $path = 'post-thumbnails/'.basename($file);
 
-    abort_unless(Storage::disk('public')->exists($path), 404);
+        abort_unless(Storage::disk('public')->exists($path), 404);
 
-    return Storage::disk('public')->response($path);
-})->name('alumkit.posts.thumbnail')->where('file', '[\w.\-]+');
+        return Storage::disk('public')->response($path);
+    })->name('alumkit.posts.thumbnail')->where('file', '[\w.\-]+');
+}
 
 // Profile photos: streamed through the package (no storage:link requirement).
 Route::get('alumkit/style/profile-photos/{file}', function (string $file) {
@@ -55,13 +57,15 @@ Route::get('alumkit/style/profile-photos/{file}', function (string $file) {
 })->name('alumkit.profile.photo.show')->where('file', '[\w.\-]+');
 
 // Committee photos: streamed through the package (no storage:link requirement).
-Route::get('alumkit/style/committee-photos/{file}', function (string $file) {
-    $path = 'committee-photos/'.basename($file);
+if (config('alumkit.features.committee')) {
+    Route::get('alumkit/style/committee-photos/{file}', function (string $file) {
+        $path = 'committee-photos/'.basename($file);
 
-    abort_unless(Storage::disk('public')->exists($path), 404);
+        abort_unless(Storage::disk('public')->exists($path), 404);
 
-    return Storage::disk('public')->response($path);
-})->name('alumkit.committee.photo')->where('file', '[\w.\-]+');
+        return Storage::disk('public')->response($path);
+    })->name('alumkit.committee.photo')->where('file', '[\w.\-]+');
+}
 
 Route::middleware(['web'])->group(function () {
     // Profile completion: accessible after email verification, before full profile is submitted.
@@ -123,9 +127,11 @@ Route::middleware(['web'])->group(function () {
                 Route::put('globals/{key}', [GlobalContentController::class, 'update'])->name('globals.update');
             });
 
-            Route::middleware('user.approved')->group(function () {
-                Route::resource('posts', PostController::class);
-            });
+            if (config('alumkit.features.posts')) {
+                Route::middleware('user.approved')->group(function () {
+                    Route::resource('posts', PostController::class);
+                });
+            }
 
             Route::middleware('user.approved')->group(function () {
                 Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
@@ -138,11 +144,13 @@ Route::middleware(['web'])->group(function () {
                 Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');
             });
 
-            Route::middleware('permission:manage committee')->group(function () {
-                Route::resource('positions', PositionController::class)->except(['show']);
-                Route::resource('committee', CommitteeController::class)->except(['show']);
-                Route::post('committee/reorder', [CommitteeController::class, 'reorder'])->name('committee.reorder');
-            });
+            if (config('alumkit.features.committee')) {
+                Route::middleware('permission:manage committee')->group(function () {
+                    Route::resource('positions', PositionController::class)->except(['show']);
+                    Route::resource('committee', CommitteeController::class)->except(['show']);
+                    Route::post('committee/reorder', [CommitteeController::class, 'reorder'])->name('committee.reorder');
+                });
+            }
         });
     });
 });
