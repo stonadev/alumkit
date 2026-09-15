@@ -36,9 +36,19 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'state' => 'pending',
+            'state' => 'registered',
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Indicate that the user has a pending profile awaiting review.
+     */
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'state' => 'pending',
+        ]);
     }
 
     /**

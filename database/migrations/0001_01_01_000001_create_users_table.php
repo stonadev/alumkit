@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('state')->default(UserState::Pending->value);
+            $table->string('state')->default(UserState::Registered->value);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->nullable()->unique();
             $table->timestamp('phone_verified_at')->nullable();

@@ -19,7 +19,7 @@ beforeEach(function () {
     Permission::findOrCreate('manage members');
     $this->admin->givePermissionTo('manage members');
 
-    $this->pendingUser = User::factory()->create(['name' => 'Pending Member']);
+    $this->pendingUser = User::factory()->pending()->create(['name' => 'Pending Member']);
     $this->pendingUser->profile()->create();
     $this->pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $this->pendingUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
@@ -35,31 +35,30 @@ it('defaults the users index to all users', function () {
         ->assertSee('Active Member');
 });
 
-it('pending filter excludes unverified pending users', function () {
-    $unverified = User::factory()->unverified()->create(['name' => 'Unverified Pending']);
-    $unverified->profile()->create();
+it('pending filter excludes registered users', function () {
+    User::factory()->create(['name' => 'Registered Member']);
 
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'pending']))
         ->assertOk()
         ->assertSee('Pending Member')
-        ->assertDontSee('Unverified Pending');
+        ->assertDontSee('Registered Member');
 });
 
-it('unverified filter shows users with null email_verified_at', function () {
-    $unverified = User::factory()->unverified()->create(['name' => 'Unverified User']);
-    $unverified->profile()->create();
+it('registered filter shows users in registered state', function () {
+    User::factory()->create(['name' => 'Registered Member']);
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->get(route('alumkit.users.index', ['filter' => 'registered']))
         ->assertOk()
-        ->assertSee('Unverified User')
-        ->assertDontSee('Active Member');
+        ->assertSee('Registered Member')
+        ->assertDontSee('Active Member')
+        ->assertDontSee('Pending Member');
 });
 
-it('unverified filter does not show email-verified users', function () {
+it('registered filter excludes non-registered users', function () {
     $this->actingAs($this->admin)
-        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
+        ->get(route('alumkit.users.index', ['filter' => 'registered']))
         ->assertOk()
         ->assertDontSee('Pending Member')
         ->assertDontSee('Active Member');
@@ -279,7 +278,7 @@ it('blocks state change on an unverified user', function () {
         ->assertRedirect(route('alumkit.users.show', $unverified))
         ->assertSessionHas('error');
 
-    expect($unverified->fresh()->state)->toBe('pending');
+    expect($unverified->fresh()->state)->toBe('registered');
 });
 
 it('hides state change buttons for an unverified user', function () {

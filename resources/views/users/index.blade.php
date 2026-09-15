@@ -34,7 +34,7 @@
                             onchange="this.form.submit()">
                         @foreach ([
                             'pending' => __('alumkit::dashboard.filter_pending'),
-                            'unverified' => __('alumkit::dashboard.filter_unverified'),
+                            'registered' => __('alumkit::dashboard.filter_registered'),
                             'active' => __('alumkit::dashboard.filter_active'),
                             'rejected' => __('alumkit::dashboard.filter_rejected'),
                             'suspended' => __('alumkit::dashboard.filter_suspended'),
@@ -54,9 +54,7 @@
             } elseif ($filter === 'all') {
                 $summary = __('alumkit::dashboard.summary_all', ['count' => $total]);
             } else {
-                $label = $filter === 'unverified'
-                    ? strtolower(__('alumkit::dashboard.filter_unverified'))
-                    : strtolower(__('alumkit::dashboard.state_' . $filter));
+                $label = strtolower(__('alumkit::dashboard.state_' . $filter));
                 $summary = __('alumkit::dashboard.summary_state', ['count' => $counts[$filter] ?? 0, 'state' => $label]);
             }
         @endphp

@@ -20,7 +20,7 @@ class UserRoleController extends Controller
         $isAdmin = $request->user()->can('manage members');
 
         if ($isAdmin) {
-            $allowed = ['pending', 'unverified', 'rejected', 'suspended', 'active', 'all'];
+            $allowed = ['pending', 'registered', 'rejected', 'suspended', 'active', 'all'];
             $filter = $request->query('filter');
 
             if (! in_array($filter, $allowed, true)) {
@@ -34,11 +34,7 @@ class UserRoleController extends Controller
             if ($filter === 'all') {
                 $query->orderBy('name');
             } elseif ($filter === 'pending') {
-                $query->where('state', UserState::Pending->value)
-                    ->whereNotNull('email_verified_at')
-                    ->orderBy('created_at');
-            } elseif ($filter === 'unverified') {
-                $query->whereNull('email_verified_at')->orderBy('created_at');
+                $query->where('state', UserState::Pending->value)->orderBy('created_at');
             } else {
                 $query->where('state', $filter)->orderBy('name');
             }
@@ -55,15 +51,11 @@ class UserRoleController extends Controller
                 return view('alumkit::users.partials.grid', compact('users', 'filter'));
             }
 
-            $unverifiedCount = $userModel::query()->whereNull('email_verified_at')->count();
-            $verifiedStates = $userModel::query()->whereNotNull('email_verified_at')->pluck('state');
-            $counts = [
-                'unverified' => $unverifiedCount,
-                'pending' => $verifiedStates->filter(fn (string $s) => $s === UserState::Pending->value)->count(),
-                'active' => $verifiedStates->filter(fn (string $s) => $s === UserState::Active->value)->count(),
-                'rejected' => $verifiedStates->filter(fn (string $s) => $s === UserState::Rejected->value)->count(),
-                'suspended' => $verifiedStates->filter(fn (string $s) => $s === UserState::Suspended->value)->count(),
-            ];
+            $counts = $userModel::query()
+                ->selectRaw('state, count(*) as aggregate')
+                ->groupBy('state')
+                ->pluck('aggregate', 'state')
+                ->all();
         } else {
             $filter = 'all';
             $search = '';

@@ -6,6 +6,7 @@ namespace Alumkit\Alumkit\Enums;
 
 enum UserState: string
 {
+    case Registered = 'registered';
     case Pending = 'pending';
     case Active = 'active';
     case Suspended = 'suspended';
@@ -17,6 +18,7 @@ enum UserState: string
     public function transitions(): array
     {
         return match ($this) {
+            self::Registered => [],
             self::Pending => [self::Active, self::Rejected],
             self::Active => [self::Suspended],
             self::Suspended => [self::Active],
