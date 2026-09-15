@@ -81,7 +81,6 @@ return [
     'view_profile' => 'View profile',
     'no_pending_users' => 'No users awaiting approval.',
     'no_registered_users' => 'No users awaiting profile completion.',
-    'no_unverified_users' => 'No users with unverified email.',
     'unverified_user_no_transition' => 'Email must be verified before membership actions can be taken.',
     'no_profile_data' => 'This user has not submitted a profile yet.',
     'back_to_users' => 'Back to Users',
