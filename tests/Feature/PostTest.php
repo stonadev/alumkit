@@ -275,3 +275,41 @@ it('returns the most recent published posts through the facade API', function ()
     expect(Alumkit::recentPosts(2)->pluck('title')->all())->toBe(['P4', 'P3']);
     expect(Alumkit::recentPosts(0))->toBeEmpty();
 });
+
+it('renders the post preview for the author', function () {
+    $post = Post::create(['user_id' => $this->user->id, 'title' => 'Draft Preview', 'body' => 'Preview content']);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.posts.show', $post))
+        ->assertOk()
+        ->assertSee('Draft Preview');
+});
+
+it('converts editor.js json body to html in the preview', function () {
+    $body = json_encode([
+        'blocks' => [
+            ['type' => 'header', 'data' => ['text' => 'My Heading', 'level' => 2]],
+            ['type' => 'paragraph', 'data' => ['text' => 'A paragraph.']],
+            ['type' => 'list', 'data' => ['style' => 'unordered', 'items' => ['Item one', 'Item two']]],
+        ],
+        'version' => '2.31.6',
+    ]);
+
+    $post = Post::create(['user_id' => $this->user->id, 'title' => 'Rich Post', 'body' => $body]);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.posts.show', $post))
+        ->assertOk()
+        ->assertSee('<h2>My Heading</h2>', false)
+        ->assertSee('<p>A paragraph.</p>', false)
+        ->assertSee('<li>Item one</li>', false);
+});
+
+it('forbids previewing another users post', function () {
+    $other = User::factory()->approved()->create();
+    $post = Post::create(['user_id' => $other->id, 'title' => 'Not Mine', 'body' => 'x']);
+
+    $this->actingAs($this->user)
+        ->get(route('alumkit.posts.show', $post))
+        ->assertForbidden();
+});

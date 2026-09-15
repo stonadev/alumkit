@@ -125,7 +125,7 @@ Route::middleware(['web'])->group(function () {
             });
 
             Route::middleware('user.approved')->group(function () {
-                Route::resource('posts', PostController::class)->except(['show']);
+                Route::resource('posts', PostController::class);
             });
 
             Route::middleware('user.approved')->group(function () {
