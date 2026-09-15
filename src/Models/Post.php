@@ -91,6 +91,9 @@ class Post extends Model
         return $html;
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private static function renderEditorHeader(array $data): string
     {
         $level = max(1, min(6, (int) ($data['level'] ?? 2)));
@@ -99,6 +102,9 @@ class Post extends Model
         return "<h{$level}>{$text}</h{$level}>";
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private static function renderEditorList(array $data): string
     {
         $tag = ($data['style'] ?? '') === 'ordered' ? 'ol' : 'ul';
@@ -110,6 +116,9 @@ class Post extends Model
         return "<{$tag}>{$items}</{$tag}>";
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private static function renderEditorTable(array $data): string
     {
         $rows = $data['content'] ?? [];
