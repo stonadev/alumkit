@@ -52,6 +52,16 @@ class PostController extends Controller
             ->with('status', __('alumkit::post.post_created'));
     }
 
+    public function show(Post $post, Request $request): View
+    {
+        abort_unless($post->user_id === $request->user()->id, 403);
+
+        /** @var View $view */
+        $view = view('alumkit::posts.show', compact('post'));
+
+        return $view;
+    }
+
     public function edit(Post $post, Request $request): View
     {
         abort_unless($post->user_id === $request->user()->id, 403);

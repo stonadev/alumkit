@@ -167,4 +167,59 @@ button[role="button"].rounded-md {
         @apply ring-2 ring-offset-2;
         --tw-ring-color: rgba(119, 90, 25, 0.5);
     }
+
+    /* Editorial prose for post body and rich-text content. */
+    .prose-navy {
+        @apply font-sans text-on-surface leading-relaxed;
+        max-width: 72ch;
+    }
+    .prose-navy h1 {
+        @apply mt-10 mb-4 text-2xl font-bold font-serif text-navy;
+    }
+    .prose-navy h2 {
+        @apply mt-8 mb-3 text-xl font-semibold font-serif text-navy;
+    }
+    .prose-navy h3 {
+        @apply mt-6 mb-2 text-lg font-semibold font-serif text-navy;
+    }
+    .prose-navy p {
+        @apply mb-4;
+    }
+    .prose-navy a {
+        @apply text-navy underline decoration-outline-variant underline-offset-2 hover:text-gold transition-colors;
+    }
+    .prose-navy strong {
+        @apply font-semibold text-navy;
+    }
+    .prose-navy ul,
+    .prose-navy ol {
+        @apply mb-4 pl-6;
+    }
+    .prose-navy ul {
+        @apply list-disc;
+    }
+    .prose-navy ol {
+        @apply list-decimal;
+    }
+    .prose-navy li {
+        @apply mb-1;
+    }
+    .prose-navy blockquote {
+        @apply my-6 border-l-4 border-gold/40 pl-4 italic text-on-surface-variant;
+    }
+    .prose-navy img {
+        @apply my-6 max-w-full rounded-lg;
+    }
+    .prose-navy pre {
+        @apply my-6 overflow-x-auto rounded-lg bg-surface-container p-4 text-sm;
+    }
+    .prose-navy code {
+        @apply rounded bg-surface-container px-1.5 py-0.5 text-sm;
+    }
+    .prose-navy pre code {
+        @apply bg-transparent p-0;
+    }
+    .prose-navy hr {
+        @apply my-8 border-outline-variant;
+    }
 }

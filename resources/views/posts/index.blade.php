@@ -43,6 +43,10 @@
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-right">
+                                <a href="{{ route('alumkit.posts.show', $post) }}" class="text-navy hover:text-gold mr-3">
+                                    {{ __('alumkit::post.preview') }}
+                                </a>
+
                                 <a href="{{ route('alumkit.posts.edit', $post) }}" class="text-navy hover:text-gold mr-3">
                                     {{ __('alumkit::dashboard.edit') }}
                                 </a>
