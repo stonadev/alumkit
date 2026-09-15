@@ -182,11 +182,9 @@ it('logs user role sync with added and removed diff', function () {
 });
 
 it('logs profile submission on completion', function () {
-    $this->user->profile()->delete();
-    $this->user->educations()->delete();
-    $this->user->careers()->delete();
+    $registered = User::factory()->create(); // default registered, no profile yet
 
-    $this->actingAs($this->user)
+    $this->actingAs($registered)
         ->post(route('alumkit.profile.complete.store'), [
             'educations' => [
                 ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
@@ -194,13 +192,15 @@ it('logs profile submission on completion', function () {
         ])
         ->assertRedirect(route('alumkit.dashboard'));
 
+    expect($registered->fresh()->state)->toBe(UserState::Pending->value);
+
     $this->assertDatabaseHas('activity_log', [
         'log_name' => 'profile',
         'description' => 'profile submitted',
         'event' => 'submitted',
-        'subject_type' => $this->user::class,
-        'subject_id' => $this->user->id,
-        'causer_id' => $this->user->id,
+        'subject_type' => $registered::class,
+        'subject_id' => $registered->id,
+        'causer_id' => $registered->id,
     ]);
 });
 

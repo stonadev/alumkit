@@ -52,15 +52,21 @@ it('allows rejected to pending transition', function () {
 it('blocks invalid transitions', function () {
     expect(UserState::Active->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Active->canTransitionTo(UserState::Rejected))->toBeFalse();
+    expect(UserState::Active->canTransitionTo(UserState::Registered))->toBeFalse();
     expect(UserState::Rejected->canTransitionTo(UserState::Active))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Rejected))->toBeFalse();
 });
 
+it('has no admin transitions from registered state', function () {
+    expect(UserState::Registered->transitions())->toBe([]);
+    expect(UserState::Registered->canTransitionTo(UserState::Pending))->toBeFalse();
+});
+
 it('sets default state on user creation', function () {
     $newUser = User::factory()->create();
 
-    expect($newUser->state)->toBe(UserState::Pending->value);
+    expect($newUser->state)->toBe(UserState::Registered->value);
 });
 
 it('updates user state with manage members permission', function () {

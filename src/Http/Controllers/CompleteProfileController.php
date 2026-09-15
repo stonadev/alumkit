@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
-use Alumkit\Alumkit\Actions\ResubmitProfileForReview;
+use Alumkit\Alumkit\Actions\SubmitProfileForReview;
 use Alumkit\Alumkit\Actions\UpdateProfileDetails;
 use Alumkit\Alumkit\Enums\EmploymentType;
 use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
@@ -98,12 +98,7 @@ class CompleteProfileController extends Controller
             $user->careers()->create($career);
         }
 
-        (new ResubmitProfileForReview)->handle($user);
-
-        activity('profile')
-            ->performedOn($user)
-            ->event('submitted')
-            ->log('profile submitted');
+        (new SubmitProfileForReview)->handle($user);
 
         $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
 

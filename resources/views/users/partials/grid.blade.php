@@ -42,6 +42,6 @@
     </x-card>
 @empty
     <p class="col-span-full text-sm text-on-surface-variant">
-        {{ $filter === 'pending' ? __('alumkit::dashboard.no_pending_users') : ($filter === 'unverified' ? __('alumkit::dashboard.no_unverified_users') : __('alumkit::dashboard.no_users')) }}
+        {{ $filter === 'pending' ? __('alumkit::dashboard.no_pending_users') : ($filter === 'registered' ? __('alumkit::dashboard.no_registered_users') : __('alumkit::dashboard.no_users')) }}
     </p>
 @endforelse

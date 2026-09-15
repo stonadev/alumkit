@@ -17,7 +17,7 @@ return [
         'admin_password' => env('ALUMKIT_ADMIN_PASSWORD', 'password'),
     ],
 
-    'default_state' => UserState::Pending,
+    'default_state' => UserState::Registered,
 
     'permission' => [
         'default_roles' => ['admin', 'moderator', 'member'],
