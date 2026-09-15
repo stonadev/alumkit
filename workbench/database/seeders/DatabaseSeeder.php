@@ -24,6 +24,29 @@ class DatabaseSeeder extends Seeder
             ContentSeeder::class,
         ]);
 
+        // Seed a profile for the admin user created by AlumkitUserSeeder.
+        $admin = User::where('email', config('alumkit.seeder.admin_email', 'admin@example.com'))->first();
+
+        if ($admin && ! $admin->profile) {
+            $admin->profile()->create([
+                'date_of_birth' => '1990-01-15',
+                'gender' => 'male',
+                'blood_group' => 'O+',
+                'present_address' => '23/A Dhanmondi R/A, Dhaka 1205',
+                'permanent_address' => 'Village: Baroaria, P.B. Rajshahi',
+                'social_links' => [
+                    'facebook' => 'facebook.com/admin.user',
+                    'linkedin' => 'linkedin.com/in/admin-user',
+                ],
+                'website' => 'admin.example.com',
+                'emergency_contact' => [
+                    'name' => 'Admin Emergency',
+                    'phone' => '+880 1800 000 000',
+                    'relation' => 'Spouse',
+                ],
+            ]);
+        }
+
         // Idempotent: a re-seed must not duplicate users or trip the
         // email/profile unique constraints, so the block runs once only.
         if (! User::where('email', 'verified@example.com')->exists()) {
