@@ -71,6 +71,7 @@ class Post extends Model
         }
 
         $data = json_decode($body, true);
+
         if (! is_array($data) || ! isset($data['blocks'])) {
             return e($body);
         }
@@ -78,12 +79,12 @@ class Post extends Model
         $html = '';
         foreach ($data['blocks'] as $block) {
             $html .= match ($block['type'] ?? '') {
-                'paragraph' => '<p>' . e($block['data']['text'] ?? '') . '</p>',
+                'paragraph' => '<p>'.e($block['data']['text'] ?? '').'</p>',
                 'header' => self::renderEditorHeader($block['data'] ?? []),
                 'list' => self::renderEditorList($block['data'] ?? []),
                 'table' => self::renderEditorTable($block['data'] ?? []),
-                'image' => '<img src="' . e($block['data']['file']['url'] ?? '') . '" alt="'
-                    . e($block['data']['caption'] ?? '') . '">',
+                'image' => '<img src="'.e($block['data']['file']['url'] ?? '').'" alt="'
+                    .e($block['data']['caption'] ?? '').'">',
                 default => '',
             };
         }
@@ -110,7 +111,7 @@ class Post extends Model
         $tag = ($data['style'] ?? '') === 'ordered' ? 'ol' : 'ul';
         $items = '';
         foreach ($data['items'] ?? [] as $item) {
-            $items .= '<li>' . e($item) . '</li>';
+            $items .= '<li>'.e($item).'</li>';
         }
 
         return "<{$tag}>{$items}</{$tag}>";
@@ -122,6 +123,7 @@ class Post extends Model
     private static function renderEditorTable(array $data): string
     {
         $rows = $data['content'] ?? [];
+
         if ($rows === []) {
             return '';
         }
@@ -131,12 +133,12 @@ class Post extends Model
             $html .= '<tr>';
             foreach ($cells as $cell) {
                 $tag = $i === 0 ? 'th' : 'td';
-                $html .= "<{$tag}>" . e($cell) . "</{$tag}>";
+                $html .= "<{$tag}>".e($cell)."</{$tag}>";
             }
             $html .= '</tr>';
         }
 
-        return $html . '</table>';
+        return $html.'</table>';
     }
 
     /**
