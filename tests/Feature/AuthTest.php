@@ -292,24 +292,44 @@ it('rejects password update with wrong current password', function () {
 });
 
 it('rejects a weak password on registration', function () {
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
     $this->post(route('register'), [
         'name' => 'Test User',
         'email' => 'weak@example.com',
         'phone' => '+1234567890',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ])->assertSessionHasErrors(['password']);
+        'password' => 'Password1',
+        'password_confirmation' => 'Password1',
+    ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
 });
 
 it('rejects a weak new password on profile password update', function () {
     $user = User::factory()->create(['password' => 'current-password']);
 
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
     $this->actingAs($user)
         ->put(route('user-password.update'), [
             'current_password' => 'current-password',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ])->assertSessionHasErrors(['password']);
+            'password' => 'Password1',
+            'password_confirmation' => 'Password1',
+        ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
+});
+
+it('rejects a weak password on reset-by-token', function () {
+    $user = User::factory()->create([
+        'password' => 'old-password',
+    ]);
+    $token = Password::createToken($user);
+
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
+    $this->post(route('password.update'), [
+        'email' => $user->email,
+        'token' => $token,
+        'password' => 'Password1',
+        'password_confirmation' => 'Password1',
+    ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
 });
 
 it('redirects authenticated users from login to dashboard', function () {
