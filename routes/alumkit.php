@@ -144,6 +144,7 @@ Route::middleware(['web'])->group(function () {
                 Route::put('users/{user}/state', [UserStateController::class, 'update'])->name('users.state.update');
             });
 
+            // positions are committee-only — toggled with the committee feature
             if (config('alumkit.features.committee')) {
                 Route::middleware('permission:manage committee')->group(function () {
                     Route::resource('positions', PositionController::class)->except(['show']);
