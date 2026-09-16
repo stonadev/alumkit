@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+it('has feature toggles enabled by default', function () {
+    $config = require __DIR__.'/../../config/alumkit.php';
+
+    expect($config['features']['posts'])->toBeTrue()
+        ->and($config['features']['committee'])->toBeTrue();
+});
+
 it('reads seeder admin values from ALUMKIT_* env vars', function () {
     putenv('ALUMKIT_ADMIN_NAME=Env Admin');
     putenv('ALUMKIT_ADMIN_EMAIL=admin@env.test');

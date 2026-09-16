@@ -19,6 +19,13 @@ return [
 
     'default_state' => UserState::Registered,
 
+    'features' => [
+        // Toggle package features off to hide their routes and dashboard
+        // links from the consuming app. Enabled by default.
+        'posts' => true,
+        'committee' => true,
+    ],
+
     'permission' => [
         'default_roles' => ['admin', 'moderator', 'member'],
         /*
