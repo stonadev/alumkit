@@ -229,8 +229,8 @@ it('logs a password change through the fortify update action', function () {
     $this->actingAs($this->user)
         ->put(route('user-password.update'), [
             'current_password' => 'current-password',
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
+            'password' => 'NewPassword1!',
+            'password_confirmation' => 'NewPassword1!',
         ])->assertSessionHasNoErrors();
 
     $this->assertDatabaseHas('activity_log', [

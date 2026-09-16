@@ -203,14 +203,14 @@ it('resets password with valid token', function () {
     $this->post(route('password.update'), [
         'email' => $user->email,
         'token' => $token,
-        'password' => 'new-password',
-        'password_confirmation' => 'new-password',
+        'password' => 'NewPassword1!',
+        'password_confirmation' => 'NewPassword1!',
     ])->assertSessionHasNoErrors()
         ->assertRedirect();
 
     $this->assertCredentials([
         'email' => $user->email,
-        'password' => 'new-password',
+        'password' => 'NewPassword1!',
     ]);
 });
 
@@ -268,13 +268,13 @@ it('updates user password', function () {
     $this->actingAs($user)
         ->put(route('user-password.update'), [
             'current_password' => 'current-password',
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
+            'password' => 'NewPassword1!',
+            'password_confirmation' => 'NewPassword1!',
         ])->assertSessionHasNoErrors();
 
     $this->assertCredentials([
         'email' => $user->email,
-        'password' => 'new-password',
+        'password' => 'NewPassword1!',
     ]);
 });
 
@@ -286,9 +286,50 @@ it('rejects password update with wrong current password', function () {
     $this->actingAs($user)
         ->put(route('user-password.update'), [
             'current_password' => 'wrong-password',
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
+            'password' => 'NewPassword1!',
+            'password_confirmation' => 'NewPassword1!',
         ])->assertSessionHasErrors(['current_password']);
+});
+
+it('rejects a weak password on registration', function () {
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
+    $this->post(route('register'), [
+        'name' => 'Test User',
+        'email' => 'weak@example.com',
+        'phone' => '+1234567890',
+        'password' => 'Password1',
+        'password_confirmation' => 'Password1',
+    ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
+});
+
+it('rejects a weak new password on profile password update', function () {
+    $user = User::factory()->create(['password' => 'current-password']);
+
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
+    $this->actingAs($user)
+        ->put(route('user-password.update'), [
+            'current_password' => 'current-password',
+            'password' => 'Password1',
+            'password_confirmation' => 'Password1',
+        ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
+});
+
+it('rejects a weak password on reset-by-token', function () {
+    $user = User::factory()->create([
+        'password' => 'old-password',
+    ]);
+    $token = Password::createToken($user);
+
+    // 'Password1' satisfies min/letters/mixedCase/numbers but lacks a symbol,
+    // so it fails exactly one rule: password.symbols.
+    $this->post(route('password.update'), [
+        'email' => $user->email,
+        'token' => $token,
+        'password' => 'Password1',
+        'password_confirmation' => 'Password1',
+    ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
 });
 
 it('redirects authenticated users from login to dashboard', function () {
