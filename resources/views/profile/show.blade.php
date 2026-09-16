@@ -53,33 +53,44 @@
                             {{ __('alumkit::auth.update_info') }}
                         </h2>
 
-                        <x-errors />
-
                         @if (session('status') === 'profile-information-updated')
                             <div class="mt-2 text-sm text-green-600">
                                 {{ __('alumkit::auth.profile_updated') }}
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('user-profile-information.update') }}" class="mt-4 space-y-4">
+                        <form method="POST" action="{{ route('user-profile-information.update') }}" class="mt-4 space-y-4"
+                              x-data="alumkitForm({
+                                  name: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.name')])) }} },
+                                  email: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.email')])) }}, email: true, emailMsg: {{ Js::from(__('validation.email', ['attribute' => __('alumkit::auth.email')])) }} },
+                              }, {{ Js::from($errors->getMessages()) }})"
+                              @focusout="validateField($event.target.name, $event.target.value)">
                             @csrf
                             @method('PUT')
 
-                            <x-input
-                                type="text"
-                                name="name"
-                                :value="old('name', Auth::user()->name)"
-                                :label="__('alumkit::auth.name')"
-                                required
-                            />
+                            <div>
+                                <x-input
+                                    type="text"
+                                    name="name"
+                                    :value="old('name', Auth::user()->name)"
+                                    :label="__('alumkit::auth.name')"
+                                    required
+                                />
+                                <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                            </div>
 
-                            <x-input
-                                type="email"
-                                name="email"
-                                :value="old('email', Auth::user()->email)"
-                                :label="__('alumkit::auth.email')"
-                                required
-                            />
+                            <div>
+                                <x-input
+                                    type="email"
+                                    name="email"
+                                    :value="old('email', Auth::user()->email)"
+                                    :label="__('alumkit::auth.email')"
+                                    required
+                                />
+                                <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                            </div>
 
                             <x-button type="submit" :text="__('alumkit::auth.save')" />
                         </form>
@@ -91,55 +102,78 @@
                         {{ __('alumkit::profile.details') }}
                     </h2>
 
-                    <x-errors />
-
                     @if (session('status') === 'profile-details-updated')
                         <div class="mt-2 text-sm text-green-600">
                             {{ __('alumkit::profile.updated') }}
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('alumkit.profile.details.update') }}" enctype="multipart/form-data" class="mt-4 space-y-4">
+                    @php
+                        $localNameRules = [];
+                        foreach (config('alumkit.local_names', []) as $code => $langConfig) {
+                            if ($langConfig['required'] ?? false) {
+                                $localNameRules["local_names.{$code}"] = [
+                                    'required' => true,
+                                    'requiredMsg' => __('validation.required', ['attribute' => $langConfig['label']]),
+                                ];
+                            }
+                        }
+                    @endphp
+
+                    <form method="POST" action="{{ route('alumkit.profile.details.update') }}" enctype="multipart/form-data" class="mt-4 space-y-4"
+                          x-data="alumkitForm({{ Js::from($localNameRules) }}, {{ Js::from($errors->getMessages()) }})"
+                          @focusout="validateField($event.target.name, $event.target.value)">
                         @csrf
                         @method('PUT')
 
-                        <label x-data="{ photoPreview: null }" class="relative inline-block cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-outline-variant bg-surface-container transition-colors hover:border-navy focus-within:ring-2 focus-within:ring-gold/50">
-                            @if (Auth::user()->profile->photoUrl())
-                                <img src="{{ Auth::user()->profile->photoUrl() }}" alt="" x-show="!photoPreview" class="block h-32 w-28 object-cover">
-                            @else
-                                <span x-show="!photoPreview" class="flex h-32 w-28 items-center justify-center font-serif text-2xl font-semibold text-navy">
-                                    {{ \Illuminate\Support\Str::initials(Auth::user()->name) }}
-                                </span>
-                            @endif
+                        <div>
+                            <label x-data="{ photoPreview: null }" class="relative inline-block cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-outline-variant bg-surface-container transition-colors hover:border-navy focus-within:ring-2 focus-within:ring-gold/50">
+                                @if (Auth::user()->profile->photoUrl())
+                                    <img src="{{ Auth::user()->profile->photoUrl() }}" alt="" x-show="!photoPreview" class="block h-32 w-28 object-cover">
+                                @else
+                                    <span x-show="!photoPreview" class="flex h-32 w-28 items-center justify-center font-serif text-2xl font-semibold text-navy">
+                                        {{ \Illuminate\Support\Str::initials(Auth::user()->name) }}
+                                    </span>
+                                @endif
 
-                            <template x-if="photoPreview">
-                                <img :src="photoPreview" alt="" class="block h-32 w-28 object-cover">
-                            </template>
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="" class="block h-32 w-28 object-cover">
+                                </template>
 
-                            <input type="file" name="photo" accept="image/*" class="sr-only" aria-label="{{ __('alumkit::profile.photo') }}" @change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
-                        </label>
+                                <input type="file" name="photo" accept="image/*" class="sr-only" aria-label="{{ __('alumkit::profile.photo') }}" @change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
+                            </label>
+                            <x-alumkit::input-error name="photo" />
+                        </div>
 
                         @if (config('alumkit.local_names'))
                             <div class="space-y-4">
                                 @foreach (config('alumkit.local_names') as $code => $langConfig)
-                                    <x-input
-                                        type="text"
-                                        name="local_names[{{ $code }}]"
-                                        :value="old('local_names.' . $code, Auth::user()->profile->local_names[$code] ?? '')"
-                                        :label="$langConfig['label']"
-                                        :required="$langConfig['required'] ?? false"
-                                    />
+                                    <div>
+                                        <x-input
+                                            type="text"
+                                            name="local_names[{{ $code }}]"
+                                            :value="old('local_names.' . $code, Auth::user()->profile->local_names[$code] ?? '')"
+                                            :label="$langConfig['label']"
+                                            :required="$langConfig['required'] ?? false"
+                                        />
+                                        <p x-show="fieldError('local_names.{{ $code }}')" x-cloak x-text="fieldError('local_names.{{ $code }}')"
+                                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                                        <x-alumkit::input-error name="local_names.{{ $code }}" />
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
 
                         <div class="grid grid-cols-3 gap-4">
-                            <x-input
-                                type="date"
-                                name="date_of_birth"
-                                :value="old('date_of_birth', Auth::user()->profile->date_of_birth?->format('Y-m-d'))"
-                                :label="__('alumkit::profile.date_of_birth')"
-                            />
+                            <div>
+                                <x-input
+                                    type="date"
+                                    name="date_of_birth"
+                                    :value="old('date_of_birth', Auth::user()->profile->date_of_birth?->format('Y-m-d'))"
+                                    :label="__('alumkit::profile.date_of_birth')"
+                                />
+                                <x-alumkit::input-error name="date_of_birth" />
+                            </div>
 
                             <x-alumkit::select
                                 name="gender"
@@ -157,19 +191,25 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <x-input
-                                type="text"
-                                name="present_address"
-                                :value="old('present_address', Auth::user()->profile->present_address)"
-                                :label="__('alumkit::profile.present_address')"
-                            />
+                            <div>
+                                <x-input
+                                    type="text"
+                                    name="present_address"
+                                    :value="old('present_address', Auth::user()->profile->present_address)"
+                                    :label="__('alumkit::profile.present_address')"
+                                />
+                                <x-alumkit::input-error name="present_address" />
+                            </div>
 
-                            <x-input
-                                type="text"
-                                name="permanent_address"
-                                :value="old('permanent_address', Auth::user()->profile->permanent_address)"
-                                :label="__('alumkit::profile.permanent_address')"
-                            />
+                            <div>
+                                <x-input
+                                    type="text"
+                                    name="permanent_address"
+                                    :value="old('permanent_address', Auth::user()->profile->permanent_address)"
+                                    :label="__('alumkit::profile.permanent_address')"
+                                />
+                                <x-alumkit::input-error name="permanent_address" />
+                            </div>
                         </div>
 
                         <div class="space-y-4">
@@ -177,26 +217,35 @@
                                 {{ __('alumkit::profile.social_links') }}
                             </label>
 
-                            <x-input
-                                type="url"
-                                name="social_links[facebook]"
-                                :value="old('social_links.facebook', Auth::user()->profile->social_links['facebook'] ?? '')"
-                                :label="__('alumkit::profile.facebook')"
-                            />
+                            <div>
+                                <x-input
+                                    type="url"
+                                    name="social_links[facebook]"
+                                    :value="old('social_links.facebook', Auth::user()->profile->social_links['facebook'] ?? '')"
+                                    :label="__('alumkit::profile.facebook')"
+                                />
+                                <x-alumkit::input-error name="social_links.facebook" />
+                            </div>
 
-                            <x-input
-                                type="url"
-                                name="social_links[linkedin]"
-                                :value="old('social_links.linkedin', Auth::user()->profile->social_links['linkedin'] ?? '')"
-                                :label="__('alumkit::profile.linkedin')"
-                            />
+                            <div>
+                                <x-input
+                                    type="url"
+                                    name="social_links[linkedin]"
+                                    :value="old('social_links.linkedin', Auth::user()->profile->social_links['linkedin'] ?? '')"
+                                    :label="__('alumkit::profile.linkedin')"
+                                />
+                                <x-alumkit::input-error name="social_links.linkedin" />
+                            </div>
 
-                            <x-input
-                                type="url"
-                                name="website"
-                                :value="old('website', Auth::user()->profile->website)"
-                                :label="__('alumkit::profile.website')"
-                            />
+                            <div>
+                                <x-input
+                                    type="url"
+                                    name="website"
+                                    :value="old('website', Auth::user()->profile->website)"
+                                    :label="__('alumkit::profile.website')"
+                                />
+                                <x-alumkit::input-error name="website" />
+                            </div>
                         </div>
 
                         <div>
@@ -205,19 +254,25 @@
                             </label>
 
                             <div class="mt-4 grid grid-cols-2 gap-4">
-                                <x-input
-                                    type="text"
-                                    name="emergency_contact[name]"
-                                    :value="old('emergency_contact.name', Auth::user()->profile->emergency_contact['name'] ?? '')"
-                                    :label="__('alumkit::profile.emergency_contact_name')"
-                                />
+                                <div>
+                                    <x-input
+                                        type="text"
+                                        name="emergency_contact[name]"
+                                        :value="old('emergency_contact.name', Auth::user()->profile->emergency_contact['name'] ?? '')"
+                                        :label="__('alumkit::profile.emergency_contact_name')"
+                                    />
+                                    <x-alumkit::input-error name="emergency_contact.name" />
+                                </div>
 
-                                <x-input
-                                    type="text"
-                                    name="emergency_contact[phone]"
-                                    :value="old('emergency_contact.phone', Auth::user()->profile->emergency_contact['phone'] ?? '')"
-                                    :label="__('alumkit::profile.emergency_contact_phone')"
-                                />
+                                <div>
+                                    <x-input
+                                        type="text"
+                                        name="emergency_contact[phone]"
+                                        :value="old('emergency_contact.phone', Auth::user()->profile->emergency_contact['phone'] ?? '')"
+                                        :label="__('alumkit::profile.emergency_contact_phone')"
+                                    />
+                                    <x-alumkit::input-error name="emergency_contact.phone" />
+                                </div>
                             </div>
 
                             <div class="mt-4">
@@ -227,6 +282,7 @@
                                     :value="old('emergency_contact.relation', Auth::user()->profile->emergency_contact['relation'] ?? '')"
                                     :label="__('alumkit::profile.emergency_contact_relation')"
                                 />
+                                <x-alumkit::input-error name="emergency_contact.relation" />
                             </div>
                         </div>
 
@@ -347,36 +403,55 @@
                             {{ __('alumkit::auth.update_password') }}
                         </h2>
 
-                        <x-errors />
-
                         @if (session('status') === 'password-updated')
                             <div class="mt-2 text-sm text-green-600">
                                 {{ __('alumkit::auth.password_updated') }}
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('user-password.update') }}" class="mt-4 space-y-4">
+                        <form method="POST" action="{{ route('user-password.update') }}" class="mt-4 space-y-4"
+                              x-data="alumkitForm({
+                                  current_password: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.current_password')])) }} },
+                                  password: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.new_password')])) }}, min: 8, minMsg: {{ Js::from(__('validation.min.string', ['attribute' => __('alumkit::auth.new_password'), 'min' => 8])) }} },
+                                  password_confirmation: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.confirm_password')])) }}, confirmed: 'password', confirmedMsg: {{ Js::from(__('validation.confirmed', ['attribute' => __('alumkit::auth.confirm_password')])) }} },
+                              }, {{ Js::from($errors->getMessages()) }})"
+                              @focusout="validateField($event.target.name, $event.target.value)">
                             @csrf
                             @method('PUT')
 
-                            <x-alumkit::password
-                                name="current_password"
-                                :label="__('alumkit::auth.current_password')"
-                                required
-                                autocomplete="current-password"
-                            />
+                            <div>
+                                <x-alumkit::password
+                                    name="current_password"
+                                    :label="__('alumkit::auth.current_password')"
+                                    required
+                                    autocomplete="current-password"
+                                    :show-error="false"
+                                />
+                                <p x-show="fieldError('current_password')" x-cloak x-text="fieldError('current_password')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                            </div>
 
-                            <x-alumkit::password
-                                name="password"
-                                :label="__('alumkit::auth.new_password')"
-                                required
-                            />
+                            <div>
+                                <x-alumkit::password
+                                    name="password"
+                                    :label="__('alumkit::auth.new_password')"
+                                    required
+                                    :show-error="false"
+                                />
+                                <p x-show="fieldError('password')" x-cloak x-text="fieldError('password')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                            </div>
 
-                            <x-alumkit::password
-                                name="password_confirmation"
-                                :label="__('alumkit::auth.confirm_password')"
-                                required
-                            />
+                            <div>
+                                <x-alumkit::password
+                                    name="password_confirmation"
+                                    :label="__('alumkit::auth.confirm_password')"
+                                    required
+                                    :show-error="false"
+                                />
+                                <p x-show="fieldError('password_confirmation')" x-cloak x-text="fieldError('password_confirmation')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                            </div>
 
                             <x-button type="submit" :text="__('alumkit::auth.save')" />
                         </form>

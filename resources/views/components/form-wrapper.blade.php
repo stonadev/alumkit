@@ -11,7 +11,9 @@
             @endif
         </div>
 
-        <x-errors />
+        @if ($showErrors ?? true)
+            <x-errors />
+        @endif
 
         {{ $slot }}
 
