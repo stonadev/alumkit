@@ -2,46 +2,12 @@
 
 namespace Workbench\App\Models;
 
-use Alumkit\Alumkit\Traits\HasCareers;
-use Alumkit\Alumkit\Traits\HasEducations;
-use Illuminate\Auth\MustVerifyEmail;
-use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Alumkit\Alumkit\Models\User as BaseUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Spatie\Permission\Traits\HasRoles;
 use Workbench\Database\Factories\UserFactory;
 
-/**
- * @property string $state
- */
-#[Fillable(['name', 'email', 'phone', 'password', 'state'])]
-#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
-class User extends Authenticatable implements MustVerifyEmailContract
+/** @use HasFactory<UserFactory> */
+class User extends BaseUser
 {
-    use HasCareers;
-    use HasEducations;
-
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-
-    use HasRoles;
-    use MustVerifyEmail;
-    use TwoFactorAuthenticatable;
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    use HasFactory;
 }

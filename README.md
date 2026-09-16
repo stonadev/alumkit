@@ -24,13 +24,27 @@ The package registers its migrations — run `php artisan migrate` to create the
 
 ### The User Model
 
+The package ships `Alumkit\Alumkit\Models\User`, a base model already wired
+with email verification (`MustVerifyEmail`), two-factor auth
+(`TwoFactorAuthenticatable`), roles (`HasRoles`), notifications
+(`Notifiable`), and the profile relations (`HasCareers`, `HasEducations`).
+Point your `App\Models\User` at it by extending:
+
+```php
+namespace App\Models;
+
+use Alumkit\Alumkit\Models\User as BaseUser;
+
+class User extends BaseUser
+{
+    // your app-specific columns, casts, factories, and relations
+}
+```
+
 Registration and the profile-completion flow are gated on email verification.
-Your `App\Models\User` **must** implement
-`Illuminate\Contracts\Auth\MustVerifyEmail` (with the `MustVerifyEmail` trait)
-and use the package's `HasEducations`, `HasCareers`, and `HasRoles` traits —
-see `workbench/app/Models/User.php` for the reference implementation. Without
-the `MustVerifyEmail` contract the framework's `verified` middleware silently
-passes unverified users, so a fresh registration lands on `/profile/complete`
+The base model already implements `Illuminate\Contracts\Auth\MustVerifyEmail`;
+without that contract the framework's `verified` middleware silently passes
+unverified users, so a fresh registration lands on `/profile/complete`
 instead of the verification notice, and no verification email is sent.
 
 ### Publishing the Configuration
