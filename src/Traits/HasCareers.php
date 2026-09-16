@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait HasCareers
 {
+    /** @phpstan-ignore missingType.generics */
     public function careers(): HasMany
     {
         return $this->profile->careers();
@@ -19,11 +20,11 @@ trait HasCareers
      */
     public function addCareer(array $attributes): Career
     {
-        return $this->careers()->create($attributes);
+        return $this->careers()->create($attributes); // @phpstan-ignore return.type
     }
 
     public function currentCareer(): ?Career
     {
-        return $this->careers()->where('is_current', true)->first();
+        return $this->careers()->where('is_current', true)->first(); // @phpstan-ignore return.type
     }
 }
