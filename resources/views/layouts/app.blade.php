@@ -15,6 +15,7 @@
             @yield('content')
         </div>
     </div>
+    @include('alumkit::layouts.partials.alumkit-form-script')
     @tallStackUiScript
     @livewireScripts
     @stack('scripts')
