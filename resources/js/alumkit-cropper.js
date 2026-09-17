@@ -24,10 +24,6 @@ function photoCropper() {
             if (this.cropSrc) {
                 URL.revokeObjectURL(this.cropSrc);
             }
-            if (this.preview) {
-                URL.revokeObjectURL(this.preview);
-                this.preview = null;
-            }
 
             this.cropSrc = URL.createObjectURL(file);
             this.cropping = true;
@@ -78,6 +74,10 @@ function photoCropper() {
 
                 transfer.items.add(file);
                 this.$refs.input.files = transfer.files;
+
+                if (this.preview) {
+                    URL.revokeObjectURL(this.preview);
+                }
 
                 this.preview = URL.createObjectURL(blob);
                 this.close();
