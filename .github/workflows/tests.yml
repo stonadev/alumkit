@@ -40,7 +40,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, fileinfo, sqlite, pdo_sqlite, bcmath, intl, gd
-          ini-values: error_reporting=E_ALL
+          ini-values: error_reporting=E_ALL, variables_order=EGPCS
           tools: composer:v2
           coverage: none
 
