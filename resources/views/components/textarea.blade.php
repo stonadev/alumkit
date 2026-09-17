@@ -1,4 +1,4 @@
-@props(['name', 'label' => null, 'value' => null, 'rows' => 4, 'required' => false])
+@props(['name', 'label' => null, 'value' => null, 'rows' => 4, 'required' => false, 'showError' => true])
 
 <div>
     @if ($label)
@@ -6,5 +6,7 @@
     @endif
     <textarea id="{{ $name }}" name="{{ $name }}" rows="{{ $rows }}" @required($required)
               class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-navy focus:ring-gold/50">{{ $value }}</textarea>
-    <x-alumkit::input-error :name="$name" />
+    @if ($showError)
+        <x-alumkit::input-error :name="$name" />
+    @endif
 </div>

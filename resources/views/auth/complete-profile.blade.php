@@ -517,7 +517,6 @@
                                 <p x-show="fieldError('local_names.{{ $code }}')" x-cloak
                                    x-text="fieldError('local_names.{{ $code }}')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                                <x-alumkit::input-error name="local_names.{{ $code }}" />
                             </div>
                         @endforeach
                     </div>

@@ -1,3 +1,5 @@
+@props(['title' => null, 'subtitle' => null, 'showErrors' => true])
+
 <div class="max-w-lg w-full mx-auto">
     <x-card {{ $attributes->class('space-y-6') }}>
         <div class="text-center">

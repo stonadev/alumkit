@@ -1,4 +1,4 @@
-@props(['name' => null, 'label' => null, 'value' => null, 'suggestions' => [], 'required' => false])
+@props(['name' => null, 'label' => null, 'value' => null, 'suggestions' => [], 'required' => false, 'showError' => true])
 
 <div
     x-data="{
@@ -85,5 +85,7 @@
         </template>
     </div>
 
-    <x-alumkit::input-error :name="$name" />
+    @if ($showError)
+        <x-alumkit::input-error :name="$name" />
+    @endif
 </div>
