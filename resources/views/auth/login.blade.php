@@ -2,12 +2,7 @@
 
 @section('content')
     <x-alumkit::form-wrapper :title="__('alumkit::auth.sign_in')" :show-errors="false">
-        <form method="POST" action="{{ route('login') }}" class="space-y-4"
-              x-data="alumkitForm({
-                  email: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.email')])) }}, email: true, emailMsg: {{ Js::from(__('validation.email', ['attribute' => __('alumkit::auth.email')])) }} },
-                  password: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.password')])) }} },
-              }, {{ Js::from($errors->getMessages()) }})"
-              @focusout="validateField($event.target.name, $event.target.value)">
+        <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
             <div>
@@ -19,8 +14,6 @@
                     required
                     autofocus
                 />
-                <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
-                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
             </div>
 
             <div>
@@ -28,10 +21,7 @@
                     name="password"
                     :label="__('alumkit::auth.password')"
                     required
-                    :show-error="false"
                 />
-                <p x-show="fieldError('password')" x-cloak x-text="fieldError('password')"
-                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
             </div>
 
             <div class="flex items-center justify-between">

@@ -21,8 +21,6 @@
                     :label="__('alumkit::auth.name')"
                     required
                 />
-                <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
-                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
             </div>
 
             <div>
@@ -33,8 +31,6 @@
                     :label="__('alumkit::auth.email')"
                     required
                 />
-                <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
-                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
             </div>
 
             <div>
@@ -45,8 +41,6 @@
                     :label="__('alumkit::auth.phone')"
                     required
                 />
-                <p x-show="fieldError('phone')" x-cloak x-text="fieldError('phone')"
-                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
             </div>
 
             <div>
