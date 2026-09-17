@@ -44,12 +44,26 @@
     @enderror
 
     <div x-show="cropping" x-cloak
-         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
          x-on:keydown.escape.window="cancel()"
          x-on:click.self="cancel()">
-        <div class="w-full max-w-2xl rounded-xl bg-white p-4 shadow-2xl" x-on:click.stop>
+        <div class="absolute inset-0 bg-navy/40 backdrop-blur-sm" x-on:click="cancel()" aria-hidden="true"></div>
+        <div class="relative w-full max-w-2xl rounded-lg border border-outline-variant/60 bg-white p-4 shadow-xl"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             x-on:click.stop>
             <div class="overflow-hidden rounded-lg bg-gray-100">
-                <img x-ref="cropImage" :src="cropSrc" alt="" class="block max-h-[60vh] max-w-full">
+                <img x-ref="cropImage" :src="cropSrc" alt="" class="block max-h-[70vh] max-w-full">
             </div>
             <div class="mt-4 flex items-center justify-between gap-3">
                 <div class="flex gap-1">
