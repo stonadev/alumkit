@@ -355,7 +355,7 @@
 
                 <x-alumkit::photo-cropper name="photo"
                     :choose-label="__('alumkit::profile.choose_photo')"
-                    box-class="h-24 w-32"
+                    box-class="h-32 w-32"
                     icon-class="h-6 w-6"
                     text-class="text-xs">
                     <x-slot:label>

@@ -106,7 +106,7 @@
                         <x-alumkit::photo-cropper name="photo"
                             :existing="Auth::user()->profile->photoUrl()"
                             :initial="\Illuminate\Support\Str::initials(Auth::user()->name)"
-                            box-class="h-32 w-28"
+                            box-class="h-32 w-32"
                             :choose-label="__('alumkit::profile.choose_photo')" />
 
                         @if (config('alumkit.local_names'))
