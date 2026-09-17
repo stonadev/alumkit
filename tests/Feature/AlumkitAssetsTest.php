@@ -50,3 +50,15 @@ it('ships the utilities used by the package views', function () {
 
     expect($css)->toContain('.p-8')->toContain('.min-h-screen')->toContain('.text-sm');
 });
+
+it('serves the compiled cropper bundle', function () {
+    $this->get('alumkit/style/alumkit-cropper.js')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'application/javascript');
+});
+
+it('serves the compiled cropper stylesheet', function () {
+    $this->get('alumkit/style/alumkit-cropper.css')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/css; charset=utf-8');
+});
