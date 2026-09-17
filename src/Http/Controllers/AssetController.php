@@ -29,6 +29,8 @@ class AssetController extends Controller
         'alumkit-editor.css' => 'text/css',
         'alumkit-editor.js' => 'application/javascript',
         'alumkit-sortable.esm.js' => 'application/javascript',
+        'alumkit-cropper.js' => 'application/javascript',
+        'alumkit-cropper.css' => 'text/css',
     ];
 
     /**

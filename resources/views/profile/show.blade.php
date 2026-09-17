@@ -126,24 +126,11 @@
                         @csrf
                         @method('PUT')
 
-                        <div>
-                            <label x-data="{ photoPreview: null }" class="relative inline-block cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-outline-variant bg-surface-container transition-colors hover:border-navy focus-within:ring-2 focus-within:ring-gold/50">
-                                @if (Auth::user()->profile->photoUrl())
-                                    <img src="{{ Auth::user()->profile->photoUrl() }}" alt="" x-show="!photoPreview" class="block h-32 w-28 object-cover">
-                                @else
-                                    <span x-show="!photoPreview" class="flex h-32 w-28 items-center justify-center font-serif text-2xl font-semibold text-navy">
-                                        {{ \Illuminate\Support\Str::initials(Auth::user()->name) }}
-                                    </span>
-                                @endif
-
-                                <template x-if="photoPreview">
-                                    <img :src="photoPreview" alt="" class="block h-32 w-28 object-cover">
-                                </template>
-
-                                <input type="file" name="photo" accept="image/*" class="sr-only" aria-label="{{ __('alumkit::profile.photo') }}" @change="photoPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null">
-                            </label>
-                            <x-alumkit::input-error name="photo" />
-                        </div>
+                        <x-alumkit::photo-cropper name="photo"
+                            :existing="Auth::user()->profile->photoUrl()"
+                            :initial="\Illuminate\Support\Str::initials(Auth::user()->name)"
+                            box-class="h-32 w-32"
+                            :choose-label="__('alumkit::profile.choose_photo')" />
 
                         @if (config('alumkit.local_names'))
                             <div class="space-y-4">

@@ -2,7 +2,7 @@
     "private": true,
     "scripts": {
         "build:css": "tailwindcss -i resources/css/alumkit.css -o public/alumkit.css --minify",
-        "build:js": "esbuild resources/js/alumkit-editor.js --bundle --minify --outfile=public/alumkit-editor.js"
+        "build:js": "esbuild resources/js/alumkit-editor.js --bundle --minify --outfile=public/alumkit-editor.js && esbuild resources/js/alumkit-cropper.js --bundle --minify --outfile=public/alumkit-cropper.js"
     },
     "devDependencies": {
         "@editorjs/editorjs": "^2.31.6",
@@ -10,6 +10,7 @@
         "@editorjs/image": "^2.10.3",
         "@editorjs/list": "^2.0.9",
         "@editorjs/paragraph": "^2.11.7",
+        "cropperjs": "^1.6.0",
         "@editorjs/table": "^2.4.5",
         "@tailwindcss/cli": "^4.0.0",
         "esbuild": "^0.28.2",
