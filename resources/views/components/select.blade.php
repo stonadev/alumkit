@@ -1,4 +1,4 @@
-@props(['name', 'label' => null, 'options' => [], 'value' => null, 'required' => false, 'placeholder' => null])
+@props(['name', 'label' => null, 'options' => [], 'value' => null, 'required' => false, 'placeholder' => null, 'showError' => true])
 
 <div>
     @if ($label)
@@ -13,7 +13,7 @@
             <option value="{{ $optionValue }}" @selected($value === $optionValue)>{{ $optionLabel }}</option>
         @endforeach
     </select>
-    @error($name)
-        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-    @enderror
+    @if ($showError)
+        <x-alumkit::input-error :name="$name" />
+    @endif
 </div>

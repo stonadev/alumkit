@@ -154,6 +154,7 @@
             </div>
         </main>
     </div>
+    @include('alumkit::layouts.partials.alumkit-form-script')
     @tallStackUiScript
     @livewireScripts
 </body>

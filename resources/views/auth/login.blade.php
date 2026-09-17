@@ -1,18 +1,20 @@
 @extends('alumkit::layouts.app')
 
 @section('content')
-    <x-alumkit::form-wrapper :title="__('alumkit::auth.sign_in')">
+    <x-alumkit::form-wrapper :title="__('alumkit::auth.sign_in')" :show-errors="false">
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
-            <x-input
-                type="email"
-                name="email"
-                :value="old('email')"
-                :label="__('alumkit::auth.email')"
-                required
-                autofocus
-            />
+            <div>
+                <x-input
+                    type="email"
+                    name="email"
+                    :value="old('email')"
+                    :label="__('alumkit::auth.email')"
+                    required
+                    autofocus
+                />
+            </div>
 
             <div>
                 <x-alumkit::password
