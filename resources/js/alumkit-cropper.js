@@ -89,6 +89,18 @@ function photoCropper() {
             this.close();
         },
 
+        zoomIn() {
+            if (this.cropper) {
+                this.cropper.zoom(0.1);
+            }
+        },
+
+        zoomOut() {
+            if (this.cropper) {
+                this.cropper.zoom(-0.1);
+            }
+        },
+
         close() {
             if (this.cropper) {
                 this.cropper.destroy();

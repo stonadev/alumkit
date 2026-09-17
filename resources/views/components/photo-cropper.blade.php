@@ -51,9 +51,23 @@
             <div class="overflow-hidden rounded-lg bg-gray-100">
                 <img x-ref="cropImage" :src="cropSrc" alt="" class="block max-h-[60vh] max-w-full">
             </div>
-            <div class="mt-4 flex items-center justify-end gap-3">
-                <x-button type="button" x-on:click="cancel()" outline :text="__('alumkit::messages.cancel')" />
-                <x-button type="button" x-on:click="save()" :text="__('alumkit::messages.crop')" />
+            <div class="mt-4 flex items-center justify-between gap-3">
+                <div class="flex gap-1">
+                    <button type="button" x-on:click="zoomOut()" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline-variant bg-surface text-on-surface hover:bg-surface-container-high focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                        </svg>
+                    </button>
+                    <button type="button" x-on:click="zoomIn()" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline-variant bg-surface text-on-surface hover:bg-surface-container-high focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex gap-2">
+                    <x-button type="button" x-on:click="cancel()" outline :text="__('alumkit::messages.cancel')" />
+                    <x-button type="button" x-on:click="save()" :text="__('alumkit::messages.crop')" />
+                </div>
             </div>
         </div>
     </div>
