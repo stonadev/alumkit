@@ -104,6 +104,7 @@ The following permissions are always seeded and cannot be removed:
 - `manage permissions`
 - `manage members`
 - `manage educations`
+- `manage committee`
 - `manage pages`
 - `view dashboard`
 
@@ -354,6 +355,43 @@ Homepage "recent posts" block:
 ```
 
 (Route name `posts.show` is the app's own; escape/format as needed.)
+
+The dashboard screens are package-owned and not overridable by design.
+
+### Public Committee Members API
+
+The package ships no public committee routes — register your own in
+`routes/web.php` and query from the facade API:
+
+```php
+Route::get('committee', [CommitteeController::class, 'index'])->name('committee.index');
+```
+
+API reference:
+
+- `Alumkit::committeeMembers()` — Eloquent builder of all committee members
+  sorted by dashboard order (position and user eager-loaded); compose with
+  `->get()`, `->paginate()`, `->where(...)`.
+- `Alumkit::recentCommitteeMembers(int $limit = 0)` — collection of the
+  `$limit` most recent committee members; limit `0` (the default) returns
+  all.
+
+In the app's controller, render from the API — e.g.
+`view('committee.index', ['members' => Alumkit::committeeMembers()->get()])`.
+
+Homepage "committee" block:
+
+```blade
+<h2>Committee</h2>
+<ul>
+    @foreach (\Alumkit\Alumkit\Facades\Alumkit::recentCommitteeMembers(5) as $member)
+        <li>
+            {{ $member->user->name }}
+            — {{ $member->position->title }}
+        </li>
+    @endforeach
+</ul>
+```
 
 The dashboard screens are package-owned and not overridable by design.
 
