@@ -16,7 +16,15 @@ final class UpdateProfileDetails
      */
     public function handle(Profile $profile, array $data, ?UploadedFile $photo): void
     {
-        $data = Arr::except($data, ['photo']);
+        // Update name/email on the parent User model
+        $user = $profile->user;
+        $userUpdates = Arr::only($data, ['name', 'email']);
+
+        if ($userUpdates) {
+            $user->update($userUpdates);
+        }
+
+        $data = Arr::except($data, ['photo', 'name', 'email']);
         // all-empty platform fields -> null, not missing/empty values
         $data['social_links'] = array_filter(
             $data['social_links'] ?? [],

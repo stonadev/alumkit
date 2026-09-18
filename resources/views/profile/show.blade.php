@@ -47,84 +47,65 @@
             </nav>
 
             <section id="profile" role="tabpanel" aria-labelledby="tab-profile" x-show="tab === 'profile'" x-cloak>
-                @if (Features::enabled(Features::updateProfileInformation()))
-                    <x-card>
-                        <h2 class="text-lg font-semibold text-navy">
-                            {{ __('alumkit::auth.update_info') }}
-                        </h2>
+                @php
+                    $localNameRules = [];
+                    foreach (config('alumkit.local_names', []) as $code => $langConfig) {
+                        if ($langConfig['required'] ?? false) {
+                            $localNameRules["local_names.{$code}"] = [
+                                'required' => true,
+                                'requiredMsg' => __('validation.required', ['attribute' => $langConfig['label']]),
+                            ];
+                        }
+                    }
 
-                        @if (session('status') === 'profile-information-updated')
-                            <div class="mt-2 text-sm text-green-600">
-                                {{ __('alumkit::auth.profile_updated') }}
-                            </div>
-                        @endif
-
-                        <form method="POST" action="{{ route('user-profile-information.update') }}" class="mt-4 space-y-4"
-                              x-data="alumkitForm({
-                                  name: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.name')])) }} },
-                                  email: { required: true, requiredMsg: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.email')])) }}, email: true, emailMsg: {{ Js::from(__('validation.email', ['attribute' => __('alumkit::auth.email')])) }} },
-                              }, {{ Js::from($errors->getMessages()) }})"
-                              @focusout="validateField($event.target.name, $event.target.value)">
-                            @csrf
-                            @method('PUT')
-
-                            <div>
-                                <x-input
-                                    type="text"
-                                    name="name"
-                                    :value="old('name', Auth::user()->name)"
-                                    :label="__('alumkit::auth.name')"
-                                    required
-                                />
-                                <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-
-                            <div>
-                                <x-input
-                                    type="email"
-                                    name="email"
-                                    :value="old('email', Auth::user()->email)"
-                                    :label="__('alumkit::auth.email')"
-                                    required
-                                />
-                                <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-
-                            <x-button type="submit" :text="__('alumkit::auth.save')" />
-                        </form>
-                    </x-card>
-                @endif
+                    $profileFieldRules = Features::enabled(Features::updateProfileInformation())
+                        ? array_merge([
+                            'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')])],
+                            'email' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.email')]), 'email' => true, 'emailMsg' => __('validation.email', ['attribute' => __('alumkit::auth.email')])],
+                        ], $localNameRules)
+                        : $localNameRules;
+                @endphp
 
                 <x-card>
-                    <h2 class="text-lg font-semibold text-navy">
-                        {{ __('alumkit::profile.details') }}
-                    </h2>
-
-                    @if (session('status') === 'profile-details-updated')
-                        <div class="mt-2 text-sm text-green-600">
+                    @if (in_array(session('status'), ['profile-details-updated', 'profile-information-updated'], true))
+                        <div class="mb-4 text-sm text-green-600">
                             {{ __('alumkit::profile.updated') }}
                         </div>
                     @endif
 
-                    @php
-                        $localNameRules = [];
-                        foreach (config('alumkit.local_names', []) as $code => $langConfig) {
-                            if ($langConfig['required'] ?? false) {
-                                $localNameRules["local_names.{$code}"] = [
-                                    'required' => true,
-                                    'requiredMsg' => __('validation.required', ['attribute' => $langConfig['label']]),
-                                ];
-                            }
-                        }
-                    @endphp
-
-                    <form method="POST" action="{{ route('alumkit.profile.details.update') }}" enctype="multipart/form-data" class="mt-4 space-y-4"
-                          x-data="alumkitForm({{ Js::from($localNameRules) }}, {{ Js::from($errors->getMessages()) }})"
+                    <form method="POST" action="{{ route('alumkit.profile.details.update') }}" enctype="multipart/form-data" class="space-y-4"
+                          x-data="alumkitForm({{ Js::from($profileFieldRules) }}, {{ Js::from($errors->getMessages()) }})"
                           @focusout="validateField($event.target.name, $event.target.value)">
                         @csrf
                         @method('PUT')
+
+                        @if (Features::enabled(Features::updateProfileInformation()))
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <x-input
+                                        type="text"
+                                        name="name"
+                                        :value="old('name', Auth::user()->name)"
+                                        :label="__('alumkit::auth.name')"
+                                        required
+                                    />
+                                    <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
+                                       class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                                </div>
+
+                                <div>
+                                    <x-input
+                                        type="email"
+                                        name="email"
+                                        :value="old('email', Auth::user()->email)"
+                                        :label="__('alumkit::auth.email')"
+                                        required
+                                    />
+                                    <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
+                                       class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
+                                </div>
+                            </div>
+                        @endif
 
                         <x-alumkit::photo-cropper name="photo"
                             :existing="Auth::user()->profile->photoUrl()"
