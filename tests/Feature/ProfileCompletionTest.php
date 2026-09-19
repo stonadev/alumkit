@@ -95,11 +95,11 @@ it('does not show the approval banner to the admin after submission', function (
     ]);
 });
 
-it('shows "Submit for Approval" on the form for non-admins', function () {
+it('shows "Update" on the form for non-admins', function () {
     $this->actingAs($this->user)
         ->get(route('alumkit.profile.complete'))
         ->assertOk()
-        ->assertSee('Submit for Approval');
+        ->assertSee('Update');
 });
 
 it('shows "Submit" on the form for admins', function () {
@@ -108,7 +108,7 @@ it('shows "Submit" on the form for admins', function () {
     $this->actingAs($this->user)
         ->get(route('alumkit.profile.complete'))
         ->assertOk()
-        ->assertDontSee('Submit for Approval')
+        ->assertDontSee('Update')
         ->assertSee('Submit');
 });
 

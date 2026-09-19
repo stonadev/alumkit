@@ -13,6 +13,7 @@ use Alumkit\Alumkit\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -42,7 +43,7 @@ class CompleteProfileController extends Controller
         }
 
         $validated = $request->validated(); // detail fields (FormRequest)
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'careers' => ['nullable', 'array'],
             'careers.*.job_title' => ['required', 'string', 'max:255'],
             'careers.*.company' => ['required', 'string', 'max:255'],
