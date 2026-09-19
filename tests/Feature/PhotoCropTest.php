@@ -61,7 +61,7 @@ it('renders crop UI on committee edit page', function () {
 });
 
 it('renders crop UI on profile completion page', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['state' => 'registered']);
 
     $this->actingAs($user)
         ->get(route('alumkit.profile.complete'))

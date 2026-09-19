@@ -131,12 +131,24 @@ it('registers a new user', function () {
         'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+        ],
     ])->assertRedirect();
 
     $this->assertDatabaseHas('users', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'phone' => '+1234567890',
+    ]);
+
+    $user = User::where('email', 'test@example.com')->first();
+    $this->assertDatabaseHas('profiles', ['user_id' => $user->id]);
+    $this->assertDatabaseHas('educations', [
+        'profile_id' => $user->profile->id,
+        'level' => 'masters',
+        'institution' => 'MIT',
+        'subject' => 'Computer Science',
     ]);
 
     Event::assertDispatched(Registered::class);
@@ -149,7 +161,7 @@ it('validates registration fields', function () {
         'phone' => '',
         'password' => '',
         'password_confirmation' => '',
-    ])->assertSessionHasErrors(['name', 'email', 'phone', 'password']);
+    ])->assertSessionHasErrors(['name', 'email', 'phone', 'password', 'educations']);
 });
 
 it('validates unique email on registration', function () {
@@ -161,6 +173,9 @@ it('validates unique email on registration', function () {
         'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+        ],
     ])->assertSessionHasErrors(['email']);
 });
 
@@ -300,7 +315,20 @@ it('rejects a weak password on registration', function () {
         'phone' => '+1234567890',
         'password' => 'Password1',
         'password_confirmation' => 'Password1',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+        ],
     ])->assertSessionHasErrors(['password' => 'The password field must contain at least one symbol.']);
+});
+
+it('rejects registration without educations', function () {
+    $this->post(route('register'), [
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'phone' => '+1234567890',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+    ])->assertSessionHasErrors(['educations']);
 });
 
 it('rejects a weak new password on profile password update', function () {

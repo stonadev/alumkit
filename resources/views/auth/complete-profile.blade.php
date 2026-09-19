@@ -7,13 +7,6 @@
         </p>
 
         @php
-            // Restore typed values on validation failure; the education step
-            // always starts with at least one empty row.
-            $defaultEducation = ['level' => '', 'institution' => '', 'student_id' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => ''];
-            $oldEducations = array_map(
-                fn (array $e): array => array_merge($defaultEducation, $e),
-                old('educations', []) ?: [$defaultEducation],
-            );
             $oldCareers = array_map(function (array $c): array {
                 $c['is_current'] = ($c['is_current'] ?? false) == '1';
 
@@ -26,12 +19,10 @@
             $initialStep = 1;
             if ($errors->isNotEmpty()) {
                 $keys = array_keys($errors->getMessages());
-                if (collect($keys)->contains(fn (string $k): bool => str_starts_with($k, 'educations'))) {
+                if (collect($keys)->contains(fn (string $k): bool => str_starts_with($k, 'careers'))) {
                     $initialStep = 1;
-                } elseif (collect($keys)->contains(fn (string $k): bool => str_starts_with($k, 'careers'))) {
-                    $initialStep = 2;
                 } else {
-                    $initialStep = 3;
+                    $initialStep = 2;
                 }
             }
 
@@ -48,7 +39,6 @@
 
         <form method="POST" action="{{ route('alumkit.profile.complete.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{
             step: {{ $initialStep }},
-            educations: {{ Js::from($oldEducations) }},
             careers: {{ Js::from($oldCareers) }},
             errors: {{ Js::from($errors->getMessages()) }},
             eager: {},
@@ -66,15 +56,6 @@
                 this.clearStepErrors(s);
                 let valid = true;
                 if (s === 1) {
-                    this.educations.forEach((edu, i) => {
-                        const p = 'educations.' + i + '.';
-                        if (!edu.level) { this.errors[p + 'level'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::education.level')])) }}]; valid = false; }
-                        if (!edu.institution) { this.errors[p + 'institution'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::education.institution')])) }}]; valid = false; }
-                        if (!edu.subject) { this.errors[p + 'subject'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::education.subject')])) }}]; valid = false; }
-                        if (!edu.start_year) { this.errors[p + 'start_year'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::education.start_year')])) }}]; valid = false; }
-                        if (!edu.is_current && !edu.end_year) { this.errors[p + 'end_year'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::education.end_year')])) }}]; valid = false; }
-                    });
-                } else if (s === 2) {
                     this.careers.forEach((c, i) => {
                         const p = 'careers.' + i + '.';
                         if (!c.job_title) { this.errors[p + 'job_title'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::career.job_title')])) }}]; valid = false; }
@@ -86,8 +67,8 @@
                 return valid;
             },
             clearStepErrors(s) {
-                const prefix = s === 1 ? 'educations.' : 'careers.';
-                Object.keys(this.errors).forEach((k) => { if (k.startsWith(prefix)) delete this.errors[k]; });
+                const prefix = s === 1 ? 'careers.' : null;
+                Object.keys(this.errors).forEach((k) => { if (prefix && k.startsWith(prefix)) delete this.errors[k]; });
             },
             attemptStep(s) {
                 this.eager[s] = true;
@@ -96,10 +77,6 @@
             liveValidate() {
                 if (this.eager[this.step]) { this.validateStep(this.step); }
             },
-            addEducation() {
-                this.educations.push({ level: '', institution: '', student_id: '', subject: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '' });
-            },
-            removeEducation(i) { this.educations.splice(i, 1); },
             addCareer() {
                 this.careers.push({ job_title: '', company: '', employment_type: '{{ array_key_first($employmentTypes) }}', industry: '', location: '', start_year: '', start_month: '', is_current: false, end_year: '', end_month: '', description: '' });
             },
@@ -108,182 +85,30 @@
             @csrf
 
             <ol aria-label="{{ __('alumkit::auth.complete_profile') }}" class="mx-auto mb-6 flex w-full max-w-xs items-center text-xs">
-                {{-- Node 1: Education --}}
+                {{-- Node 1: Career --}}
                 <li class="flex flex-1 items-center" :aria-current="step === 1 ? 'step' : null">
                     <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
                           :class="step > 1 ? 'border-navy bg-navy text-white' : (step === 1 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400')">
                         <span x-show="step > 1" x-cloak>&#10003;</span>
                         <span x-show="step <= 1" x-cloak>1</span>
                     </span>
-                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 1 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::education.education') }}</span>
+                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 1 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::career.career') }}</span>
                     <span class="mx-2 h-px flex-1" :class="step > 1 ? 'bg-navy' : 'bg-gray-300'"></span>
                 </li>
-                {{-- Node 2: Career --}}
-                <li class="flex flex-1 items-center" :aria-current="step === 2 ? 'step' : null">
+                {{-- Node 2: Profile Details --}}
+                <li class="flex items-center" :aria-current="step === 2 ? 'step' : null">
                     <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
-                          :class="step > 2 ? 'border-navy bg-navy text-white' : (step === 2 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400')">
-                        <span x-show="step > 2" x-cloak>&#10003;</span>
-                        <span x-show="step <= 2" x-cloak>2</span>
+                          :class="step === 2 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400'">
+                        2
                     </span>
-                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 2 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::career.career') }}</span>
-                    <span class="mx-2 h-px flex-1" :class="step > 2 ? 'bg-navy' : 'bg-gray-300'"></span>
-                </li>
-                {{-- Node 3: Profile Details --}}
-                <li class="flex items-center" :aria-current="step === 3 ? 'step' : null">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
-                          :class="step === 3 ? 'border-navy text-navy' : 'border-gray-300 text-gray-400'">
-                        3
-                    </span>
-                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 3 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::profile.details') }}</span>
+                    <span class="ml-2 hidden font-medium sm:block" :class="step >= 2 ? 'text-navy' : 'text-gray-400'">{{ __('alumkit::profile.details') }}</span>
                 </li>
             </ol>
 
-            <p class="mb-4 text-center text-xs text-gray-500 sm:hidden">{{ __('alumkit::auth.step') }} <span x-text="step" class="font-semibold text-navy"></span> {{ __('alumkit::auth.of') }} 3</p>
-
-            {{-- Education Section --}}
-            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), attemptStep(1))" @focusout="liveValidate()">
-            <div class="space-y-3">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ __('alumkit::education.education') }}
-                </label>
-
-                <template x-for="(edu, index) in educations" :key="index">
-                    <div class="rounded-lg border border-gray-200 p-4 space-y-4 dark:border-gray-700">
-                        <div class="flex justify-end" x-show="educations.length > 1">
-                            <x-button
-                                type="button"
-                                x-on:click="removeEducation(index)"
-                                :text="__('alumkit::education.remove')"
-                                xs
-                                outline
-                                color="red"
-                            />
-                        </div>
-
-                        <div>
-                            <x-alumkit::suggest
-                                x-bind:name="'educations[' + index + '][level]'"
-                                x-model="edu.level"
-                                :label="__('alumkit::education.level')"
-                                :suggestions="config('alumkit.education.levels', [])"
-                                required
-                            />
-                            <p x-show="fieldError('educations.' + index + '.level')" x-cloak
-                               x-text="fieldError('educations.' + index + '.level')"
-                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                        </div>
-
-                        <div>
-                            <x-alumkit::suggest
-                                x-bind:name="'educations[' + index + '][institution]'"
-                                x-model="edu.institution"
-                                :label="__('alumkit::education.institution')"
-                                :suggestions="config('alumkit.education.institutions', [])"
-                                required
-                            />
-                            <p x-show="fieldError('educations.' + index + '.institution')" x-cloak
-                               x-text="fieldError('educations.' + index + '.institution')"
-                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                        </div>
-
-                        <div>
-                            <x-alumkit::suggest
-                                x-bind:name="'educations[' + index + '][subject]'"
-                                x-model="edu.subject"
-                                :label="__('alumkit::education.subject')"
-                                :suggestions="config('alumkit.education.subjects', [])"
-                                required
-                            />
-                            <p x-show="fieldError('educations.' + index + '.subject')" x-cloak
-                               x-text="fieldError('educations.' + index + '.subject')"
-                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                        </div>
-
-                        <div>
-                            <x-input
-                                type="text"
-                                x-bind:name="'educations[' + index + '][student_id]'"
-                                x-model="edu.student_id"
-                                :label="__('alumkit::education.student_id')"
-                            />
-                            <p x-show="fieldError('educations.' + index + '.student_id')" x-cloak
-                               x-text="fieldError('educations.' + index + '.student_id')"
-                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <x-alumkit::year-select
-                                    x-bind:name="'educations[' + index + '][start_year]'"
-                                    x-model="edu.start_year"
-                                    :label="__('alumkit::education.start_year')"
-                                    :show-error="false"
-                                    required
-                                />
-                                <p x-show="fieldError('educations.' + index + '.start_year')" x-cloak
-                                   x-text="fieldError('educations.' + index + '.start_year')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-                            <div>
-                                <x-alumkit::month-select
-                                    x-bind:name="'educations[' + index + '][start_month]'"
-                                    x-model="edu.start_month"
-                                    :label="__('alumkit::education.start_month')"
-                                    :show-error="false"
-                                />
-                                <p x-show="fieldError('educations.' + index + '.start_month')" x-cloak
-                                   x-text="fieldError('educations.' + index + '.start_month')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-                        </div>
-
-                        <label class="flex items-center gap-2">
-                            <input type="hidden" x-bind:name="'educations[' + index + '][is_current]'" value="0">
-                            <input type="checkbox" x-bind:name="'educations[' + index + '][is_current]'" value="1"
-                                   x-model="edu.is_current" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ __('alumkit::education.currently_studying') }}</span>
-                        </label>
-
-                        <div class="grid grid-cols-2 gap-4" x-show="!edu.is_current">
-                            <div>
-                                <x-alumkit::year-select
-                                    x-bind:name="'educations[' + index + '][end_year]'"
-                                    x-model="edu.end_year"
-                                    :label="__('alumkit::education.end_year')"
-                                    :show-error="false"
-                                />
-                                <p x-show="fieldError('educations.' + index + '.end_year')" x-cloak
-                                   x-text="fieldError('educations.' + index + '.end_year')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-                            <div>
-                                <x-alumkit::month-select
-                                    x-bind:name="'educations[' + index + '][end_month]'"
-                                    x-model="edu.end_month"
-                                    :label="__('alumkit::education.end_month')"
-                                    :show-error="false"
-                                />
-                                <p x-show="fieldError('educations.' + index + '.end_month')" x-cloak
-                                   x-text="fieldError('educations.' + index + '.end_month')"
-                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <x-button
-                    type="button"
-                    x-on:click="addEducation()"
-                    :text="__('alumkit::education.add_education')"
-                    xs
-                    outline
-                    block
-                />
-            </div>
-            </div>
+            <p class="mb-4 text-center text-xs text-gray-500 sm:hidden">{{ __('alumkit::auth.step') }} <span x-text="step" class="font-semibold text-navy"></span> {{ __('alumkit::auth.of') }} 2</p>
 
             {{-- Career Section --}}
-            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), attemptStep(2))" @focusout="liveValidate()">
+            <div x-show="step === 1" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), attemptStep(1))" @focusout="liveValidate()">
             <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::career.career') }}
@@ -463,7 +288,7 @@
             </div>
 
             {{-- Profile Details Section --}}
-            <div x-show="step === 3" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @focusout="validateLocalNames($event)">
+            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @focusout="validateLocalNames($event)">
             <div class="space-y-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::profile.details') }}
@@ -642,14 +467,14 @@
                 <div class="flex justify-end">
                     <x-button
                         type="button"
-                        x-show="step < 3"
+                        x-show="step < 2"
                         x-cloak
                         x-on:click="attemptStep(step)"
                         :text="__('alumkit::auth.next')"
                     />
                     <x-button
                         type="submit"
-                        x-show="step === 3"
+                        x-show="step === 2"
                         x-cloak
                         :text="$isAdmin ? __('alumkit::auth.submit') : __('alumkit::auth.submit_for_approval')"
                     />
