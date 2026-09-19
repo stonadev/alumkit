@@ -51,7 +51,7 @@ return [
     'of' => 'of',
     'back' => 'Back',
     'next' => 'Next',
-    'profile_completed' => 'Your profile has been submitted for review.',
+    'profile_completed' => 'Your profile has been updated.',
     'two_factor_auth' => 'Two-Factor Authentication',
     'two_factor_enabled' => 'Two-factor authentication has been enabled.',
     'two_factor_confirmed' => 'Two-factor authentication has been confirmed.',
