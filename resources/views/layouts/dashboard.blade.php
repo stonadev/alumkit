@@ -48,7 +48,7 @@
                         ['label' => __('alumkit::dashboard.dashboard'), 'route' => 'alumkit.dashboard', 'show' => true],
                         ['label' => __('alumkit::dashboard.roles'), 'route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles')],
                         ['label' => __('alumkit::dashboard.member_directory'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
-                        ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('manage members')],
+                        ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('view activity log')],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
                         ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => config('alumkit.features.posts') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
                         ['label' => __('alumkit::committee.committee'), 'route' => 'alumkit.committee.index', 'show' => config('alumkit.features.committee') && auth()->user()->can('manage committee')],

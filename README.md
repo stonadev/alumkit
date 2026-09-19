@@ -107,6 +107,7 @@ The following permissions are always seeded and cannot be removed:
 - `manage committee`
 - `manage pages`
 - `view dashboard`
+- `view activity log`
 
 #### Extending with Custom Permissions
 

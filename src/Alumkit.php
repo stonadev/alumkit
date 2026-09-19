@@ -30,6 +30,7 @@ class Alumkit
         'manage committee',
         'manage pages',
         'view dashboard',
+        'view activity log',
     ];
 
     /**
