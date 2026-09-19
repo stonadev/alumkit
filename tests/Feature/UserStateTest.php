@@ -239,7 +239,7 @@ it('sends rejection email with reason', function () {
     );
 });
 
-it('suspension email with reason', function () {
+it('sends suspension email with reason', function () {
     Notification::fake();
     Permission::findOrCreate('manage members');
     $this->user->givePermissionTo('manage members');
@@ -261,7 +261,7 @@ it('suspension email with reason', function () {
     );
 });
 
-it('sends approval email when activating a pending user', function () {
+it('sends activation email when approving a pending user', function () {
     Notification::fake();
     Permission::findOrCreate('manage members');
     $this->user->givePermissionTo('manage members');
@@ -276,7 +276,8 @@ it('sends approval email when activating a pending user', function () {
         $this->targetUser,
         UserActivatedNotification::class,
         function ($notification, $channels) {
-            return $notification->word === 'approved';
+            return $notification->via($this->targetUser) === ['mail']
+                && $notification->toMail($this->targetUser)->actionUrl === route('alumkit.dashboard');
         },
     );
 });
@@ -293,13 +294,7 @@ it('sends activation email when reactivating a suspended user', function () {
         ])
         ->assertRedirect(route('alumkit.users.index'));
 
-    Notification::assertSentTo(
-        $this->targetUser,
-        UserActivatedNotification::class,
-        function ($notification, $channels) {
-            return $notification->word === 'active';
-        },
-    );
+    Notification::assertSentTo($this->targetUser, UserActivatedNotification::class);
 });
 
 it('stores reason in activity log', function () {

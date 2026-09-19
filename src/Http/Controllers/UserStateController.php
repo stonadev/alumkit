@@ -61,8 +61,7 @@ class UserStateController extends Controller
         } elseif ($newState === UserState::Suspended) {
             $targetUser->notify(new UserSuspendedNotification($request->input('reason')));
         } elseif ($newState === UserState::Active) {
-            $word = $currentState === UserState::Suspended ? 'active' : 'approved';
-            $targetUser->notify(new UserActivatedNotification($word));
+            $targetUser->notify(new UserActivatedNotification);
         }
 
         return redirect()->route('alumkit.users.index')

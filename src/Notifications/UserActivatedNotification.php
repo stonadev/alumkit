@@ -13,8 +13,6 @@ class UserActivatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public readonly string $word) {}
-
     /**
      * @return array<int, string>
      */
@@ -26,7 +24,8 @@ class UserActivatedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Your account has been {$this->word}")
-            ->line("Your account has been {$this->word}.");
+            ->subject('Your account has been activated')
+            ->line('Your account has been activated.')
+            ->action('Go to your dashboard', route('alumkit.dashboard'));
     }
 }
