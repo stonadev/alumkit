@@ -84,7 +84,7 @@ Route::middleware(['web'])->group(function () {
         })->name('alumkit.dashboard');
 
         Route::prefix('dashboard')->name('alumkit.')->middleware('user.suspended')->group(function () {
-            Route::middleware('permission:manage members')->group(function () {
+            Route::middleware('permission:view activity log')->group(function () {
                 Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity.index');
             });
 

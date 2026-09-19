@@ -16,7 +16,7 @@ beforeEach(function () {
 
     $this->admin = User::factory()->approved()->create();
     $this->admin->profile()->create();
-    $this->admin->givePermissionTo('manage members');
+    $this->admin->givePermissionTo('view activity log');
 
     $this->targetUser = User::factory()->create(['state' => UserState::Pending->value]);
     $this->targetUser->profile()->create();
@@ -69,8 +69,18 @@ it('excludes trait-level CRUD noise from the feed', function () {
         ->assertDontSee('Records');
 });
 
-it('requires the manage members permission', function () {
+it('requires the view activity log permission', function () {
     $this->actingAs($this->targetUser)
+        ->get(route('alumkit.activity.index'))
+        ->assertForbidden();
+});
+
+it('forbids moderators who lack the view activity log permission', function () {
+    $moderator = User::factory()->approved()->create();
+    $moderator->profile()->create();
+    $moderator->assignRole('moderator');
+
+    $this->actingAs($moderator)
         ->get(route('alumkit.activity.index'))
         ->assertForbidden();
 });
