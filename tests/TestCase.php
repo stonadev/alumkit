@@ -83,6 +83,11 @@ abstract class TestCase extends Orchestra
         $app['config']->set('cache.store', 'array');
         $app['config']->set('cache.default', 'array');
 
+        // Notifications are ShouldQueue; without this the framework falls back to
+        // the `database` driver and every unfaked notification needs a `jobs` table
+        // the package does not ship. Mirrors testbench.yaml's QUEUE_CONNECTION.
+        $app['config']->set('queue.default', 'sync');
+
         $app['config']->set('fortify.home', '/dashboard');
     }
 

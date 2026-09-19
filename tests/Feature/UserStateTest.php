@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Alumkit\Alumkit\Enums\UserState;
+use Alumkit\Alumkit\Notifications\UserActivatedNotification;
 use Alumkit\Alumkit\Notifications\UserRejectedNotification;
 use Alumkit\Alumkit\Notifications\UserSuspendedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -258,6 +259,42 @@ it('sends suspension email with reason', function () {
             return $notification->reason === 'Violation of terms';
         },
     );
+});
+
+it('sends activation email when approving a pending user', function () {
+    Notification::fake();
+    Permission::findOrCreate('manage members');
+    $this->user->givePermissionTo('manage members');
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.users.state.update', $this->targetUser), [
+            'state' => UserState::Active->value,
+        ])
+        ->assertRedirect(route('alumkit.users.index'));
+
+    Notification::assertSentTo(
+        $this->targetUser,
+        UserActivatedNotification::class,
+        function ($notification, $channels) {
+            return $notification->via($this->targetUser) === ['mail']
+                && $notification->toMail($this->targetUser)->actionUrl === route('alumkit.dashboard');
+        },
+    );
+});
+
+it('sends activation email when reactivating a suspended user', function () {
+    Notification::fake();
+    Permission::findOrCreate('manage members');
+    $this->user->givePermissionTo('manage members');
+    $this->targetUser->update(['state' => UserState::Suspended->value]);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.users.state.update', $this->targetUser), [
+            'state' => UserState::Active->value,
+        ])
+        ->assertRedirect(route('alumkit.users.index'));
+
+    Notification::assertSentTo($this->targetUser, UserActivatedNotification::class);
 });
 
 it('stores reason in activity log', function () {

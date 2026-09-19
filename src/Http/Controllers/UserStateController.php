@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Enums\UserState;
+use Alumkit\Alumkit\Notifications\UserActivatedNotification;
 use Alumkit\Alumkit\Notifications\UserRejectedNotification;
 use Alumkit\Alumkit\Notifications\UserSuspendedNotification;
 use Illuminate\Http\RedirectResponse;
@@ -59,6 +60,8 @@ class UserStateController extends Controller
             $targetUser->notify(new UserRejectedNotification($request->input('reason')));
         } elseif ($newState === UserState::Suspended) {
             $targetUser->notify(new UserSuspendedNotification($request->input('reason')));
+        } elseif ($newState === UserState::Active) {
+            $targetUser->notify(new UserActivatedNotification);
         }
 
         return redirect()->route('alumkit.users.index')
