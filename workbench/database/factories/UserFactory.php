@@ -63,6 +63,19 @@ class UserFactory extends Factory
     }
 
     /**
+     * Attach a complete profile (gender + blood_group) to the user.
+     */
+    public function withProfile(array $attributes = []): static
+    {
+        return $this->afterCreating(function (User $user) use ($attributes): void {
+            $user->profile()->create(array_merge([
+                'gender' => 'male',
+                'blood_group' => 'O+',
+            ], $attributes));
+        });
+    }
+
+    /**
      * Indicate that the model's email address should be unverified.
      */
     public function unverified(): static

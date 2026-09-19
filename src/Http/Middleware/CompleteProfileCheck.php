@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Middleware;
 
-use Alumkit\Alumkit\Enums\UserState;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,7 @@ class CompleteProfileCheck
     {
         $user = $request->user();
 
-        if ($user && $user->state === UserState::Registered->value) {
+        if ($user && ! $user->profile?->isComplete()) {
             return redirect()->route('alumkit.profile.complete');
         }
 

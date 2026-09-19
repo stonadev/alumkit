@@ -12,8 +12,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
-    $this->user = User::factory()->create();
-    $this->user->profile()->create();
+    $this->user = User::factory()->withProfile()->create();
     $this->actingAs($this->user);
 });
 

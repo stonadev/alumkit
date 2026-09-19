@@ -14,17 +14,15 @@ beforeEach(function () {
     Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
-    $this->admin = User::factory()->approved()->create();
-    $this->admin->profile()->create();
+    $this->admin = User::factory()->approved()->withProfile()->create();
     Permission::findOrCreate('manage members');
     $this->admin->givePermissionTo('manage members');
 
-    $this->pendingUser = User::factory()->pending()->create(['name' => 'Pending Member']);
-    $this->pendingUser->profile()->create();
+    $this->pendingUser = User::factory()->pending()->withProfile()->create(['name' => 'Pending Member']);
     $this->pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $this->pendingUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
-    $this->activeUser = User::factory()->approved()->create(['name' => 'Active Member']);
+    $this->activeUser = User::factory()->approved()->withProfile()->create(['name' => 'Active Member']);
 });
 
 it('defaults the users index to all users', function () {
@@ -151,8 +149,7 @@ it('combines search with the active filter', function () {
 });
 
 it('denies the users index without manage members permission', function () {
-    $deniedUser = User::factory()->create();
-    $deniedUser->profile()->create();
+    $deniedUser = User::factory()->withProfile()->create();
 
     $this->actingAs($deniedUser)
         ->get(route('alumkit.users.index'))
@@ -183,8 +180,7 @@ it('renders user details for users with manage members permission', function () 
 });
 
 it('denies user details without manage members permission', function () {
-    $deniedUser = User::factory()->create();
-    $deniedUser->profile()->create();
+    $deniedUser = User::factory()->withProfile()->create();
 
     $this->actingAs($deniedUser)
         ->get(route('alumkit.users.show', $this->pendingUser))

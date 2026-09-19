@@ -12,12 +12,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
-    $this->member = User::factory()->approved()->create(['name' => 'Active Member']);
-    $this->member->profile()->create();
+    $this->member = User::factory()->approved()->withProfile()->create(['name' => 'Active Member']);
     $this->member->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
-    $this->pending = User::factory()->create(['name' => 'Pending Member']);
-    $this->pending->profile()->create();
+    $this->pending = User::factory()->withProfile()->create(['name' => 'Pending Member']);
 });
 
 it('lists active members for active users', function () {
@@ -66,8 +64,7 @@ it('links the directory in the sidebar for active members', function () {
 });
 
 it('keeps the management list in the sidebar for admins', function () {
-    $admin = User::factory()->approved()->create(['name' => 'Admin Member']);
-    $admin->profile()->create();
+    $admin = User::factory()->approved()->withProfile()->create(['name' => 'Admin Member']);
     Permission::findOrCreate('manage members');
     $admin->givePermissionTo('manage members');
 

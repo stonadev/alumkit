@@ -19,6 +19,7 @@ it('accepts a profile with no careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'gender' => 'male',
+            'blood_group' => 'O+',
             'website' => 'https://example.com',
             'date_of_birth' => '1990-05-15',
         ])
@@ -28,6 +29,7 @@ it('accepts a profile with no careers', function () {
     $this->assertDatabaseHas('profiles', [
         'user_id' => $this->user->id,
         'gender' => 'male',
+        'blood_group' => 'O+',
         'website' => 'https://example.com',
     ]);
 
@@ -37,6 +39,8 @@ it('accepts a profile with no careers', function () {
 it('accepts a profile with careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'gender' => 'male',
+            'blood_group' => 'O+',
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -55,7 +59,7 @@ it('accepts a profile with careers', function () {
 
 it('does not require careers to access protected routes', function () {
     $this->user->update(['state' => UserState::Pending->value]);
-    $this->user->profile()->create();
+    $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.dashboard'))
@@ -81,6 +85,8 @@ it('does not show the approval banner to the admin after submission', function (
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'gender' => 'male',
+            'blood_group' => 'O+',
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -112,18 +118,18 @@ it('shows "Submit" on the form for admins', function () {
         ->assertSee('Submit');
 });
 
-it('redirects away from the completion form once the state is not registered', function () {
+it('redirects away from the completion form once the profile is complete', function () {
     $this->user->update(['state' => UserState::Pending->value]);
-    $this->user->profile()->create();
+    $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
 
     $this->actingAs($this->user)
         ->get(route('alumkit.profile.complete'))
         ->assertRedirect(route('alumkit.dashboard'));
 });
 
-it('does not write again when the state is not registered', function () {
+it('does not write again when the profile is already complete', function () {
     $this->user->update(['state' => UserState::Pending->value]);
-    $this->user->profile()->create();
+    $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
     $this->actingAs($this->user)

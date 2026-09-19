@@ -49,8 +49,7 @@ it('logs in with valid credentials', function () {
 });
 
 it('logs in a rejected user', function () {
-    $user = User::factory()->create(['state' => 'rejected']);
-    $user->profile()->create();
+    $user = User::factory()->withProfile()->create(['state' => 'rejected']);
 
     $this->post(route('login'), [
         'email' => $user->email,
@@ -63,8 +62,7 @@ it('logs in a rejected user', function () {
 });
 
 it('logs in a suspended user', function () {
-    $user = User::factory()->create(['state' => 'suspended']);
-    $user->profile()->create();
+    $user = User::factory()->withProfile()->create(['state' => 'suspended']);
 
     $this->post(route('login'), [
         'email' => $user->email,
@@ -107,8 +105,7 @@ it('logs out and invalidates session', function () {
 });
 
 it('renders the dashboard for authenticated users', function () {
-    $user = User::factory()->create();
-    $user->profile()->create();
+    $user = User::factory()->withProfile()->create();
     $user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
@@ -247,8 +244,7 @@ it('redirects unverified users from dashboard', function () {
 });
 
 it('renders the profile page for verified users', function () {
-    $user = User::factory()->create();
-    $user->profile()->create();
+    $user = User::factory()->withProfile()->create();
     $user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 

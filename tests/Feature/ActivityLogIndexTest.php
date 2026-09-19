@@ -15,11 +15,11 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->admin = User::factory()->approved()->create();
-    $this->admin->profile()->create();
+    $this->admin->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $this->admin->givePermissionTo('view activity log');
 
     $this->targetUser = User::factory()->create(['state' => UserState::Pending->value]);
-    $this->targetUser->profile()->create();
+    $this->targetUser->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
 });
 
 it('shows the activity log with state transitions for admins', function () {
@@ -77,7 +77,7 @@ it('requires the view activity log permission', function () {
 
 it('forbids moderators who lack the view activity log permission', function () {
     $moderator = User::factory()->approved()->create();
-    $moderator->profile()->create();
+    $moderator->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $moderator->assignRole('moderator');
 
     $this->actingAs($moderator)

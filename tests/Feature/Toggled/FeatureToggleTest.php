@@ -30,8 +30,7 @@ class FeatureToggleTest extends FeatureToggleDisabledTestCase
     {
         $this->seed(DatabaseSeeder::class);
 
-        $user = User::factory()->approved()->create();
-        $user->profile()->create();
+        $user = User::factory()->approved()->withProfile()->create();
         $user->educations()->create([
             'level' => 'masters',
             'institution' => 'MIT',

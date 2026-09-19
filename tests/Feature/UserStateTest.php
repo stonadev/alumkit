@@ -19,13 +19,11 @@ beforeEach(function () {
     Notification::fake();
     $this->seed(DatabaseSeeder::class);
 
-    $this->user = User::factory()->create(['state' => UserState::Active->value]);
-    $this->user->profile()->create();
+    $this->user = User::factory()->withProfile()->create(['state' => UserState::Active->value]);
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $this->user->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 
-    $this->targetUser = User::factory()->create(['state' => UserState::Pending->value]);
-    $this->targetUser->profile()->create();
+    $this->targetUser = User::factory()->withProfile()->create(['state' => UserState::Pending->value]);
     $this->targetUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
     $this->targetUser->careers()->create(['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020]);
 });

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Alumkit\Alumkit\Http\Controllers;
 
-use Alumkit\Alumkit\Actions\SubmitProfileForReview;
 use Alumkit\Alumkit\Actions\UpdateProfileDetails;
 use Alumkit\Alumkit\Enums\EmploymentType;
-use Alumkit\Alumkit\Enums\UserState;
 use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
 use Alumkit\Alumkit\Models\Profile;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +20,7 @@ class CompleteProfileController extends Controller
 {
     public function create(Request $request): View|RedirectResponse
     {
-        if ($request->user()->state !== UserState::Registered->value) {
+        if ($request->user()->profile?->isComplete()) {
             return redirect()->route('alumkit.dashboard');
         }
 
@@ -38,12 +36,14 @@ class CompleteProfileController extends Controller
 
     public function store(ProfileDetailsRequest $request): RedirectResponse
     {
-        if ($request->user()->state !== UserState::Registered->value) {
+        if ($request->user()->profile?->isComplete()) {
             return redirect()->route('alumkit.dashboard');
         }
 
         $validated = $request->validated(); // detail fields (FormRequest)
         $validator = Validator::make($request->all(), [
+            'gender' => ['required'],
+            'blood_group' => ['required'],
             'careers' => ['nullable', 'array'],
             'careers.*.job_title' => ['required', 'string', 'max:255'],
             'careers.*.company' => ['required', 'string', 'max:255'],
@@ -78,7 +78,7 @@ class CompleteProfileController extends Controller
             $user->careers()->create($career);
         }
 
-        (new SubmitProfileForReview)->handle($user);
+        activity('profile')->performedOn($user)->event('submitted')->log('profile submitted');
 
         $adminRole = config('alumkit.permission.default_roles', ['admin', 'moderator', 'member'])[0] ?? 'admin';
 

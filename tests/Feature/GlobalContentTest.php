@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->approved()->create();
-    $this->user->profile()->create();
+    $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
 
     Permission::findOrCreate('manage pages');
     $this->user->givePermissionTo('manage pages');
