@@ -45,7 +45,7 @@ return [
     'complete_profile' => 'Complete Your Profile',
     'complete_profile_text' => 'Please add your career and profile details below.',
     'account_details' => 'Account Details',
-    'submit_for_approval' => 'Submit for Approval',
+    'submit_for_approval' => 'Update',
     'submit' => 'Submit',
     'step' => 'Step',
     'of' => 'of',
