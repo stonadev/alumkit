@@ -213,25 +213,24 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.start_year') }}</label>
-                                <select x-bind:name="'educations[' + index + '][start_year]'" x-model="edu.start_year" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(date('Y') + 5, 1970) as $y)
-                                        <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::year-select
+                                    x-bind:name="'educations[' + index + '][start_year]'"
+                                    x-model="edu.start_year"
+                                    :label="__('alumkit::education.start_year')"
+                                    :show-error="false"
+                                    required
+                                />
                                 <p x-show="fieldError('educations.' + index + '.start_year')" x-cloak
                                    x-text="fieldError('educations.' + index + '.start_year')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.start_month') }}</label>
-                                <select x-bind:name="'educations[' + index + '][start_month]'" x-model="edu.start_month" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(1, 12) as $m)
-                                        <option value="{{ $m }}">{{ $m }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::month-select
+                                    x-bind:name="'educations[' + index + '][start_month]'"
+                                    x-model="edu.start_month"
+                                    :label="__('alumkit::education.start_month')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('educations.' + index + '.start_month')" x-cloak
                                    x-text="fieldError('educations.' + index + '.start_month')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -247,25 +246,23 @@
 
                         <div class="grid grid-cols-2 gap-4" x-show="!edu.is_current">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.end_year') }}</label>
-                                <select x-bind:name="'educations[' + index + '][end_year]'" x-model="edu.end_year" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(date('Y') + 5, 1970) as $y)
-                                        <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::year-select
+                                    x-bind:name="'educations[' + index + '][end_year]'"
+                                    x-model="edu.end_year"
+                                    :label="__('alumkit::education.end_year')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('educations.' + index + '.end_year')" x-cloak
                                    x-text="fieldError('educations.' + index + '.end_year')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::education.end_month') }}</label>
-                                <select x-bind:name="'educations[' + index + '][end_month]'" x-model="edu.end_month" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(1, 12) as $m)
-                                        <option value="{{ $m }}">{{ $m }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::month-select
+                                    x-bind:name="'educations[' + index + '][end_month]'"
+                                    x-model="edu.end_month"
+                                    :label="__('alumkit::education.end_month')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('educations.' + index + '.end_month')" x-cloak
                                    x-text="fieldError('educations.' + index + '.end_month')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -376,25 +373,24 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::career.start_year') }}</label>
-                                <select x-bind:name="'careers[' + index + '][start_year]'" x-model="career.start_year" required class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(date('Y') + 5, 1970) as $y)
-                                        <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::year-select
+                                    x-bind:name="'careers[' + index + '][start_year]'"
+                                    x-model="career.start_year"
+                                    :label="__('alumkit::career.start_year')"
+                                    :show-error="false"
+                                    required
+                                />
                                 <p x-show="fieldError('careers.' + index + '.start_year')" x-cloak
                                    x-text="fieldError('careers.' + index + '.start_year')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::career.start_month') }}</label>
-                                <select x-bind:name="'careers[' + index + '][start_month]'" x-model="career.start_month" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(1, 12) as $m)
-                                        <option value="{{ $m }}">{{ $m }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::month-select
+                                    x-bind:name="'careers[' + index + '][start_month]'"
+                                    x-model="career.start_month"
+                                    :label="__('alumkit::career.start_month')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('careers.' + index + '.start_month')" x-cloak
                                    x-text="fieldError('careers.' + index + '.start_month')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -415,25 +411,23 @@
 
                         <div class="grid grid-cols-2 gap-4" x-show="!career.is_current">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::career.end_year') }}</label>
-                                <select x-bind:name="'careers[' + index + '][end_year]'" x-model="career.end_year" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(date('Y') + 5, 1970) as $y)
-                                        <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::year-select
+                                    x-bind:name="'careers[' + index + '][end_year]'"
+                                    x-model="career.end_year"
+                                    :label="__('alumkit::career.end_year')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('careers.' + index + '.end_year')" x-cloak
                                    x-text="fieldError('careers.' + index + '.end_year')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('alumkit::career.end_month') }}</label>
-                                <select x-bind:name="'careers[' + index + '][end_month]'" x-model="career.end_month" class="w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                                    <option value="">—</option>
-                                    @foreach (range(1, 12) as $m)
-                                        <option value="{{ $m }}">{{ $m }}</option>
-                                    @endforeach
-                                </select>
+                                <x-alumkit::month-select
+                                    x-bind:name="'careers[' + index + '][end_month]'"
+                                    x-model="career.end_month"
+                                    :label="__('alumkit::career.end_month')"
+                                    :show-error="false"
+                                />
                                 <p x-show="fieldError('careers.' + index + '.end_month')" x-cloak
                                    x-text="fieldError('careers.' + index + '.end_month')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>

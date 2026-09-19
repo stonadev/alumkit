@@ -21,15 +21,15 @@
                 <x-input name="location" :label="__('alumkit::career.location')" :value="old('location', $career->location)" />
 
                 <div class="grid grid-cols-2 gap-4">
-                    <x-input type="number" name="start_year" :label="__('alumkit::career.start_year')" :value="old('start_year', $career->start_year)" min="1900" max="2099" required />
-                    <x-input type="number" name="start_month" :label="__('alumkit::career.start_month')" :value="old('start_month', $career->start_month)" min="1" max="12" />
+                    <x-alumkit::year-select name="start_year" :label="__('alumkit::career.start_year')" :value="old('start_year', $career->start_year)" required />
+                    <x-alumkit::month-select name="start_month" :label="__('alumkit::career.start_month')" :value="old('start_month', $career->start_month)" />
                 </div>
 
                 <x-alumkit::checkbox name="is_current" :label="__('alumkit::career.currently_working')" x-model="is_current" />
 
                 <div class="grid grid-cols-2 gap-4" x-show="!is_current">
-                    <x-input type="number" name="end_year" :label="__('alumkit::career.end_year')" :value="old('end_year', $career->end_year)" min="1900" max="2099" />
-                    <x-input type="number" name="end_month" :label="__('alumkit::career.end_month')" :value="old('end_month', $career->end_month)" min="1" max="12" />
+                    <x-alumkit::year-select name="end_year" :label="__('alumkit::career.end_year')" :value="old('end_year', $career->end_year)" />
+                    <x-alumkit::month-select name="end_month" :label="__('alumkit::career.end_month')" :value="old('end_month', $career->end_month)" />
                 </div>
 
                 <x-alumkit::textarea name="description" :label="__('alumkit::career.description')" :value="old('description', $career->description)" />
