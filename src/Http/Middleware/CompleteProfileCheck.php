@@ -15,7 +15,7 @@ class CompleteProfileCheck
     {
         $user = $request->user();
 
-        if ($user && $user->state !== UserState::Suspended->value && $user->profile()->exists() === false) {
+        if ($user && $user->state === UserState::Registered->value) {
             return redirect()->route('alumkit.profile.complete');
         }
 

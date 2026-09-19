@@ -36,7 +36,7 @@ it('defaults the users index to all users', function () {
 });
 
 it('pending filter excludes registered users', function () {
-    User::factory()->create(['name' => 'Registered Member']);
+    User::factory()->create(['name' => 'Registered Member', 'state' => 'registered']);
 
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'pending']))
@@ -46,7 +46,7 @@ it('pending filter excludes registered users', function () {
 });
 
 it('registered filter shows users in registered state', function () {
-    User::factory()->create(['name' => 'Registered Member']);
+    User::factory()->create(['name' => 'Registered Member', 'state' => 'registered']);
 
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'registered']))
@@ -278,7 +278,7 @@ it('blocks state change on an unverified user', function () {
         ->assertRedirect(route('alumkit.users.show', $unverified))
         ->assertSessionHas('error');
 
-    expect($unverified->fresh()->state)->toBe('registered');
+    expect($unverified->fresh()->state)->toBe('pending');
 });
 
 it('hides state change buttons for an unverified user', function () {

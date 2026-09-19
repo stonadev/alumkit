@@ -182,12 +182,12 @@ it('logs user role sync with added and removed diff', function () {
 });
 
 it('logs profile submission on completion', function () {
-    $registered = User::factory()->create(); // default registered, no profile yet
+    $registered = User::factory()->create(['state' => 'registered']);
 
     $this->actingAs($registered)
         ->post(route('alumkit.profile.complete.store'), [
-            'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+            'careers' => [
+                ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
         ])
         ->assertRedirect(route('alumkit.dashboard'));

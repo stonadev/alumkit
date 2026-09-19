@@ -7,21 +7,22 @@ namespace Alumkit\Alumkit\Http\Controllers;
 use Alumkit\Alumkit\Actions\SubmitProfileForReview;
 use Alumkit\Alumkit\Actions\UpdateProfileDetails;
 use Alumkit\Alumkit\Enums\EmploymentType;
+use Alumkit\Alumkit\Enums\UserState;
 use Alumkit\Alumkit\Http\Requests\ProfileDetailsRequest;
 use Alumkit\Alumkit\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Validator;
 use Illuminate\View\View;
 
 class CompleteProfileController extends Controller
 {
     public function create(Request $request): View|RedirectResponse
     {
-        if ($request->user()->profile()->exists()) {
+        if ($request->user()->state !== UserState::Registered->value) {
             return redirect()->route('alumkit.dashboard');
         }
 
@@ -37,22 +38,12 @@ class CompleteProfileController extends Controller
 
     public function store(ProfileDetailsRequest $request): RedirectResponse
     {
-        if ($request->user()->profile()->exists()) {
+        if ($request->user()->state !== UserState::Registered->value) {
             return redirect()->route('alumkit.dashboard');
         }
 
         $validated = $request->validated(); // detail fields (FormRequest)
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'educations' => ['required', 'array', 'min:1'],
-            'educations.*.level' => ['required', 'string', 'max:255'],
-            'educations.*.institution' => ['required', 'string', 'max:255'],
-            'educations.*.student_id' => ['nullable', 'string', 'max:255'],
-            'educations.*.subject' => ['required', 'string', 'max:255'],
-            'educations.*.start_year' => ['required', 'integer', 'digits:4'],
-            'educations.*.start_month' => ['nullable', 'integer', 'between:1,12'],
-            'educations.*.is_current' => ['sometimes', 'boolean'],
-            'educations.*.end_year' => ['nullable', 'integer', 'digits:4', 'gte:educations.*.start_year'],
-            'educations.*.end_month' => ['nullable', 'integer', 'between:1,12'],
+        $validator = Validator::make($request->all(), [
             'careers' => ['nullable', 'array'],
             'careers.*.job_title' => ['required', 'string', 'max:255'],
             'careers.*.company' => ['required', 'string', 'max:255'],
@@ -65,13 +56,7 @@ class CompleteProfileController extends Controller
             'careers.*.end_year' => ['nullable', 'integer', 'digits:4'],
             'careers.*.end_month' => ['nullable', 'integer', 'between:1,12'],
             'careers.*.description' => ['nullable', 'string'],
-        ])->after(function (Validator $validator) use ($request): void {
-            foreach ($request->input('educations', []) as $i => $education) {
-                if (empty($education['end_year']) && empty($education['is_current'])) {
-                    $validator->errors()->add("educations.{$i}.end_year", __('validation.required', ['attribute' => 'end year']));
-                }
-            }
-        });
+        ]);
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -87,11 +72,6 @@ class CompleteProfileController extends Controller
         $user->setRelation('profile', $profile);
 
         (new UpdateProfileDetails)->handle($profile, $validated, $request->file('photo'));
-
-        foreach ($validated['educations'] as $education) {
-            /** @phpstan-ignore method.notFound */
-            $user->educations()->create($education);
-        }
 
         foreach ($validated['careers'] ?? [] as $career) {
             /** @phpstan-ignore method.notFound */

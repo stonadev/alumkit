@@ -22,6 +22,9 @@ it('sends the verification email on registration', function () {
         'phone' => '+1234567890',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+        ],
     ])->assertRedirect();
 
     Notification::assertSentTo(

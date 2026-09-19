@@ -132,13 +132,11 @@ it('resubmits a rejected user for review on profile update', function () {
 });
 
 it('stores profile details during profile completion', function () {
+    $this->user->update(['state' => 'registered']);
     $this->user->profile()->delete();
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
-            'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
-            ],
             'gender' => 'female',
             'website' => 'https://example.org',
             'date_of_birth' => '1990-05-15',
@@ -153,21 +151,13 @@ it('stores profile details during profile completion', function () {
     ]);
 
     expect($this->user->profile->fresh()->date_of_birth?->format('Y-m-d'))->toBe('1990-05-15');
-
-    $this->assertDatabaseHas('educations', [
-        'profile_id' => $this->user->profile->id,
-        'level' => 'masters',
-        'institution' => 'MIT',
-        'subject' => 'Computer Science',
-    ]);
 });
 
 it('validates profile details during profile completion', function () {
+    $this->user->update(['state' => 'registered']);
+
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
-            'educations' => [
-                ['level' => 'masters', 'institution' => 'MIT'],
-            ],
             'gender' => 'x',
         ])
         ->assertSessionHasErrors(['gender']);

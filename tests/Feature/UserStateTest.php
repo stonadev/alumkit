@@ -67,7 +67,7 @@ it('has no admin transitions from registered state', function () {
 it('sets default state on user creation', function () {
     $newUser = User::factory()->create();
 
-    expect($newUser->state)->toBe(UserState::Registered->value);
+    expect($newUser->state)->toBe(UserState::Pending->value);
 });
 
 it('updates user state with manage members permission', function () {
