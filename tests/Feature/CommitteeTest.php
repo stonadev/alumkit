@@ -19,8 +19,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
-    $this->user = User::factory()->approved()->create();
-    $this->user->profile()->create();
+    $this->user = User::factory()->approved()->withProfile()->create();
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     Permission::findOrCreate('manage committee');
@@ -36,8 +35,7 @@ it('renders the positions index', function () {
 });
 
 it('denies access to positions index without permission', function () {
-    $other = User::factory()->approved()->create();
-    $other->profile()->create();
+    $other = User::factory()->approved()->withProfile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($other)
@@ -124,8 +122,7 @@ it('renders the committee index', function () {
 });
 
 it('denies access to committee index without permission', function () {
-    $other = User::factory()->approved()->create();
-    $other->profile()->create();
+    $other = User::factory()->approved()->withProfile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($other)
@@ -345,8 +342,7 @@ it('shows committee card on dashboard for users with permission', function () {
 });
 
 it('hides committee card on dashboard for users without permission', function () {
-    $other = User::factory()->approved()->create();
-    $other->profile()->create();
+    $other = User::factory()->approved()->withProfile()->create();
     $other->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($other)

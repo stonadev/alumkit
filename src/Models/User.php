@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property string $state
  *
- * @method Profile profile()
+ * @method Profile|null profile()
  */
 class User extends Authenticatable implements MustVerifyEmailContract
 {

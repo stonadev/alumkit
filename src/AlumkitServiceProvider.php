@@ -18,10 +18,13 @@ use Alumkit\Alumkit\Http\Livewire\UserSearch;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
+use Alumkit\Alumkit\Listeners\MarkUserPendingOnVerification;
 use Alumkit\Alumkit\Models\Page;
 use Alumkit\Alumkit\Observers\PageObserver;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 use Livewire\Livewire;
@@ -66,6 +69,8 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->configureFortifyViews();
 
         $this->configureFortifyActions();
+
+        Event::listen(Verified::class, MarkUserPendingOnVerification::class);
 
         if (! $this->app->runningInConsole()) {
             return;

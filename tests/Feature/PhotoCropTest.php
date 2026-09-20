@@ -16,8 +16,7 @@ beforeEach(function () {
 });
 
 it('renders crop UI on profile details page', function () {
-    $user = User::factory()->approved()->create();
-    $user->profile()->create();
+    $user = User::factory()->approved()->withProfile()->create();
 
     $this->actingAs($user)
         ->get(route('alumkit.profile'))
@@ -27,8 +26,7 @@ it('renders crop UI on profile details page', function () {
 });
 
 it('renders crop UI on committee create page', function () {
-    $user = User::factory()->approved()->create();
-    $user->profile()->create();
+    $user = User::factory()->approved()->withProfile()->create();
 
     Permission::findOrCreate('manage committee');
     $user->givePermissionTo('manage committee');
@@ -41,8 +39,7 @@ it('renders crop UI on committee create page', function () {
 });
 
 it('renders crop UI on committee edit page', function () {
-    $user = User::factory()->approved()->create();
-    $user->profile()->create();
+    $user = User::factory()->approved()->withProfile()->create();
 
     Permission::findOrCreate('manage committee');
     $user->givePermissionTo('manage committee');

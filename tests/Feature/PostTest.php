@@ -17,7 +17,7 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->user = User::factory()->approved()->create();
-    $this->user->profile()->create();
+    $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 });
 
@@ -226,7 +226,7 @@ it('lists only the authors own posts on the index', function () {
 
 it('forbids pending users from the posts index', function () {
     $pendingUser = User::factory()->create();
-    $pendingUser->profile()->create();
+    $pendingUser->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($pendingUser)
@@ -236,7 +236,7 @@ it('forbids pending users from the posts index', function () {
 
 it('forbids pending users from the create post form', function () {
     $pendingUser = User::factory()->create();
-    $pendingUser->profile()->create();
+    $pendingUser->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $pendingUser->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 
     $this->actingAs($pendingUser)

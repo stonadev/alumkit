@@ -43,6 +43,11 @@ class Profile extends Model
         'local_names',
     ];
 
+    public function isComplete(): bool
+    {
+        return $this->gender !== null && $this->blood_group !== null;
+    }
+
     public function photoUrl(): ?string
     {
         return $this->photo_path

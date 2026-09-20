@@ -17,8 +17,7 @@ afterEach(fn () => Config::set('alumkit.local_names', []));
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
-    $this->user = User::factory()->create();
-    $this->user->profile()->create();
+    $this->user = User::factory()->withProfile()->create();
 });
 
 it('requires authentication', function () {
@@ -138,6 +137,7 @@ it('stores profile details during profile completion', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'gender' => 'female',
+            'blood_group' => 'O+',
             'website' => 'https://example.org',
             'date_of_birth' => '1990-05-15',
         ])
@@ -155,6 +155,7 @@ it('stores profile details during profile completion', function () {
 
 it('validates profile details during profile completion', function () {
     $this->user->update(['state' => 'registered']);
+    $this->user->profile()->delete();
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [

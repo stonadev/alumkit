@@ -50,9 +50,19 @@ class DatabaseSeeder extends Seeder
         // Idempotent: a re-seed must not duplicate users or trip the
         // email/profile unique constraints, so the block runs once only.
         if (! User::where('email', 'verified@example.com')->exists()) {
-            UserFactory::new()->create([
+            $verified = UserFactory::new()->create([
                 'name' => 'Verified User',
                 'email' => 'verified@example.com',
+            ]);
+
+            $verified->profile()->create();
+
+            $verified->educations()->create([
+                'level' => 'Honors',
+                'institution' => 'University of Dhaka',
+                'subject' => 'Information Technology',
+                'start_year' => 2013,
+                'end_year' => 2017,
             ]);
 
             UserFactory::new()->approved()->create([
