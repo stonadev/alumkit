@@ -76,4 +76,8 @@ return [
         // 'bn' => ['label' => 'বাংলা নাম', 'required' => false],
     ],
 
+    'maintenance' => [
+        'enabled' => env('ALUMKIT_MAINTENANCE_ENABLED', false),
+    ],
+
 ];
