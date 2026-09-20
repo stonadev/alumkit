@@ -15,6 +15,7 @@ use Alumkit\Alumkit\Http\Livewire\CommitteeOrdering;
 use Alumkit\Alumkit\Http\Livewire\LinkField;
 use Alumkit\Alumkit\Http\Livewire\RepeaterField;
 use Alumkit\Alumkit\Http\Livewire\UserSearch;
+use Alumkit\Alumkit\Http\Middleware\CheckMaintenanceMode;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
@@ -45,6 +46,8 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->configureFortifyConfig();
 
         $this->registerMiddlewareAliases();
+
+        $this->app->make('router')->pushMiddlewareToGroup('web', 'alumkit.maintenance');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'alumkit');
 
@@ -138,5 +141,6 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->app->make('router')->aliasMiddleware('user.suspended', CheckUserSuspended::class);
         $this->app->make('router')->aliasMiddleware('complete-profile.check', CompleteProfileCheck::class);
         $this->app->make('router')->aliasMiddleware('user.approved', CheckUserApproved::class);
+        $this->app->make('router')->aliasMiddleware('alumkit.maintenance', CheckMaintenanceMode::class);
     }
 }
