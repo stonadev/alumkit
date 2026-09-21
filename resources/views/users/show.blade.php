@@ -34,6 +34,9 @@
                         @endif
                         <h1 class="mt-1 font-serif text-2xl font-semibold leading-tight text-navy">{{ $user->name }}</h1>
                         <p class="mt-1 truncate text-sm text-on-surface-variant">{{ $user->email }}</p>
+                        @if ($user->phone)
+                            <p class="mt-1 truncate text-sm text-on-surface-variant">{{ $user->phone }}</p>
+                        @endif
                     </div>
                 </div>
 

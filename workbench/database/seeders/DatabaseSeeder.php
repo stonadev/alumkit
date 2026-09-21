@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
             $verified = UserFactory::new()->create([
                 'name' => 'Verified User',
                 'email' => 'verified@example.com',
+                'phone' => '+880 1712 345 678',
             ]);
 
             $verified->profile()->create();
@@ -68,16 +69,19 @@ class DatabaseSeeder extends Seeder
             UserFactory::new()->approved()->create([
                 'name' => 'Approved User',
                 'email' => 'approved@example.com',
+                'phone' => '+880 1812 345 678',
             ]);
 
             UserFactory::new()->unverified()->create([
                 'name' => 'Unverified User',
                 'email' => 'unverified@example.com',
+                'phone' => '+880 1912 345 678',
             ]);
 
             $featured = UserFactory::new()->approved()->create([
                 'name' => 'Ayesha Rahman',
                 'email' => 'ayesha.rahman@example.com',
+                'phone' => '+880 1612 345 678',
             ]);
 
             $featured->profile()->create([
