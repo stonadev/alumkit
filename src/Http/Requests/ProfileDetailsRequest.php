@@ -25,6 +25,7 @@ class ProfileDetailsRequest extends FormRequest
         $rules = [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.($user->id ?? 'NULL')],
+            'phone' => ['sometimes', 'required', 'string', 'max:20', 'unique:users,phone,'.($user->id ?? 'NULL')],
             'photo' => ['nullable', 'image', 'max:2048'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', Rule::in(array_column(Gender::cases(), 'value'))],

@@ -18,7 +18,7 @@ final class UpdateProfileDetails
     {
         // Update name/email on the parent User model
         $user = $profile->user;
-        $userUpdates = Arr::only($data, ['name', 'email']);
+        $userUpdates = Arr::only($data, ['name', 'email', 'phone']);
 
         if ($userUpdates) {
             $user->update($userUpdates);

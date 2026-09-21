@@ -18,6 +18,7 @@ beforeEach(function () {
 it('accepts a profile with no careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
             'website' => 'https://example.com',
@@ -39,6 +40,7 @@ it('accepts a profile with no careers', function () {
 it('accepts a profile with careers', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
             'careers' => [
@@ -85,6 +87,7 @@ it('does not show the approval banner to the admin after submission', function (
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
             'careers' => [
@@ -134,6 +137,7 @@ it('does not write again when the profile is already complete', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $this->user->phone,
             'careers' => [
                 ['job_title' => 'CEO', 'company' => 'Other', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
