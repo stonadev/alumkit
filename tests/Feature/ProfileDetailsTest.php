@@ -28,6 +28,7 @@ it('requires authentication', function () {
 it('stores all profile details', function () {
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'date_of_birth' => '1990-05-15',
             'gender' => 'male',
             'blood_group' => 'O+',
@@ -81,6 +82,7 @@ it('uploads and serves the profile photo', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'photo' => UploadedFile::fake()->image('me.jpg'),
         ])
         ->assertRedirect(route('alumkit.profile'));
@@ -101,6 +103,7 @@ it('deletes the old photo when replaced', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'photo' => UploadedFile::fake()->image('new.jpg'),
         ])
         ->assertRedirect(route('alumkit.profile'));
@@ -123,6 +126,7 @@ it('resubmits a rejected user for review on profile update', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'website' => 'https://example.com',
         ])
         ->assertRedirect(route('alumkit.profile'));
@@ -136,6 +140,7 @@ it('stores profile details during profile completion', function () {
 
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $this->user->phone,
             'gender' => 'female',
             'blood_group' => 'O+',
             'website' => 'https://example.org',
@@ -171,6 +176,7 @@ it('stores local_names when bn is enabled', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'local_names' => ['bn' => 'রহিম উদ্দিন'],
         ])
         ->assertRedirect(route('alumkit.profile'))
@@ -191,6 +197,7 @@ it('nullifies empty local_names', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'local_names' => ['bn' => ''],
         ])
         ->assertRedirect(route('alumkit.profile'));

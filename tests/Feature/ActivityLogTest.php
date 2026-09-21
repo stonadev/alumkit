@@ -186,6 +186,7 @@ it('logs profile submission on completion', function () {
 
     $this->actingAs($registered)
         ->post(route('alumkit.profile.complete.store'), [
+            'phone' => $registered->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
             'careers' => [
@@ -209,6 +210,7 @@ it('logs profile resubmission when a rejected user edits details', function () {
 
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
+            'phone' => $this->user->phone,
             'website' => 'https://example.com',
         ])
         ->assertRedirect(route('alumkit.profile'));
