@@ -58,7 +58,7 @@
                         }
                     }
 
-                        $profileFieldRules = Features::enabled(Features::updateProfileInformation())
+                    $profileFieldRules = Features::enabled(Features::updateProfileInformation())
                         ? array_merge([
                             'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')])],
                             'email' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.email')]), 'email' => true, 'emailMsg' => __('validation.email', ['attribute' => __('alumkit::auth.email')])],

@@ -24,7 +24,7 @@ final class UpdateProfileDetails
             $user->update($userUpdates);
         }
 
-        $data = Arr::except($data, ['photo', 'name', 'email']);
+        $data = Arr::except($data, ['photo', 'name', 'email', 'phone']);
         // all-empty platform fields -> null, not missing/empty values
         $data['social_links'] = array_filter(
             $data['social_links'] ?? [],
