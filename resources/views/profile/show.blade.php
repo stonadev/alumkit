@@ -58,10 +58,11 @@
                         }
                     }
 
-                    $profileFieldRules = Features::enabled(Features::updateProfileInformation())
+                        $profileFieldRules = Features::enabled(Features::updateProfileInformation())
                         ? array_merge([
                             'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')])],
                             'email' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.email')]), 'email' => true, 'emailMsg' => __('validation.email', ['attribute' => __('alumkit::auth.email')])],
+                            'phone' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.phone')])],
                         ], $localNameRules)
                         : $localNameRules;
                 @endphp
@@ -104,6 +105,18 @@
                                     <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
                                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                                 </div>
+                            </div>
+
+                            <div>
+                                <x-input
+                                    type="tel"
+                                    name="phone"
+                                    :value="old('phone', Auth::user()->phone)"
+                                    :label="__('alumkit::auth.phone')"
+                                    required
+                                />
+                                <p x-show="fieldError('phone')" x-cloak x-text="fieldError('phone')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                         @endif
 
