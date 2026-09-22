@@ -21,6 +21,8 @@ it('accepts a profile with no careers', function () {
             'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'website' => 'https://example.com',
             'date_of_birth' => '1990-05-15',
         ])
@@ -43,6 +45,8 @@ it('accepts a profile with careers', function () {
             'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -90,6 +94,8 @@ it('does not show the approval banner to the admin after submission', function (
             'phone' => $this->user->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -138,6 +144,8 @@ it('does not write again when the profile is already complete', function () {
     $this->actingAs($this->user)
         ->post(route('alumkit.profile.complete.store'), [
             'phone' => $this->user->phone,
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'careers' => [
                 ['job_title' => 'CEO', 'company' => 'Other', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -161,6 +169,7 @@ it('restores submitted values when validation fails', function () {
             'website' => 'not-a-url',
             'date_of_birth' => '1990-01-01',
             'present_address' => 'Dhaka',
+            'permanent_address' => '456 Elm St',
         ])
         ->assertSessionHasErrors(['website'])
         ->assertRedirect(route('alumkit.profile.complete'));

@@ -63,6 +63,8 @@
                             'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')])],
                             'email' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.email')]), 'email' => true, 'emailMsg' => __('validation.email', ['attribute' => __('alumkit::auth.email')])],
                             'phone' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.phone')])],
+                            'present_address' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::profile.present_address')])],
+                            'permanent_address' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::profile.permanent_address')])],
                         ], $localNameRules)
                         : $localNameRules;
                 @endphp
@@ -177,8 +179,10 @@
                                     name="present_address"
                                     :value="old('present_address', Auth::user()->profile->present_address)"
                                     :label="__('alumkit::profile.present_address')"
+                                    required
                                 />
-                                <x-alumkit::input-error name="present_address" />
+                                <p x-show="fieldError('present_address')" x-cloak x-text="fieldError('present_address')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
 
                             <div>
@@ -187,8 +191,10 @@
                                     name="permanent_address"
                                     :value="old('permanent_address', Auth::user()->profile->permanent_address)"
                                     :label="__('alumkit::profile.permanent_address')"
+                                    required
                                 />
-                                <x-alumkit::input-error name="permanent_address" />
+                                <p x-show="fieldError('permanent_address')" x-cloak x-text="fieldError('permanent_address')"
+                                   class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                             </div>
                         </div>
 
