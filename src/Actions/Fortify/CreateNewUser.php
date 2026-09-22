@@ -21,7 +21,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         $request = new RegisterUserRequest;
 
-        $validator = Validator::make($input, $request->rules());
+        $validator = Validator::make($input, $request->rules(), $request->messages());
 
         $validator->after(function (\Illuminate\Validation\Validator $validator) use ($input): void {
             foreach ($input['educations'] ?? [] as $i => $education) {

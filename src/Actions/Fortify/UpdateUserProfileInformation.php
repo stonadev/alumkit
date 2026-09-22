@@ -17,7 +17,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     public function update(User $user, array $input): void
     {
         Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/u'],
             'email' => [
                 'required',
                 'string',
@@ -25,6 +25,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
+        ], [
+            'name.regex' => __('alumkit::validation.name_latin_only'),
         ])->validate();
 
         if ($input['email'] !== $user->getAttribute('email')) {
