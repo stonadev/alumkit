@@ -45,6 +45,24 @@
             localNameRules: {{ Js::from($localNameRules) }},
             toKey(name) { return String(name || '').replace(/\[([^\]]+)\]/g, '.$1'); },
             fieldError(key) { return (this.errors[this.toKey(key)] || [])[0] || null; },
+            validateBlurField(e) {
+                const key = this.toKey(e.target.name);
+                const value = e.target.value;
+                const r = this.localNameRules[key];
+                if (r) {
+                    if (r.required && !String(value).trim()) { this.errors[key] = [r.requiredMsg]; }
+                    else { delete this.errors[key]; }
+                    return;
+                }
+                const requiredFields = {
+                    present_address: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::profile.present_address')])) }},
+                    permanent_address: {{ Js::from(__('validation.required', ['attribute' => __('alumkit::profile.permanent_address')])) }},
+                };
+                if (key in requiredFields) {
+                    if (!String(value).trim()) { this.errors[key] = [requiredFields[key]]; }
+                    else { delete this.errors[key]; }
+                }
+            },
             validateLocalNames(e) {
                 const key = this.toKey(e.target.name);
                 const r = this.localNameRules[key];
@@ -64,11 +82,28 @@
                         if (!c.start_year) { this.errors[p + 'start_year'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::career.start_year')])) }}]; valid = false; }
                     });
                 }
+                if (s === 2) {
+                    const form = this.$refs.form;
+                    const required = [
+                        ['present_address', {{ Js::from(__('validation.required', ['attribute' => __('alumkit::profile.present_address')])) }}],
+                        ['permanent_address', {{ Js::from(__('validation.required', ['attribute' => __('alumkit::profile.permanent_address')])) }}],
+                    ];
+                    required.forEach(([name, msg]) => {
+                        const v = form.elements[name]?.value ?? '';
+                        if (!v.trim()) { this.errors[name] = [msg]; valid = false; }
+                    });
+                }
                 return valid;
             },
             clearStepErrors(s) {
-                const prefix = s === 1 ? 'careers.' : null;
-                Object.keys(this.errors).forEach((k) => { if (prefix && k.startsWith(prefix)) delete this.errors[k]; });
+                const prefixes = s === 1 ? ['careers.'] : ['present_address', 'permanent_address'];
+                Object.keys(this.errors).forEach((k) => {
+                    if (s === 1) {
+                        if (k.startsWith('careers.')) delete this.errors[k];
+                    } else {
+                        if (prefixes.includes(k)) delete this.errors[k];
+                    }
+                });
             },
             attemptStep(s) {
                 this.eager[s] = true;
@@ -288,7 +323,7 @@
             </div>
 
             {{-- Profile Details Section --}}
-            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @focusout="validateLocalNames($event)">
+            <div x-show="step === 2" x-cloak x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @keydown.enter="event.target.tagName === 'TEXTAREA' || (event.preventDefault(), attemptStep(2))" @focusout="validateBlurField($event)">
             <div class="space-y-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ __('alumkit::profile.details') }}
@@ -333,7 +368,8 @@
                             :value="old('date_of_birth')"
                             :label="__('alumkit::profile.date_of_birth')"
                         />
-                        <x-alumkit::input-error name="date_of_birth" />
+                        <p x-show="fieldError('date_of_birth')" x-cloak x-text="fieldError('date_of_birth')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
                 </div>
 
@@ -364,8 +400,10 @@
                             name="present_address"
                             :value="old('present_address')"
                             :label="__('alumkit::profile.present_address')"
+                            required
                         />
-                        <x-alumkit::input-error name="present_address" />
+                        <p x-show="fieldError('present_address')" x-cloak x-text="fieldError('present_address')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
 
                     <div>
@@ -374,8 +412,10 @@
                             name="permanent_address"
                             :value="old('permanent_address')"
                             :label="__('alumkit::profile.permanent_address')"
+                            required
                         />
-                        <x-alumkit::input-error name="permanent_address" />
+                        <p x-show="fieldError('permanent_address')" x-cloak x-text="fieldError('permanent_address')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
                 </div>
 
@@ -391,7 +431,8 @@
                             :value="old('social_links.facebook')"
                             :label="__('alumkit::profile.facebook')"
                         />
-                        <x-alumkit::input-error name="social_links.facebook" />
+                        <p x-show="fieldError('social_links.facebook')" x-cloak x-text="fieldError('social_links.facebook')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
 
                     <div>
@@ -401,7 +442,8 @@
                             :value="old('social_links.linkedin')"
                             :label="__('alumkit::profile.linkedin')"
                         />
-                        <x-alumkit::input-error name="social_links.linkedin" />
+                        <p x-show="fieldError('social_links.linkedin')" x-cloak x-text="fieldError('social_links.linkedin')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
 
                     <div>
@@ -411,7 +453,8 @@
                             :value="old('website')"
                             :label="__('alumkit::profile.website')"
                         />
-                        <x-alumkit::input-error name="website" />
+                        <p x-show="fieldError('website')" x-cloak x-text="fieldError('website')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
                 </div>
 
@@ -428,7 +471,8 @@
                                 :value="old('emergency_contact.name')"
                                 :label="__('alumkit::profile.emergency_contact_name')"
                             />
-                            <x-alumkit::input-error name="emergency_contact.name" />
+                            <p x-show="fieldError('emergency_contact.name')" x-cloak x-text="fieldError('emergency_contact.name')"
+                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                         </div>
 
                         <div>
@@ -438,7 +482,8 @@
                                 :value="old('emergency_contact.phone')"
                                 :label="__('alumkit::profile.emergency_contact_phone')"
                             />
-                            <x-alumkit::input-error name="emergency_contact.phone" />
+                            <p x-show="fieldError('emergency_contact.phone')" x-cloak x-text="fieldError('emergency_contact.phone')"
+                               class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                         </div>
                     </div>
 
@@ -449,7 +494,8 @@
                             :value="old('emergency_contact.relation')"
                             :label="__('alumkit::profile.emergency_contact_relation')"
                         />
-                        <x-alumkit::input-error name="emergency_contact.relation" />
+                        <p x-show="fieldError('emergency_contact.relation')" x-cloak x-text="fieldError('emergency_contact.relation')"
+                           class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
                     </div>
                 </div>
             </div>

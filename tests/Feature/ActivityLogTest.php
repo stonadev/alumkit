@@ -189,6 +189,8 @@ it('logs profile submission on completion', function () {
             'phone' => $registered->phone,
             'gender' => 'male',
             'blood_group' => 'O+',
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'careers' => [
                 ['job_title' => 'Developer', 'company' => 'Acme', 'employment_type' => 'full_time', 'start_year' => 2020],
             ],
@@ -211,6 +213,8 @@ it('logs profile resubmission when a rejected user edits details', function () {
     $this->actingAs($this->user)
         ->put(route('alumkit.profile.details.update'), [
             'phone' => $this->user->phone,
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
             'website' => 'https://example.com',
         ])
         ->assertRedirect(route('alumkit.profile'));
