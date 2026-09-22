@@ -18,6 +18,7 @@
             else if (value && r.url && !this.isUrl(value)) { message = r.urlMsg; }
             else if (value && r.min && String(value).length < r.min) { message = r.minMsg; }
             else if (r.confirmed && value !== this.values[r.confirmed]) { message = r.confirmedMsg; }
+            else if (value && r.regex && !new RegExp(r.regex).test(value)) { message = r.regexMsg; }
             if (message) { this.errors[key] = [message]; } else { delete this.errors[key]; }
             if (key === 'password' && this.values.password_confirmation !== undefined) {
                 this.validateField('password_confirmation', this.values.password_confirmation);

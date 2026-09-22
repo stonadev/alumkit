@@ -60,7 +60,7 @@
 
                     $profileFieldRules = Features::enabled(Features::updateProfileInformation())
                         ? array_merge([
-                            'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')])],
+                            'name' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.name')]), 'regex' => '/^[A-Za-z\\s]+$/', 'regexMsg' => __('alumkit::validation.name_latin_only')],
                             'email' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.email')]), 'email' => true, 'emailMsg' => __('validation.email', ['attribute' => __('alumkit::auth.email')])],
                             'phone' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::auth.phone')])],
                             'present_address' => ['required' => true, 'requiredMsg' => __('validation.required', ['attribute' => __('alumkit::profile.present_address')])],
@@ -91,6 +91,7 @@
                                         :value="old('name', Auth::user()->name)"
                                         :label="__('alumkit::auth.name')"
                                         required
+                                        invalidate
                                     />
                                     <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
                                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -103,6 +104,7 @@
                                         :value="old('email', Auth::user()->email)"
                                         :label="__('alumkit::auth.email')"
                                         required
+                                        invalidate
                                     />
                                     <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
                                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -116,6 +118,7 @@
                                     :value="old('phone', Auth::user()->phone)"
                                     :label="__('alumkit::auth.phone')"
                                     required
+                                    invalidate
                                 />
                                 <p x-show="fieldError('phone')" x-cloak x-text="fieldError('phone')"
                                    class="mt-1.5 text-sm font-medium text-error" role="alert"></p>

@@ -363,3 +363,16 @@ it('redirects authenticated users from login to dashboard', function () {
         ->get(route('login'))
         ->assertRedirect(route('alumkit.dashboard'));
 });
+
+it('rejects non-latin characters in name on registration', function () {
+    $this->post(route('register'), [
+        'name' => 'জন ডো',
+        'email' => 'test@example.com',
+        'phone' => '+1234567890',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'educations' => [
+            ['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2020, 'is_current' => 1],
+        ],
+    ])->assertSessionHasErrors(['name']);
+});

@@ -267,3 +267,13 @@ it('does not render local_names field when disabled', function () {
         ->assertOk()
         ->assertDontSee('বাংলা নাম');
 });
+
+it('rejects non-latin characters in name on profile update', function () {
+    $this->actingAs($this->user)
+        ->put(route('alumkit.profile.details.update'), [
+            'present_address' => '123 Main St',
+            'permanent_address' => '456 Elm St',
+            'name' => 'আব্দুল্লাহ',
+        ])
+        ->assertSessionHasErrors(['name']);
+});

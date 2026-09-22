@@ -18,12 +18,22 @@ class RegisterUserRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.regex' => __('alumkit::validation.name_latin_only'),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/u'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
             'phone' => ['required', 'string', 'max:20', Rule::unique('users')],
             'password' => [...$this->passwordRules(), 'confirmed'],

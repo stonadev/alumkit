@@ -45,7 +45,7 @@
                     const phoneEl = this.$refs.form.querySelector('[name=phone]');
                     const pwEl = this.$refs.form.querySelector('[name=password]');
                     const pwConfEl = this.$refs.form.querySelector('[name=password_confirmation]');
-                    if (nameEl && !nameEl.value.trim()) { this.errors['name'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.name')])) }}]; valid = false; } else { delete this.errors['name']; }
+                    if (nameEl && !nameEl.value.trim()) { this.errors['name'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.name')])) }}]; valid = false; } else if (nameEl && !/^[A-Za-z\s]+$/.test(nameEl.value)) { this.errors['name'] = [{{ Js::from(__('alumkit::validation.name_latin_only')) }}]; valid = false; } else { delete this.errors['name']; }
                     if (emailEl && !emailEl.value.trim()) { this.errors['email'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.email')])) }}]; valid = false; } else if (emailEl && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) { this.errors['email'] = [{{ Js::from(__('validation.email', ['attribute' => __('alumkit::auth.email')])) }}]; valid = false; } else { delete this.errors['email']; }
                     if (phoneEl && !phoneEl.value.trim()) { this.errors['phone'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.phone')])) }}]; valid = false; } else { delete this.errors['phone']; }
                     if (pwEl && !pwEl.value) { this.errors['password'] = [{{ Js::from(__('validation.required', ['attribute' => __('alumkit::auth.password')])) }}]; valid = false; } else if (pwEl && pwEl.value.length < 8) { this.errors['password'] = [{{ Js::from(__('validation.min.string', ['attribute' => __('alumkit::auth.password'), 'min' => 8])) }}]; valid = false; } else { delete this.errors['password']; }
@@ -246,6 +246,7 @@
                         :value="old('name')"
                         :label="__('alumkit::auth.name')"
                         required
+                        invalidate
                     />
                     <p x-show="fieldError('name')" x-cloak x-text="fieldError('name')"
                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -258,6 +259,7 @@
                         :value="old('email')"
                         :label="__('alumkit::auth.email')"
                         required
+                        invalidate
                     />
                     <p x-show="fieldError('email')" x-cloak x-text="fieldError('email')"
                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>
@@ -270,6 +272,7 @@
                         :value="old('phone')"
                         :label="__('alumkit::auth.phone')"
                         required
+                        invalidate
                     />
                     <p x-show="fieldError('phone')" x-cloak x-text="fieldError('phone')"
                        class="mt-1.5 text-sm font-medium text-error" role="alert"></p>

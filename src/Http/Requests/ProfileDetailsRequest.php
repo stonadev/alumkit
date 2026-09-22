@@ -17,13 +17,23 @@ class ProfileDetailsRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.regex' => __('alumkit::validation.name_latin_only'),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function rules(): array
     {
         $user = $this->user();
         $rules = [
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'name' => ['sometimes', 'required', 'string', 'max:255', 'regex:/^[A-Za-z\s]+$/u'],
             'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.($user->id ?? 'NULL')],
             'phone' => ['sometimes', 'required', 'string', 'max:20', 'unique:users,phone,'.($user->id ?? 'NULL')],
             'photo' => ['nullable', 'image', 'max:2048'],
