@@ -274,7 +274,7 @@ it('blocks state change on an unverified user', function () {
         ->assertRedirect(route('alumkit.users.show', $unverified))
         ->assertSessionHas('error');
 
-    expect($unverified->fresh()->state)->toBe('pending');
+    expect($unverified->fresh()->state)->toBe('unverified');
 });
 
 it('hides state change buttons for an unverified user', function () {
