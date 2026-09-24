@@ -37,7 +37,7 @@ class UserFactory extends Factory
             'phone' => fake()->unique()->phoneNumber(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'state' => 'pending',
+            'state' => 'unverified',
             'remember_token' => Str::random(10),
         ];
     }
@@ -49,6 +49,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'state' => 'pending',
+            'email_verified_at' => now(),
         ]);
     }
 
@@ -83,6 +84,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+            'state' => 'unverified',
         ]);
     }
 }
