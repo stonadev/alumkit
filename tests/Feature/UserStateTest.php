@@ -51,15 +51,15 @@ it('allows rejected to pending transition', function () {
 it('blocks invalid transitions', function () {
     expect(UserState::Active->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Active->canTransitionTo(UserState::Rejected))->toBeFalse();
-    expect(UserState::Active->canTransitionTo(UserState::Registered))->toBeFalse();
+    expect(UserState::Active->canTransitionTo(UserState::Unverified))->toBeFalse();
     expect(UserState::Rejected->canTransitionTo(UserState::Active))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Pending))->toBeFalse();
     expect(UserState::Suspended->canTransitionTo(UserState::Rejected))->toBeFalse();
 });
 
 it('has no admin transitions from registered state', function () {
-    expect(UserState::Registered->transitions())->toBe([]);
-    expect(UserState::Registered->canTransitionTo(UserState::Pending))->toBeFalse();
+    expect(UserState::Unverified->transitions())->toBe([]);
+    expect(UserState::Unverified->canTransitionTo(UserState::Pending))->toBeFalse();
 });
 
 it('sets default state on user creation', function () {

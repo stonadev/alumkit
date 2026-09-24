@@ -33,30 +33,30 @@ it('defaults the users index to all users', function () {
         ->assertSee('Active Member');
 });
 
-it('pending filter excludes registered users', function () {
-    User::factory()->create(['name' => 'Registered Member', 'state' => 'registered']);
+it('pending filter excludes unverified users', function () {
+    User::factory()->create(['name' => 'Unverified Member', 'state' => 'unverified']);
 
     $this->actingAs($this->admin)
         ->get(route('alumkit.users.index', ['filter' => 'pending']))
         ->assertOk()
         ->assertSee('Pending Member')
-        ->assertDontSee('Registered Member');
+        ->assertDontSee('Unverified Member');
 });
 
-it('registered filter shows users in registered state', function () {
-    User::factory()->create(['name' => 'Registered Member', 'state' => 'registered']);
+it('unverified filter shows users in unverified state', function () {
+    User::factory()->create(['name' => 'Unverified Member', 'state' => 'unverified']);
 
     $this->actingAs($this->admin)
-        ->get(route('alumkit.users.index', ['filter' => 'registered']))
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
         ->assertOk()
-        ->assertSee('Registered Member')
+        ->assertSee('Unverified Member')
         ->assertDontSee('Active Member')
         ->assertDontSee('Pending Member');
 });
 
-it('registered filter excludes non-registered users', function () {
+it('unverified filter excludes non-unverified users', function () {
     $this->actingAs($this->admin)
-        ->get(route('alumkit.users.index', ['filter' => 'registered']))
+        ->get(route('alumkit.users.index', ['filter' => 'unverified']))
         ->assertOk()
         ->assertDontSee('Pending Member')
         ->assertDontSee('Active Member');

@@ -14,7 +14,9 @@ class MarkUserPendingOnVerification
     {
         $user = $event->user;
 
-        if ($user instanceof User && $user->state === UserState::Registered->value) {
+        if ($user instanceof User && $user->state === UserState::Unverified->value) {
+            // Transition from Unverified → Pending so the user enters
+            // the admin approval queue before gaining full access.
             $user->update(['state' => UserState::Pending->value]);
         }
     }

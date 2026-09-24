@@ -57,8 +57,11 @@ it('renders crop UI on committee edit page', function () {
         ->assertSee(__('alumkit::messages.crop'), false);
 });
 
+// Verify the photo cropper JS loads on the profile completion page.
+// This page is accessible after email verification and only shown
+// when the user's profile is incomplete (missing gender/blood_group).
 it('renders crop UI on profile completion page', function () {
-    $user = User::factory()->create(['state' => 'registered']);
+    $user = User::factory()->create(['state' => 'unverified']);
 
     $this->actingAs($user)
         ->get(route('alumkit.profile.complete'))

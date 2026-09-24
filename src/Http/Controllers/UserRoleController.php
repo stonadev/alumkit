@@ -20,7 +20,7 @@ class UserRoleController extends Controller
         $isAdmin = $request->user()->can('manage members');
 
         if ($isAdmin) {
-            $allowed = ['pending', 'registered', 'rejected', 'suspended', 'active', 'all'];
+            $allowed = ['pending', 'unverified', 'rejected', 'suspended', 'active', 'all'];
             $filter = $request->query('filter');
 
             if (! in_array($filter, $allowed, true)) {

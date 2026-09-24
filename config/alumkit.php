@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-use Alumkit\Alumkit\Enums\UserState;
 
 return [
 
@@ -16,8 +15,6 @@ return [
         'admin_email' => env('ALUMKIT_ADMIN_EMAIL', 'admin@example.com'),
         'admin_password' => env('ALUMKIT_ADMIN_PASSWORD', 'password'),
     ],
-
-    'default_state' => UserState::Registered,
 
     'features' => [
         // Toggle package features off to hide their routes and dashboard

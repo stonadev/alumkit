@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
-    $this->user = User::factory()->create(['state' => 'registered']);
+    $this->user = User::factory()->create(['state' => 'unverified']);
 });
 
 it('accepts a profile with no careers', function () {

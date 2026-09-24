@@ -182,7 +182,7 @@ it('logs user role sync with added and removed diff', function () {
 });
 
 it('logs profile submission on completion', function () {
-    $registered = User::factory()->create(['state' => 'registered']);
+    $registered = User::factory()->create(['state' => 'unverified']);
 
     $this->actingAs($registered)
         ->post(route('alumkit.profile.complete.store'), [
