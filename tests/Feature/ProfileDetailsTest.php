@@ -145,7 +145,7 @@ it('resubmits a rejected user for review on profile update', function () {
 });
 
 it('stores profile details during profile completion', function () {
-    $this->user->update(['state' => 'registered']);
+    $this->user->update(['state' => 'unverified']);
     $this->user->profile()->delete();
 
     $this->actingAs($this->user)
@@ -171,7 +171,7 @@ it('stores profile details during profile completion', function () {
 });
 
 it('validates profile details during profile completion', function () {
-    $this->user->update(['state' => 'registered']);
+    $this->user->update(['state' => 'unverified']);
     $this->user->profile()->delete();
 
     $this->actingAs($this->user)

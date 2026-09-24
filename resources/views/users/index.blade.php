@@ -34,7 +34,7 @@
                             onchange="this.form.submit()">
                         @foreach ([
                             'pending' => __('alumkit::dashboard.filter_pending'),
-                            'registered' => __('alumkit::dashboard.filter_registered'),
+                            'unverified' => __('alumkit::dashboard.filter_unverified'),
                             'active' => __('alumkit::dashboard.filter_active'),
                             'rejected' => __('alumkit::dashboard.filter_rejected'),
                             'suspended' => __('alumkit::dashboard.filter_suspended'),
