@@ -30,6 +30,7 @@ workbench:
     - db-wipe
     - migrate-fresh
     - { 'db:seed': { '--class': 'Workbench\Database\Seeders\DatabaseSeeder' } }
+    - { 'db:seed': { '--class': 'Workbench\Database\Seeders\BulkUserSeeder' } }
   assets:
     - laravel-assets
   sync:

@@ -90,4 +90,7 @@ return [
     'transition_reason_description' => 'Please provide a reason for this action.',
     'state_reason_confirm' => 'Confirm',
     'state_reason_cancel' => 'Cancel',
+    'pagination' => 'Pagination',
+    'previous' => 'Previous',
+    'next' => 'Next',
 ];
