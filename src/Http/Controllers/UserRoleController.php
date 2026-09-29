@@ -6,6 +6,7 @@ namespace Alumkit\Alumkit\Http\Controllers;
 
 use Alumkit\Alumkit\Enums\UserState;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,7 +15,7 @@ use Spatie\Permission\Models\Role;
 
 class UserRoleController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $userModel = config('alumkit.auth.user_model', 'App\\Models\\User');
         $isAdmin = $request->user()->can('manage members');
@@ -45,10 +46,16 @@ class UserRoleController extends Controller
                     ->orWhereRaw('email LIKE ? ESCAPE \'\\\'', [$like]));
             }
 
-            $users = $query->get();
+            $users = $query->paginate(24)->appends([
+                'filter' => $filter,
+                'search' => $search,
+            ]);
 
             if ($request->ajax()) {
-                return view('alumkit::users.partials.grid', compact('users', 'filter'));
+                return response()->json([
+                    'grid' => view('alumkit::users.partials.grid', ['users' => $users->items(), 'filter' => $filter])->render(),
+                    'pagination' => view('alumkit.pagination::users', ['paginator' => $users])->render(),
+                ]);
             }
 
             $counts = $userModel::query()
@@ -64,7 +71,14 @@ class UserRoleController extends Controller
                 ->with(['roles', 'profile.educations', 'profile.careers'])
                 ->where('state', UserState::Active->value)
                 ->orderBy('name')
-                ->get();
+                ->paginate(24);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'grid' => view('alumkit::users.partials.grid', ['users' => $users->items(), 'filter' => $filter])->render(),
+                    'pagination' => view('alumkit.pagination::users', ['paginator' => $users])->render(),
+                ]);
+            }
         }
 
         /** @var View $view */

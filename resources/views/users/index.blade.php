@@ -18,8 +18,11 @@
                           headers: { 'X-Requested-With': 'XMLHttpRequest' },
                           signal: this.controller.signal
                       })
-                      .then(r => r.text())
-                      .then(html => { document.getElementById('user-grid').innerHTML = html; })
+                      .then(r => r.json())
+                      .then(data => {
+                          document.getElementById('user-grid').innerHTML = data.grid;
+                          document.getElementById('user-pagination').innerHTML = data.pagination;
+                      })
                       .catch(e => { if (e.name !== 'AbortError') throw e; });
                   }
               }"
@@ -50,7 +53,7 @@
         @php
             $total = array_sum($counts);
             if ($search !== '') {
-                $summary = __('alumkit::dashboard.summary_filtered', ['count' => $users->count()]);
+                $summary = __('alumkit::dashboard.summary_filtered', ['count' => $users->total()]);
             } elseif ($filter === 'all') {
                 $summary = __('alumkit::dashboard.summary_all', ['count' => $total]);
             } else {
@@ -64,5 +67,9 @@
 
     <div id="user-grid" class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         @include('alumkit::users.partials.grid')
+    </div>
+
+    <div id="user-pagination" class="mt-6">
+        @include('alumkit.pagination::users', ['paginator' => $users])
     </div>
 @endsection
