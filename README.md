@@ -82,6 +82,8 @@ While typing the level, institution and subject fields on education forms, the p
 ],
 ```
 
+The registration form pre-fills the level field of the first education row with the first configured level; rows added via "Add education" start empty. Users can change or override the pre-filled value.
+
 ## Usage
 
 ### Permissions
