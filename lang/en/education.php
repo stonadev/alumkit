@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'education' => 'Education',
     'educations' => 'Educations',
-    'add_education' => 'Add Education',
+    'add_education' => 'Add Another Education',
     'update_education' => 'Update Education',
     'remove' => 'Remove',
     'level' => 'Level',
