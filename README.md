@@ -396,6 +396,116 @@ Homepage "committee" block:
 
 The dashboard screens are package-owned and not overridable by design.
 
+### Memberships & Manual Payments
+
+Alumkit ships a dashboard-managed membership system: tiered plans with terms
+and manual/offline payments reviewed by staff.
+There is no payment gateway and no invoice entity — members declare a payment
+(bKash, Nagad, or bank transfer) and staff approve or reject it.
+
+The feature is on by default and toggled like the others:
+
+```php
+// config/alumkit.php
+'features' => [
+    'memberships' => true, // set false to hide all membership routes and links
+],
+```
+
+When disabled, membership routes 404 and every dashboard entry disappears;
+models, migrations, and facade helpers stay loaded, so re-enabling restores
+the feature without data loss.
+
+**Plans are authored only in the dashboard** — there is no config array, seeder,
+or artisan command for plans. Staff holding `manage membership plans` create and
+edit tiers under **Membership → Manage Plans** (`alumkit.plans.*`). Each plan
+has a price, a features map, and **exactly one term**:
+
+- a base duration stored in days — `duration_days` (e.g. 30). The dashboard
+  also accepts a month term and stores it as days (12 months → 360), **or**
+- a lifetime flag (`is_lifetime`, with `duration_days` null).
+
+**Single currency.** Memberships are single-currency: every membership amount
+is stored in the app-wide `alumkit.membership.currency` (env
+`ALUMKIT_MEMBERSHIP_CURRENCY`, default `BDT`) and rendered by
+`Alumkit::formatMoney($amount)`.
+
+**Payment methods are dashboard-managed.** Staff holding `manage membership
+plans` maintain the ways members can pay under **Membership → Payment
+Methods** (`alumkit.payment-methods.*`). Each method is a typed channel —
+**bKash**, **Nagad**, or **Bank Transfer** (one method per type; payments
+reference the method by that type) plus rich-text instructions carrying the
+pay-to details (account numbers, bank details, QR codes, etc.). Staff create
+methods from the dashboard — the package ships no default methods — and
+re-order them by dragging rows on the index. Inactive methods are hidden from
+the member form. When a member pays, the form lists the active methods and
+shows the selected method's instructions.
+
+**Payment flow.** A member opens **Membership → Pay for this plan**, submits a
+payment for the plan's price (the request re-validates the amount, so a payment
+can never be over- or under-charged), and staff review it
+under **Payment Queue** (`alumkit.payments.*`). Approving activates or extends
+the membership; rejecting requires a reason and emails the member. Approving
+extends from the current `ends_at` (remaining time is preserved); a lifetime
+membership is never shortened or downgraded. Members must have an Active
+account (`user.approved`), matching the member directory.
+
+**Expiry.** The package schedules `alumkit:memberships:expire` daily
+(`membership.expiry.at`, default `00:30`) to flip lapsed, non-lifetime rows to
+`expired`. Status is also derived on read, so a missed run never shows a lapsed
+membership as active.
+
+**Read-only facade API** for app-side pricing pages and gating (plan authoring
+stays in the dashboard):
+
+- `Alumkit::activePlans()` — collection of active plans (ordered by `sort_order`).
+- `Alumkit::membershipFor(User $user): ?Membership` — the user's current membership.
+- `Alumkit::hasActiveMembership(User $user): bool` — gate features on membership.
+- `Alumkit::formatMoney(float|string $amount): string` — renders in the app-wide membership currency, e.g. `"BDT 1,500.00"`.
+- `Alumkit::paymentMethods(): array<string,string>` — the active,
+  dashboard-managed methods (`slug => name`).
+
+On the user model, the package adds membership helpers for gating:
+
+```php
+if ($user->hasActiveMembership() && $user->hasMembershipFeature('event_discount')) {
+    // ...
+}
+
+$feature = $user->membershipFeature('event_discount'); // raw string value or null
+```
+
+A features bag is a flat `string => string` map; `hasMembershipFeature()` treats
+`1`, `true`, `yes`, and `on` as enabled.
+
+**Gated features.** While `features.memberships` is enabled, two dashboard areas
+are gated behind membership: the **Member Directory** (`members`) and **Posts**
+(`posts`). An approved user needs an active membership whose plan grants the
+feature to reach them; otherwise they are redirected to their membership page.
+Staff who administer memberships (`manage members`, `manage memberships`, or
+`manage membership plans`) always bypass the gate.
+
+Admins set these as toggles in the plan editor ("Access this plan unlocks"), which are
+stored in the same `features` bag (`members => "1"`, `posts => "1"`). The
+textarea beside them is for app-specific value features like `event_discount`.
+
+> **Behavior change:** with memberships enabled, approved non-members lose
+> access to the Member Directory and Posts until a plan grants them (or they are
+> staff). Disable `features.memberships` to keep them open to all approved users.
+
+Apps can gate their own dashboard areas the same way: add a key to
+`alumkit.membership.gateable_features`, add a matching `feature_{key}` label to
+`lang/en/membership.php`, and protect the route with the `membership:<key>`
+middleware alias (e.g. `->middleware('membership:members')`). The user-model
+helper `$user->canAccessMembershipFeature('members')` exposes the same check for
+views and controllers.
+
+**Events and notifications.** Activation and rejection dispatch events
+(`PaymentSubmitted`, `PaymentApproved`, `PaymentRejected`,
+`MembershipActivated`, `MembershipExpired`) and queue
+a mail notification to the member. Apps can extend via these events; there are
+no renewal reminders.
+
 #### Seeding the Admin User
 
 The admin user created by `AlumkitUserSeeder` is configured via environment variables:

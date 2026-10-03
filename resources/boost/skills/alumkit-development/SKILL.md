@@ -31,7 +31,7 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
 
 #### Permissions
 
-- built-in permissions (`manage roles`, `manage permissions`, `manage members`, `manage educations`, `view dashboard`) are always seeded and cannot be removed
+- built-in permissions (`manage roles`, `manage permissions`, `manage members`, `manage educations`, `manage committee`, `manage pages`, `manage membership plans`, `manage memberships`, `view dashboard`, `view activity log`) are always seeded and cannot be removed
 - to add app permissions, publish the config and extend `permission.permissions`; run `php artisan alumkit:seed` to create them and assign them to the admin role
 - guard app routes with the registered middleware aliases: `permission:manage events`, `role:admin`, `role_or_permission:...`, plus `user.suspended` and `complete-profile.check`
 
@@ -54,6 +54,17 @@ Use this skill when a Laravel application needs to integrate the Alumkit package
   2. define routes under the package middleware stack (`web`, `auth`, `user.suspended`, `complete-profile.check`, `permission:manage events`); `Route::resource` names like `events.index` are what `dashboard_nav` resolves
   3. add the nav entry to `dashboard_nav`
   4. extend `alumkit::layouts.dashboard` in views to inherit the sidebar and auth chrome
+
+#### Memberships
+
+- the membership feature is on by default; set `features.memberships` to `false` in the published config to hide all membership routes and dashboard links (models/migrations/facade helpers stay loaded)
+- plans are authored only in the dashboard by staff holding `manage membership plans` (`alumkit.plans.*`); there is no config array, seeder, or command for plans — do not try to define tiers in app code
+- each plan has exactly one term: a base `duration_days` count (the dashboard also accepts a month term and stores it as days, 12 months → 360) or `is_lifetime`; plans always charge their configured price — there are no discount windows or zero-cost self-serve activations; members pay through the manual payment flow staff then review
+- staff review member-declared payments under `alumkit.payments.*` behind `manage memberships`; approving activates/extends, rejecting requires a reason; manual/offline methods only (no gateway)
+- payment methods (bKash, Nagad, bank transfer) are dashboard-managed under `alumkit.payment-methods.*` behind `manage membership plans`; staff create methods from the dashboard — there is no seeder, no config array for methods. Each method is a typed channel (one per type; payments reference it by `type`) plus rich-text instructions (account numbers, bank details, etc.) authored in the editor; ordering is drag-and-drop on the index (`payment-methods/reorder`). The member payment form lists active methods and shows the selected method's instructions; `Alumkit::paymentMethods()` returns `type => label`
+- gate app features on membership via the user model: `$user->hasActiveMembership()`, `$user->hasMembershipFeature('event_discount')`, `$user->membershipFeature('key')`
+- while memberships are enabled, the Member Directory (`members`) and Posts (`posts`) are gated behind membership: an approved user needs an active plan that grants the feature (staff administering memberships bypass). Admins toggle these per plan in the plan editor; gate your own dashboard areas via `alumkit.membership.gateable_features` + the `membership:<key>` middleware alias and `$user->canAccessMembershipFeature('key')`
+- build app-side pricing/gating from the read-only facade: `Alumkit::activePlans()`, `Alumkit::membershipFor($user)`, `Alumkit::hasActiveMembership($user)`, `Alumkit::formatMoney($amount)`, `Alumkit::paymentMethods()`
 
 #### Field components
 
