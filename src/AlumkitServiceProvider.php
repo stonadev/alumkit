@@ -9,6 +9,7 @@ use Alumkit\Alumkit\Actions\Fortify\ResetUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserPassword;
 use Alumkit\Alumkit\Actions\Fortify\UpdateUserProfileInformation;
 use Alumkit\Alumkit\Console\Commands\AlumkitCommand;
+use Alumkit\Alumkit\Console\Commands\ExpireMembershipsCommand;
 use Alumkit\Alumkit\Console\Commands\PublishCommand;
 use Alumkit\Alumkit\Content\ContentRegistry;
 use Alumkit\Alumkit\Http\Livewire\CommitteeOrdering;
@@ -19,12 +20,15 @@ use Alumkit\Alumkit\Http\Middleware\CheckMaintenanceMode;
 use Alumkit\Alumkit\Http\Middleware\CheckUserApproved;
 use Alumkit\Alumkit\Http\Middleware\CheckUserSuspended;
 use Alumkit\Alumkit\Http\Middleware\CompleteProfileCheck;
+use Alumkit\Alumkit\Http\Middleware\MembershipFeature;
 use Alumkit\Alumkit\Listeners\MarkUserPendingOnVerification;
 use Alumkit\Alumkit\Models\Page;
 use Alumkit\Alumkit\Observers\PageObserver;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Console\Scheduling\Schedule as ConsoleSchedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
@@ -75,6 +79,8 @@ class AlumkitServiceProvider extends ServiceProvider
 
         Event::listen(Verified::class, MarkUserPendingOnVerification::class);
 
+        $this->scheduleMembershipExpiry();
+
         if (! $this->app->runningInConsole()) {
             return;
         }
@@ -85,8 +91,24 @@ class AlumkitServiceProvider extends ServiceProvider
 
         $this->commands([
             AlumkitCommand::class,
+            ExpireMembershipsCommand::class,
             PublishCommand::class,
         ]);
+    }
+
+    protected function scheduleMembershipExpiry(): void
+    {
+        if (! config('alumkit.membership.expiry.enabled', true)) {
+            return;
+        }
+
+        $at = (string) config('alumkit.membership.expiry.at', '00:30');
+
+        $this->callAfterResolving(ConsoleSchedule::class, function (ConsoleSchedule $schedule) use ($at): void {
+            $schedule->call(function (): void {
+                Artisan::call('alumkit:memberships:expire');
+            })->dailyAt($at)->name('alumkit:memberships:expire');
+        });
     }
 
     protected function configureFortifyConfig(): void
@@ -146,6 +168,7 @@ class AlumkitServiceProvider extends ServiceProvider
         $this->app->make('router')->aliasMiddleware('user.suspended', CheckUserSuspended::class);
         $this->app->make('router')->aliasMiddleware('complete-profile.check', CompleteProfileCheck::class);
         $this->app->make('router')->aliasMiddleware('user.approved', CheckUserApproved::class);
+        $this->app->make('router')->aliasMiddleware('membership', MembershipFeature::class);
         $this->app->make('router')->aliasMiddleware('alumkit.maintenance', CheckMaintenanceMode::class);
     }
 }

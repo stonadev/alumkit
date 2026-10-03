@@ -10,7 +10,12 @@ use Alumkit\Alumkit\Http\Controllers\CompleteProfileController;
 use Alumkit\Alumkit\Http\Controllers\EditorImageController;
 use Alumkit\Alumkit\Http\Controllers\EducationController;
 use Alumkit\Alumkit\Http\Controllers\GlobalContentController;
+use Alumkit\Alumkit\Http\Controllers\MembershipController;
+use Alumkit\Alumkit\Http\Controllers\MembershipPaymentMethodController;
+use Alumkit\Alumkit\Http\Controllers\MembershipPlanController;
+use Alumkit\Alumkit\Http\Controllers\MyMembershipController;
 use Alumkit\Alumkit\Http\Controllers\PageController;
+use Alumkit\Alumkit\Http\Controllers\PaymentController;
 use Alumkit\Alumkit\Http\Controllers\PositionController;
 use Alumkit\Alumkit\Http\Controllers\PostController;
 use Alumkit\Alumkit\Http\Controllers\ProfileCareerController;
@@ -129,13 +134,13 @@ Route::middleware(['web'])->group(function () {
 
             if (config('alumkit.features.posts')) {
                 Route::middleware('user.approved')->group(function () {
-                    Route::resource('posts', PostController::class);
+                    Route::resource('posts', PostController::class)->middleware('membership:posts');
                 });
             }
 
             Route::middleware('user.approved')->group(function () {
-                Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
-                Route::get('users/{user}', [UserRoleController::class, 'show'])->name('users.show');
+                Route::get('users', [UserRoleController::class, 'index'])->name('users.index')->middleware('membership:members');
+                Route::get('users/{user}', [UserRoleController::class, 'show'])->name('users.show')->middleware('membership:members');
             });
 
             Route::middleware('permission:manage members')->group(function () {
@@ -150,6 +155,60 @@ Route::middleware(['web'])->group(function () {
                     Route::resource('positions', PositionController::class)->except(['show']);
                     Route::resource('committee', CommitteeController::class)->except(['show']);
                     Route::post('committee/reorder', [CommitteeController::class, 'reorder'])->name('committee.reorder');
+                });
+            }
+
+            // memberships — toggled with the memberships feature
+            if (config('alumkit.features.memberships')) {
+                Route::middleware('user.approved')->group(function () {
+                    Route::get('membership', [MyMembershipController::class, 'show'])->name('membership.show');
+                    Route::get('membership/plans', [MyMembershipController::class, 'plans'])->name('membership.plans');
+                    Route::get('membership/payments/create', [MyMembershipController::class, 'createPayment'])->name('membership.payments.create');
+                    Route::post('membership/payments', [MyMembershipController::class, 'storePayment'])->name('membership.payments.store');
+                    Route::get('membership/payments/{payment}', [MyMembershipController::class, 'showPayment'])
+                        ->name('membership.payments.show')
+                        ->whereNumber('payment');
+                    Route::get('membership/payments/{payment}/proof', [MyMembershipController::class, 'proof'])
+                        ->name('membership.payments.proof')
+                        ->whereNumber('payment');
+                });
+
+                Route::middleware('permission:manage membership plans')->group(function () {
+                    Route::resource('plans', MembershipPlanController::class)->except(['show']);
+                    Route::post('plans/reorder', [MembershipPlanController::class, 'reorder'])->name('plans.reorder');
+                    Route::resource('payment-methods', MembershipPaymentMethodController::class)
+                        ->except(['show'])
+                        ->parameters(['payment-methods' => 'paymentMethod']);
+                    Route::post('payment-methods/reorder', [MembershipPaymentMethodController::class, 'reorder'])->name('payment-methods.reorder');
+                });
+
+                Route::middleware('permission:manage memberships')->group(function () {
+                    Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
+                    Route::get('memberships/{membership}', [MembershipController::class, 'show'])
+                        ->name('memberships.show')
+                        ->whereNumber('membership');
+                    Route::put('memberships/{membership}', [MembershipController::class, 'update'])
+                        ->name('memberships.update')
+                        ->whereNumber('membership');
+                    Route::post('memberships/{membership}/cancel', [MembershipController::class, 'cancel'])
+                        ->name('memberships.cancel')
+                        ->whereNumber('membership');
+
+                    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+                    Route::get('payments/create', [PaymentController::class, 'create'])->name('payments.create');
+                    Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
+                    Route::get('payments/{payment}', [PaymentController::class, 'show'])
+                        ->name('payments.show')
+                        ->whereNumber('payment');
+                    Route::get('payments/{payment}/proof', [PaymentController::class, 'proof'])
+                        ->name('payments.proof')
+                        ->whereNumber('payment');
+                    Route::post('payments/{payment}/approve', [PaymentController::class, 'approve'])
+                        ->name('payments.approve')
+                        ->whereNumber('payment');
+                    Route::post('payments/{payment}/reject', [PaymentController::class, 'reject'])
+                        ->name('payments.reject')
+                        ->whereNumber('payment');
                 });
             }
         });

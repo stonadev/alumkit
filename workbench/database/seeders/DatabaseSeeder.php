@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             AlumkitRolesAndPermissionsSeeder::class,
             AlumkitUserSeeder::class,
             ContentSeeder::class,
+            MembershipSeeder::class,
         ]);
 
         // Seed a profile for the admin user created by AlumkitUserSeeder.

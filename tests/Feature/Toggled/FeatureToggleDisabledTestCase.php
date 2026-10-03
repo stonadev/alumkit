@@ -14,5 +14,6 @@ class FeatureToggleDisabledTestCase extends TestCase
 
         $app['config']->set('alumkit.features.posts', false);
         $app['config']->set('alumkit.features.committee', false);
+        $app['config']->set('alumkit.features.memberships', false);
     }
 }

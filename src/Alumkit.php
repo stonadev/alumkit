@@ -9,8 +9,12 @@ use Alumkit\Alumkit\Content\GlobalSchema;
 use Alumkit\Alumkit\Content\PageSchema;
 use Alumkit\Alumkit\Models\CommitteeMember;
 use Alumkit\Alumkit\Models\Content;
+use Alumkit\Alumkit\Models\Membership;
+use Alumkit\Alumkit\Models\MembershipPaymentMethod;
+use Alumkit\Alumkit\Models\MembershipPlan;
 use Alumkit\Alumkit\Models\Page;
 use Alumkit\Alumkit\Models\Post;
+use Alumkit\Alumkit\Models\User;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -29,6 +33,8 @@ class Alumkit
         'manage educations',
         'manage committee',
         'manage pages',
+        'manage membership plans',
+        'manage memberships',
         'view dashboard',
         'view activity log',
     ];
@@ -137,6 +143,63 @@ class Alumkit
     public function getGlobalContent(string $key): Collection
     {
         return Content::forGlobal($key)->get();
+    }
+
+    /**
+     * Active membership plans, ordered for display. Pricing/gating reads only —
+     * plans are authored in the dashboard.
+     *
+     * @return Collection<int, MembershipPlan>
+     */
+    public function activePlans(): Collection
+    {
+        return MembershipPlan::active()->get();
+    }
+
+    /**
+     * The user's current membership, or null when they have none.
+     */
+    public function membershipFor(User $user): ?Membership
+    {
+        /** @var Membership|null $membership */
+        $membership = $user->activeMembership()->with('plan')->first();
+
+        return $membership;
+    }
+
+    /**
+     * Whether the user currently holds an active membership.
+     */
+    public function hasActiveMembership(User $user): bool
+    {
+        return $user->hasActiveMembership();
+    }
+
+    /**
+     * Format an amount in the app-wide membership currency, e.g. "BDT 1,500.00".
+     */
+    public function formatMoney(float|string $amount): string
+    {
+        $currency = (string) config('alumkit.membership.currency', 'BDT');
+
+        return $currency.' '.number_format((float) $amount, 2);
+    }
+
+    /**
+     * The dashboard-managed payment methods (type => label). Only methods
+     * staff created in the dashboard are listed.
+     *
+     * @return array<string, string>
+     */
+    public function paymentMethods(): array
+    {
+        /** @var array<string, string> $methods */
+        $methods = MembershipPaymentMethod::active()
+            ->get()
+            ->mapWithKeys(fn (MembershipPaymentMethod $method): array => [$method->type => $method->label()])
+            ->all();
+
+        return $methods;
     }
 
     /**

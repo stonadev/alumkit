@@ -47,11 +47,12 @@
                     $items = [
                         ['label' => __('alumkit::dashboard.dashboard'), 'route' => 'alumkit.dashboard', 'show' => true],
                         ['label' => __('alumkit::dashboard.roles'), 'route' => 'alumkit.roles.index', 'show' => auth()->user()->can('manage roles')],
-                        ['label' => __('alumkit::dashboard.member_directory'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
+                        ['label' => __('alumkit::dashboard.member_directory'), 'route' => 'alumkit.users.index', 'show' => auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value && auth()->user()->canAccessMembershipFeature('members')],
                         ['label' => __('alumkit::activity_log.title'), 'route' => 'alumkit.activity.index', 'show' => auth()->user()->can('view activity log')],
                         ['label' => __('alumkit::career.careers'), 'route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers')],
-                        ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => config('alumkit.features.posts') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
+                        ['label' => __('alumkit::post.posts'), 'route' => 'alumkit.posts.index', 'show' => config('alumkit.features.posts') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value && auth()->user()->canAccessMembershipFeature('posts')],
                         ['label' => __('alumkit::committee.committee'), 'route' => 'alumkit.committee.index', 'show' => config('alumkit.features.committee') && auth()->user()->can('manage committee')],
+                        ['label' => __('alumkit::membership.membership'), 'route' => 'alumkit.membership.show', 'show' => config('alumkit.features.memberships') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value],
                     ];
                 @endphp
 
@@ -67,6 +68,34 @@
                         </a>
                     @endif
                 @endforeach
+
+                @if (config('alumkit.features.memberships'))
+                    @php
+                        $membershipAdminItems = [
+                            ['label' => __('alumkit::membership.manage_plans'), 'route' => 'alumkit.plans.index', 'show' => auth()->user()->can('manage membership plans')],
+                            ['label' => __('alumkit::membership.manage_payment_methods'), 'route' => 'alumkit.payment-methods.index', 'show' => auth()->user()->can('manage membership plans')],
+                            ['label' => __('alumkit::membership.member_memberships'), 'route' => 'alumkit.memberships.index', 'show' => auth()->user()->can('manage memberships')],
+                            ['label' => __('alumkit::membership.payment_queue'), 'route' => 'alumkit.payments.index', 'show' => auth()->user()->can('manage memberships')],
+                        ];
+                        $membershipAdminItems = array_values(array_filter($membershipAdminItems, fn ($i) => $i['show']));
+                    @endphp
+
+                    @if (! empty($membershipAdminItems))
+                        <p class="label-caps px-6 pt-5 pb-1 text-on-surface-variant">
+                            {{ __('alumkit::membership.memberships') }}
+                        </p>
+                        @foreach ($membershipAdminItems as $item)
+                            @php $active = request()->routeIs($item['route']) || request()->routeIs($item['route'].'.*'); @endphp
+                            <a href="{{ route($item['route']) }}"
+                               class="relative flex items-center pl-10 pr-6 py-2 text-sm font-medium transition-colors {{ $active ? 'text-navy bg-surface-container' : 'text-on-surface-variant hover:text-navy hover:bg-surface-container/60' }}">
+                                @if ($active)
+                                    <span class="absolute left-0 inset-y-0 w-1 bg-gold" aria-hidden="true"></span>
+                                @endif
+                                {{ $item['label'] }}
+                            </a>
+                        @endforeach
+                    @endif
+                @endif
 
                 @foreach (config('alumkit.dashboard_nav', []) as $item)
                     @if (! empty($item['children']) && is_array($item['children']))
