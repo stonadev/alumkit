@@ -26,6 +26,15 @@ class FeatureToggleTest extends FeatureToggleDisabledTestCase
         $this->assertFalse(Route::has('alumkit.positions.index'));
     }
 
+    public function test_membership_routes_not_registered_when_disabled(): void
+    {
+        $this->assertFalse(Route::has('alumkit.membership.show'));
+        $this->assertFalse(Route::has('alumkit.membership.plans'));
+        $this->assertFalse(Route::has('alumkit.plans.index'));
+        $this->assertFalse(Route::has('alumkit.memberships.index'));
+        $this->assertFalse(Route::has('alumkit.payments.index'));
+    }
+
     public function test_dashboard_hides_posts_and_committee_when_disabled(): void
     {
         $this->seed(DatabaseSeeder::class);

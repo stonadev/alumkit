@@ -12,6 +12,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
+    // The directory acts as a general-user feature here; membership feature
+    // gating is covered separately in MembershipFeatureGateTest.
+    $this->app['config']->set('alumkit.features.memberships', false);
+
     $this->member = User::factory()->approved()->withProfile()->create(['name' => 'Active Member']);
     $this->member->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
 

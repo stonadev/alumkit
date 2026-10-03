@@ -16,6 +16,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 
+    // Posts act as a general-user feature here; membership feature gating is
+    // covered separately in MembershipFeatureGateTest.
+    $this->app['config']->set('alumkit.features.memberships', false);
+
     $this->user = User::factory()->approved()->create();
     $this->user->profile()->create(['gender' => 'male', 'blood_group' => 'O+']);
     $this->user->educations()->create(['level' => 'masters', 'institution' => 'MIT', 'subject' => 'Computer Science', 'start_year' => 2015]);
