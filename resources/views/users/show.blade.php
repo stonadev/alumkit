@@ -196,6 +196,48 @@
             <section class="card p-6 lg:p-8">
                 <h2 class="font-serif text-2xl font-semibold text-navy">{{ __('alumkit::dashboard.membership') }}</h2>
 
+                @if (auth()->user()->can('manage memberships') && config('alumkit.features.memberships'))
+                    @php
+                        $memberMembership = $user->latestMembership()->with('plan')->first();
+                        $memberPayments = \Alumkit\Alumkit\Models\MembershipPayment::where('user_id', $user->getKey())->with('plan')->latest('id')->limit(5)->get();
+                    @endphp
+
+                    <div class="mt-6 rounded-lg bg-surface-container/60 px-4 py-4">
+                        <p class="label-caps text-gold">{{ __('alumkit::membership.current_membership') }}</p>
+
+                        @if ($memberMembership)
+                            @php $memberEffective = $memberMembership->effectiveStatus(); @endphp
+                            <div class="mt-2 flex flex-wrap items-center gap-2">
+                                <span class="font-semibold text-navy">{{ $memberMembership->plan?->name ?? '—' }}</span>
+                                <span class="rounded px-2 py-0.5 text-xs font-medium {{ $memberEffective->value === 'active' ? 'bg-emerald-100 text-emerald-800' : ($memberEffective->value === 'expired' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600') }}">
+                                    {{ __('alumkit::membership.status_'.$memberEffective->value) }}
+                                </span>
+                            </div>
+                            <p class="mt-2 text-sm text-on-surface-variant">
+                                {{ $memberMembership->starts_at?->format('d M Y') ?? '—' }} → {{ $memberMembership->ends_at?->format('d M Y') ?? __('alumkit::membership.never') }}
+                            </p>
+                        @else
+                            <p class="mt-2 text-sm text-on-surface-variant">{{ __('alumkit::membership.no_membership') }}</p>
+                        @endif
+
+                        @if ($memberPayments->isNotEmpty())
+                            <div class="mt-4 border-t border-outline-variant/60 pt-4">
+                                <p class="label-caps text-gold">{{ __('alumkit::membership.payments') }}</p>
+                                <ul class="mt-2 space-y-1.5 text-sm text-on-surface-variant">
+                                    @foreach ($memberPayments as $memberPayment)
+                                        <li class="flex items-center justify-between gap-3">
+                                            <span>{{ $memberPayment->plan?->name ?? '—' }} · {{ $memberPayment->paid_at?->format('d M Y') }}</span>
+                                            <span class="rounded px-2 py-0.5 text-xs font-medium {{ $memberPayment->status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ($memberPayment->status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600') }}">
+                                                {{ __('alumkit::membership.payment_'.$memberPayment->status) }}
+                                            </span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
                 <div class="mt-6 flex flex-wrap items-center gap-3">
                     <span class="text-sm text-on-surface-variant">{{ __('alumkit::dashboard.current_state') }}</span>
                     @include('alumkit::users.partials.state-badge', ['state' => $user->state, 'emailVerifiedAt' => $user->email_verified_at])

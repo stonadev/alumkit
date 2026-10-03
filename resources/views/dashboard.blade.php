@@ -31,6 +31,7 @@
                 ['route' => 'alumkit.careers.index', 'show' => auth()->user()->can('manage careers'), 'overline' => __('alumkit::career.careers'), 'title' => __('alumkit::career.careers'), 'description' => __('alumkit::dashboard.careers_description')],
                 ['route' => 'alumkit.posts.index', 'show' => config('alumkit.features.posts') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::post.posts'), 'title' => __('alumkit::post.posts'), 'description' => __('alumkit::dashboard.posts_description')],
                 ['route' => 'alumkit.committee.index', 'show' => config('alumkit.features.committee') && auth()->user()->can('manage committee'), 'overline' => __('alumkit::committee.committee'), 'title' => __('alumkit::committee.committee'), 'description' => __('alumkit::dashboard.committee_description')],
+                ['route' => 'alumkit.membership.show', 'show' => config('alumkit.features.memberships') && auth()->user()->state === \Alumkit\Alumkit\Enums\UserState::Active->value, 'overline' => __('alumkit::membership.membership'), 'title' => __('alumkit::membership.membership'), 'description' => __('alumkit::membership.view_plans')],
             ];
             $links = array_values(array_filter($links, fn ($link) => $link['show']));
         @endphp
@@ -53,6 +54,38 @@
                         </a>
                     @endforeach
                 </div>
+            </section>
+        @endif
+
+        @if (Auth::user()->state !== \Alumkit\Alumkit\Enums\UserState::Suspended->value && config('alumkit.features.memberships'))
+            @php
+                $activeMembership = Auth::user()->activeMembership()->with('plan')->first();
+            @endphp
+            <section class="card p-6 lg:p-8">
+                <p class="label-caps text-gold">{{ __('alumkit::membership.membership') }}</p>
+
+                @if ($activeMembership)
+                    <h2 class="mt-2 font-serif text-2xl font-semibold text-navy">
+                        {{ $activeMembership->plan?->name ?? '—' }}
+                    </h2>
+                    <div class="mt-3 flex flex-wrap items-center gap-2">
+                        <span class="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">{{ __('alumkit::membership.status_active') }}</span>
+                        @if ($activeMembership->isLifetime())
+                            <span class="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800">{{ __('alumkit::membership.lifetime_membership') }}</span>
+                        @endif
+                    </div>
+                    <p class="mt-3 text-sm text-on-surface-variant">
+                        {{ __('alumkit::membership.ends_at') }}: {{ $activeMembership->ends_at?->format('d M Y') ?? __('alumkit::membership.never') }}
+                    </p>
+                @else
+                    <h2 class="mt-2 font-serif text-2xl font-semibold text-navy">
+                        {{ __('alumkit::membership.no_membership') }}
+                    </h2>
+                @endif
+
+                <a href="{{ route('alumkit.membership.show') }}" class="btn-primary mt-5 inline-block">
+                    {{ __('alumkit::membership.membership') }} →
+                </a>
             </section>
         @endif
 
