@@ -175,6 +175,7 @@ Route::middleware(['web'])->group(function () {
 
                 Route::middleware('permission:manage membership plans')->group(function () {
                     Route::resource('plans', MembershipPlanController::class)->except(['show']);
+                    Route::post('plans/reorder', [MembershipPlanController::class, 'reorder'])->name('plans.reorder');
                     Route::resource('payment-methods', MembershipPaymentMethodController::class)
                         ->except(['show'])
                         ->parameters(['payment-methods' => 'paymentMethod']);

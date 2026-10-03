@@ -425,6 +425,10 @@ has a price, a features map, and **exactly one term**:
   also accepts a month term and stores it as days (12 months → 360), **or**
 - a lifetime flag (`is_lifetime`, with `duration_days` null).
 
+New plans are appended to the end of the list; staff re-order plans by dragging
+rows on the Manage Plans index (`alumkit.plans.reorder`). The create/edit
+forms expose no sort field.
+
 **Single currency.** Memberships are single-currency: every membership amount
 is stored in the app-wide `alumkit.membership.currency` (env
 `ALUMKIT_MEMBERSHIP_CURRENCY`, default `BDT`) and rendered by

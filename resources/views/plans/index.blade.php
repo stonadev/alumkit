@@ -19,9 +19,12 @@
                 {{ __('alumkit::membership.no_plans') }}
             </p>
         @else
+            <p class="text-sm text-gray-500 mb-4">{{ __('alumkit::membership.drag_to_reorder') }}</p>
+
             <table class="w-full">
                 <thead>
                     <tr class="border-b">
+                        <th class="text-left py-3 px-4 w-8"></th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::membership.plan_name') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::membership.term') }}</th>
                         <th class="text-left py-3 px-4">{{ __('alumkit::membership.price') }}</th>
@@ -29,9 +32,35 @@
                         <th class="text-right py-3 px-4">{{ __('alumkit::dashboard.actions') }}</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody x-data x-init="
+                    import('{{ url('alumkit/style/alumkit-sortable.esm.js') }}').then(function(m) {
+                        new m.default($el, {
+                            animation: 150,
+                            handle: '.drag-handle',
+                            onEnd: function(evt) {
+                                var ids = Array.from($el.querySelectorAll('tr')).map(function(row) { return row.dataset.id; });
+                                fetch('{{ route('alumkit.plans.reorder') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''),
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({ ids: ids })
+                                });
+                            }
+                        });
+                    });
+                ">
                     @foreach ($plans as $plan)
-                        <tr class="border-b">
+                        <tr class="border-b" data-id="{{ $plan->id }}">
+                            <td class="py-3 px-4">
+                                <span class="drag-handle cursor-grab text-gray-400 hover:text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+                                    </svg>
+                                </span>
+                            </td>
                             <td class="py-3 px-4 font-medium">
                                 {{ $plan->name }}
                             </td>

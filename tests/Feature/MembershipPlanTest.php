@@ -47,9 +47,12 @@ function makeStoredPlan(array $overrides = []): array
 }
 
 it('renders the plans index', function () {
+    MembershipPlan::create(makeStoredPlan());
+
     $this->actingAs($this->user)
         ->get(route('alumkit.plans.index'))
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('drag-handle', false);
 });
 
 it('renders the create plan form with term choices', function () {
@@ -58,6 +61,7 @@ it('renders the create plan form with term choices', function () {
         ->assertOk()
         ->assertSee('name="term_type"', false)
         ->assertSee('value="lifetime"', false)
+        ->assertDontSee('name="sort_order"', false)
         ->assertDontSee('name="currency"', false);
 });
 
@@ -68,6 +72,7 @@ it('renders the edit plan form for a stored plan', function () {
         ->get(route('alumkit.plans.edit', $plan))
         ->assertOk()
         ->assertSee('name="term_type"', false)
+        ->assertDontSee('name="sort_order"', false)
         ->assertDontSee('name="currency"', false);
 });
 
@@ -129,6 +134,70 @@ it('updates a plan', function () {
         ->assertRedirect(route('alumkit.plans.index'));
 
     $this->assertDatabaseHas('membership_plans', ['id' => $plan->id, 'price' => '150.00']);
+});
+
+it('appends new plans to the end when sort order is omitted', function () {
+    MembershipPlan::query()->delete();
+
+    MembershipPlan::create(makeStoredPlan(['sort_order' => 0]));
+    MembershipPlan::create(makeStoredPlan(['name' => 'Silver', 'sort_order' => 1]));
+
+    $payload = makePlan();
+    unset($payload['sort_order']);
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.plans.store'), $payload)
+        ->assertRedirect(route('alumkit.plans.index'));
+
+    $this->assertDatabaseHas('membership_plans', ['name' => 'Gold', 'sort_order' => 2]);
+});
+
+it('gives the first plan sort order zero on an empty table', function () {
+    MembershipPlan::query()->delete();
+
+    $payload = makePlan();
+    unset($payload['sort_order']);
+
+    $this->actingAs($this->user)
+        ->post(route('alumkit.plans.store'), $payload)
+        ->assertRedirect(route('alumkit.plans.index'));
+
+    $this->assertDatabaseHas('membership_plans', ['name' => 'Gold', 'sort_order' => 0]);
+});
+
+it('preserves sort order on update when sort order is omitted', function () {
+    $plan = MembershipPlan::create(makeStoredPlan(['sort_order' => 3]));
+
+    $payload = makePlan(['price' => '150.00']);
+    unset($payload['sort_order']);
+
+    $this->actingAs($this->user)
+        ->put(route('alumkit.plans.update', $plan), $payload)
+        ->assertRedirect(route('alumkit.plans.index'));
+
+    expect($plan->fresh()->sort_order)->toBe(3);
+});
+
+it('reorders plans via drag and drop', function () {
+    $a = MembershipPlan::create(makeStoredPlan(['sort_order' => 0]));
+    $b = MembershipPlan::create(makeStoredPlan(['name' => 'Silver', 'sort_order' => 1]));
+    $c = MembershipPlan::create(makeStoredPlan(['name' => 'Bronze', 'sort_order' => 2]));
+
+    $this->actingAs($this->user)
+        ->postJson(route('alumkit.plans.reorder'), ['ids' => [$c->id, $a->id, $b->id]])
+        ->assertOk();
+
+    expect($c->fresh()->sort_order)->toBe(0)
+        ->and($a->fresh()->sort_order)->toBe(1)
+        ->and($b->fresh()->sort_order)->toBe(2);
+});
+
+it('denies reordering plans without permission', function () {
+    $other = User::factory()->approved()->withProfile()->create();
+
+    $this->actingAs($other)
+        ->postJson(route('alumkit.plans.reorder'), ['ids' => []])
+        ->assertForbidden();
 });
 
 it('prevents deleting a plan in use', function () {

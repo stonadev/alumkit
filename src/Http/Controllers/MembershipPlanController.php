@@ -7,7 +7,9 @@ namespace Alumkit\Alumkit\Http\Controllers;
 use Alumkit\Alumkit\Http\Requests\StoreMembershipPlanRequest;
 use Alumkit\Alumkit\Http\Requests\UpdateMembershipPlanRequest;
 use Alumkit\Alumkit\Models\MembershipPlan;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
@@ -34,6 +36,10 @@ class MembershipPlanController extends Controller
     public function store(StoreMembershipPlanRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        // New plans are appended to the end (unless sort_order is given);
+        // staff re-order via drag-and-drop.
+        $data['sort_order'] ??= (int) (MembershipPlan::max('sort_order') ?? -1) + 1;
 
         MembershipPlan::create($data);
 
@@ -70,5 +76,16 @@ class MembershipPlanController extends Controller
 
         return redirect()->route('alumkit.plans.index')
             ->with('status', __('alumkit::membership.plan_deleted'));
+    }
+
+    public function reorder(Request $request): JsonResponse
+    {
+        $ids = $request->validate(['ids' => 'required|array']);
+
+        foreach ($ids['ids'] as $position => $id) {
+            MembershipPlan::where('id', $id)->update(['sort_order' => $position]);
+        }
+
+        return response()->json(['ok' => true]);
     }
 }

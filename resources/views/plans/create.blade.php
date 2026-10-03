@@ -66,12 +66,7 @@
 
                 <x-alumkit::textarea name="features" :label="__('alumkit::membership.features')" :value="old('features')" :placeholder="__('alumkit::membership.features_help')" />
 
-                <div class="grid grid-cols-2 gap-4">
-                    <x-input name="sort_order" type="number" min="0" :label="__('alumkit::membership.sort_order')" :value="old('sort_order', '0')" />
-                    <div class="flex items-end pb-2">
-                        <x-alumkit::checkbox name="is_active" :label="__('alumkit::membership.is_active')" :checked="old('is_active', true)" />
-                    </div>
-                </div>
+                <x-alumkit::checkbox name="is_active" :label="__('alumkit::membership.is_active')" :checked="old('is_active', true)" />
             </div>
 
             <div class="mt-6 flex items-center gap-4">

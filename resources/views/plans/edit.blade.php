@@ -75,12 +75,7 @@
 
                 <x-alumkit::textarea name="features" :label="__('alumkit::membership.features')" :value="old('features', collect($plan->features ?? [])->except(config('alumkit.membership.gateable_features', []))->map(fn ($v, $k) => $k.'='.$v)->implode("\n'))" :placeholder="__('alumkit::membership.features_help')" />
 
-                <div class="grid grid-cols-2 gap-4">
-                    <x-input name="sort_order" type="number" min="0" :label="__('alumkit::membership.sort_order')" :value="old('sort_order', $plan->sort_order)" />
-                    <div class="flex items-end pb-2">
-                        <x-alumkit::checkbox name="is_active" :label="__('alumkit::membership.is_active')" :checked="old('is_active', $plan->is_active)" />
-                    </div>
-                </div>
+                <x-alumkit::checkbox name="is_active" :label="__('alumkit::membership.is_active')" :checked="old('is_active', $plan->is_active)" />
             </div>
 
             <div class="mt-6 flex items-center gap-4">
