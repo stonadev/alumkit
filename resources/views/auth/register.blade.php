@@ -2,7 +2,9 @@
 
 @section('content')
     @php
-        $defaultEducation = ['level' => '', 'institution' => '', 'student_id' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => ''];
+        $levels = config('alumkit.education.levels', []);
+        $defaultLevel = is_array($levels) ? ($levels[0] ?? '') : '';
+        $defaultEducation = ['level' => $defaultLevel, 'institution' => '', 'student_id' => '', 'subject' => '', 'start_year' => '', 'start_month' => '', 'is_current' => false, 'end_year' => '', 'end_month' => ''];
         $oldEducations = array_map(
             fn (array $e): array => array_merge($defaultEducation, $e),
             old('educations', []) ?: [$defaultEducation],

@@ -37,6 +37,26 @@ it('renders the registration page', function () {
         ->assertSee(__('alumkit::auth.register'));
 });
 
+it('preselects the first configured education level on the first education row', function () {
+    config()->set('alumkit.education.levels', ['First Level', 'Second Level']);
+
+    // The initial education row carries the default level; rows added via
+    // "Add education" start with an empty level.
+    $this->get(route('register'))
+        ->assertOk()
+        ->assertSee('\u0022level\u0022:\u0022First Level\u0022', false)
+        ->assertSee("this.educations.push({ level: ''", false);
+});
+
+it('falls back to an empty default education level when levels config is empty', function () {
+    config()->set('alumkit.education.levels', []);
+
+    $this->get(route('register'))
+        ->assertOk()
+        ->assertSee('\u0022level\u0022:\u0022\u0022', false)
+        ->assertSee("this.educations.push({ level: ''", false);
+});
+
 it('logs in with valid credentials', function () {
     $user = User::factory()->create();
 
