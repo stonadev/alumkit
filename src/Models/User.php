@@ -6,6 +6,7 @@ namespace Alumkit\Alumkit\Models;
 
 use Alumkit\Alumkit\Traits\HasCareers;
 use Alumkit\Alumkit\Traits\HasEducations;
+use Alumkit\Alumkit\Traits\HasMemberships;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
 {
     use HasCareers;
     use HasEducations;
+    use HasMemberships;
     use HasRoles;
     use MustVerifyEmail;
     use Notifiable;
