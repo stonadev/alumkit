@@ -9,6 +9,12 @@ it('has feature toggles enabled by default', function () {
         ->and($config['features']['committee'])->toBeTrue();
 });
 
+it('defaults the membership currency to BDT', function () {
+    $config = require __DIR__.'/../../config/alumkit.php';
+
+    expect($config['membership']['currency'])->toBe('BDT');
+});
+
 it('reads seeder admin values from ALUMKIT_* env vars', function () {
     putenv('ALUMKIT_ADMIN_NAME=Env Admin');
     putenv('ALUMKIT_ADMIN_EMAIL=admin@env.test');
